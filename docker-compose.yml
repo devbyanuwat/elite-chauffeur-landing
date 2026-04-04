@@ -1,0 +1,155 @@
+# ======================================================
+# Elite Chauffeur — Docker Compose
+# Server: KVM 1 (1 CPU / 4GB RAM / 50GB)
+# Domain: sabuygo.com
+# DNS: Cloudflare (SSL Full Strict)
+# ======================================================
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Nginx Proxy Manager — Reverse Proxy + SSL UI
+  # Admin UI: http://<server-ip>:81
+  # Default login: admin@example.com / changeme
+  # ─────────────────────────────────────────────
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:2.12.1
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"       # HTTP
+      - "443:443"     # HTTPS
+      - "81:81"       # Admin UI
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+  # ─────────────────────────────────────────────
+  # Portainer — Container Management UI
+  # UI: https://<server-ip>:9443
+  # ─────────────────────────────────────────────
+  portainer:
+    image: portainer/portainer-ce:2.21.5
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - proxy
+
+  # ─────────────────────────────────────────────
+  # Landing Page — nginx:alpine serve static HTML
+  # Domain: sabuygo.com
+  # Image จะถูก build และ push โดย GitHub Actions
+  # ─────────────────────────────────────────────
+  landing:
+    image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG:-latest}
+    container_name: elite-chauffeur-landing
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - proxy
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────
+  # Internal Docs — เอกสารภายใน (architecture, diagrams)
+  # Domain: internal.sabuygo.com
+  # ─────────────────────────────────────────────
+  internal:
+    image: nginx:1.27-alpine
+    container_name: internal-docs
+    restart: unless-stopped
+    expose:
+      - "80"
+    volumes:
+      - ./internal:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+
+  # ─────────────────────────────────────────────
+  # MinIO — Object Storage
+  # API: port 9000
+  # Console UI: port 9001
+  # ─────────────────────────────────────────────
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    expose:
+      - "9000"   # S3 API (ผ่าน NPM)
+      - "9001"   # Console UI (ผ่าน NPM)
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    networks:
+      - proxy
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # Uptime Kuma — Monitoring & Status Page
+  # UI: http://<server-ip>:3001 (ผ่าน NPM)
+  # ─────────────────────────────────────────────
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.23.16
+    container_name: uptime-kuma
+    restart: unless-stopped
+    expose:
+      - "3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    networks:
+      - proxy
+
+  # ─────────────────────────────────────────────
+  # Watchtower — Auto Deploy
+  # Poll ทุก 5 นาที (300 วินาที)
+  # Cleanup old images อัตโนมัติ
+  # Monitor เฉพาะ container ที่มี label
+  # ─────────────────────────────────────────────
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_POLL_INTERVAL: 300
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_LABEL_ENABLE: "true"
+      # ถ้า image อยู่ใน private registry ต้องตั้ง credentials
+      # REPO_USER: ${DOCKER_HUB_USERNAME}
+      # REPO_PASS: ${DOCKER_HUB_TOKEN}
+    networks:
+      - proxy
+
+# ─────────────────────────────────────────────
+# Volumes — Persistent Data
+# ─────────────────────────────────────────────
+volumes:
+  npm_data:
+  npm_letsencrypt:
+  portainer_data:
+  minio_data:
+  uptime_kuma_data:
+
+# ─────────────────────────────────────────────
+# Networks
+# ─────────────────────────────────────────────
+networks:
+  proxy:
+    name: proxy
+    driver: bridge

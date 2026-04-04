@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elite Chauffeur — Infrastructure Architecture</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0e1a;
+      color: #e8e8e8;
+      min-height: 100vh;
+      padding: 32px 24px 48px;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #c9a84c, #f0d060);
+      color: #0a0e1a;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      font-size: clamp(20px, 4vw, 32px);
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ffffff, #c9a84c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+    .header-sub {
+      font-size: 13px;
+      color: #7a8299;
+      margin-top: 6px;
+      letter-spacing: 0.5px;
+    }
+    .header-divider {
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+      margin: 16px auto 0;
+    }
+
+    /* ===== MAIN GRID ===== */
+    .diagram-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ===== LAYER WRAPPER ===== */
+    .layer {
+      position: relative;
+    }
+
+    /* ===== SECTION LABELS ===== */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 4px 4px 0 0;
+      display: inline-block;
+      margin-bottom: -1px;
+    }
+    .label-external  { background: #1e2a4a; color: #5b8def; border: 1px solid #2d3e6a; border-bottom: none; }
+    .label-cloudflare { background: #1e2a1e; color: #f6821f; border: 1px solid #2d4a2d; border-bottom: none; }
+    .label-server    { background: #1a1e0e; color: #c9a84c; border: 1px solid #3a3e1a; border-bottom: none; }
+    .label-cicd      { background: #1e1a2a; color: #a78bfa; border: 1px solid #3a2d5a; border-bottom: none; }
+
+    /* ===== ZONE BOXES ===== */
+    .zone {
+      border-radius: 0 8px 8px 8px;
+      padding: 20px;
+      margin-bottom: 0;
+    }
+    .zone-external {
+      background: #0d1529;
+      border: 1px solid #2d3e6a;
+    }
+    .zone-cloudflare {
+      background: #0d160d;
+      border: 1px solid #2d4a2d;
+      margin-top: 0;
+    }
+    .zone-server {
+      background: #0f1208;
+      border: 2px solid #c9a84c;
+      border-radius: 0 8px 8px 8px;
+    }
+    .zone-cicd {
+      background: #100d18;
+      border: 1px solid #3a2d5a;
+      border-radius: 0 8px 8px 8px;
+    }
+
+    /* connector lines between zones */
+    .connector {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      color: #4a5568;
+      font-size: 11px;
+    }
+    .conn-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .conn-line {
+      width: 2px;
+      height: 24px;
+      background: linear-gradient(to bottom, #2d3e6a, #2d4a2d);
+    }
+    .conn-arrow-head {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 8px solid #4a5568;
+    }
+    .conn-label {
+      font-size: 10px;
+      color: #4a5568;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== FLOW ROW ===== */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .flow-row.left-align { justify-content: flex-start; }
+
+    /* ===== SERVICE CARD ===== */
+    .card {
+      border-radius: 8px;
+      padding: 12px 16px;
+      min-width: 130px;
+      text-align: center;
+      position: relative;
+    }
+    .card-icon {
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .card-name {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+    .card-desc {
+      font-size: 10px;
+      opacity: 0.7;
+      line-height: 1.3;
+    }
+    .card-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-top: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    /* card color themes */
+    .card-github {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+    }
+    .card-ghcr {
+      background: #1a1f2e;
+      border: 1px solid #30363d;
+      color: #79c0ff;
+    }
+    .card-actions {
+      background: #1a2030;
+      border: 1px solid #388bfd44;
+      color: #79c0ff;
+    }
+    .card-cloudflare {
+      background: #1a1a0d;
+      border: 1px solid #f6821f55;
+      color: #f6821f;
+    }
+    .card-dns {
+      background: #141e14;
+      border: 1px solid #3fb95044;
+      color: #3fb950;
+    }
+    .card-npm {
+      background: #141a2e;
+      border: 1px solid #5b8def55;
+      color: #7eb3ff;
+    }
+    .card-landing {
+      background: #0f1a0f;
+      border: 1px solid #3fb95055;
+      color: #3fb950;
+    }
+    .card-portainer {
+      background: #1a140a;
+      border: 1px solid #f6821f55;
+      color: #f09e3a;
+    }
+    .card-minio {
+      background: #0f100f;
+      border: 1px solid #c084fc55;
+      color: #c084fc;
+    }
+    .card-uptime {
+      background: #140f1a;
+      border: 1px solid #a78bfa55;
+      color: #a78bfa;
+    }
+    .card-watchtower {
+      background: #1a1508;
+      border: 1px solid #c9a84c55;
+      color: #c9a84c;
+    }
+    .card-user {
+      background: #0d1529;
+      border: 1px solid #5b8def55;
+      color: #7eb3ff;
+    }
+
+    /* ===== ARROW ===== */
+    .arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+    .arrow svg {
+      display: block;
+    }
+    .arrow-gold svg path { stroke: #c9a84c; }
+    .arrow-blue svg path { stroke: #5b8def; }
+    .arrow-green svg path { stroke: #3fb950; }
+    .arrow-purple svg path { stroke: #a78bfa; }
+    .arrow-gray svg path { stroke: #4a5568; }
+    .arrow-orange svg path { stroke: #f6821f; }
+
+    .arrow-label {
+      font-size: 9px;
+      color: #4a5568;
+      text-align: center;
+      display: block;
+      margin-top: 2px;
+    }
+    .arrow-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    /* ===== SERVER INFO BOX ===== */
+    .server-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .server-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #c9a84c;
+      letter-spacing: 0.5px;
+    }
+    .server-title-sub {
+      font-size: 11px;
+      color: #7a8299;
+      margin-top: 3px;
+    }
+    .server-specs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .spec-pill {
+      background: #1a1e0e;
+      border: 1px solid #3a3e1a;
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 10px;
+      color: #c9a84c;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* ===== REVERSE PROXY BLOCK ===== */
+    .proxy-block {
+      background: #101828;
+      border: 1px solid #5b8def44;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .proxy-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #7eb3ff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .proxy-title::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #5b8def;
+      border-radius: 50%;
+    }
+    .proxy-routes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .route-item {
+      background: #0d1220;
+      border: 1px solid #2d3e6a44;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .route-arrow {
+      color: #5b8def;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .route-domain {
+      font-size: 11px;
+      font-weight: 600;
+      color: #7eb3ff;
+      font-family: 'Courier New', monospace;
+    }
+    .route-service {
+      font-size: 10px;
+      color: #4a5568;
+      margin-top: 2px;
+    }
+    .route-port {
+      margin-left: auto;
+      font-size: 9px;
+      font-family: monospace;
+      background: #1a2030;
+      border: 1px solid #2d3e6a;
+      border-radius: 4px;
+      padding: 2px 5px;
+      color: #4a90d9;
+      flex-shrink: 0;
+    }
+
+    /* ===== SERVICES ROW ===== */
+    .services-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    /* ===== DOCKER INFO ===== */
+    .docker-info {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .docker-pill {
+      background: #0d1220;
+      border: 1px solid #2d3e6a44;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 10px;
+      color: #7a8299;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .docker-pill strong { color: #5b8def; }
+    .docker-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ===== CI/CD FLOW ===== */
+    .cicd-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cicd-step {
+      background: #180f28;
+      border: 1px solid #3a2d5a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: center;
+      min-width: 110px;
+    }
+    .cicd-step-icon { font-size: 18px; margin-bottom: 4px; }
+    .cicd-step-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #a78bfa;
+    }
+    .cicd-step-desc {
+      font-size: 9px;
+      color: #5b4e7a;
+      margin-top: 2px;
+    }
+    .cicd-arrow {
+      padding: 0 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .cicd-time {
+      font-size: 9px;
+      color: #5b4e7a;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    /* ===== LEGEND ===== */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 32px;
+      padding: 18px 24px;
+      background: #0d1020;
+      border: 1px solid #1e2a40;
+      border-radius: 10px;
+    }
+    .legend-title {
+      width: 100%;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #4a5568;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #7a8299;
+    }
+    .legend-swatch {
+      width: 24px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ===== INTERNET ENTRY ===== */
+    .internet-entry {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .port-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-family: monospace;
+      background: #1a2030;
+      border: 1px solid #2d3e6a;
+      color: #4a90d9;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: 0 3px;
+    }
+
+    /* ===== WATCHTOWER NOTE ===== */
+    .watchtower-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      background: #1a1508;
+      border: 1px solid #c9a84c33;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .watchtower-note-text {
+      font-size: 10px;
+      color: #a08030;
+      line-height: 1.4;
+    }
+    .watchtower-note-text strong { color: #c9a84c; }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 10px;
+      color: #2d3550;
+      letter-spacing: 1px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      body { padding: 16px 12px 32px; }
+      .flow-row { gap: 0; }
+      .arrow svg { width: 20px; }
+      .card { min-width: 90px; padding: 10px 10px; }
+      .cicd-step { min-width: 80px; padding: 8px 10px; }
+      .server-header { flex-direction: column; }
+    }
+
+    /* inline SVG arrow helper */
+    .svg-arrow-right {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Infrastructure Architecture</div>
+  <h1>Elite Chauffeur — Docker Stack</h1>
+  <p class="header-sub">KVM 1 &nbsp;·&nbsp; sabuygo.com &nbsp;·&nbsp; Production</p>
+  <div class="header-divider"></div>
+</div>
+
+<div class="diagram-wrapper">
+
+  <!-- =========================================================
+       EXTERNAL LAYER
+  ========================================================== -->
+  <div class="layer">
+    <span class="section-label label-external">External / Users</span>
+    <div class="zone zone-external">
+      <div class="flow-row">
+
+        <!-- Developer -->
+        <div class="card card-user">
+          <div class="card-icon">&#128187;</div>
+          <div class="card-name">Developer</div>
+          <div class="card-desc">git push main</div>
+        </div>
+
+        <!-- arrow -->
+        <div class="arrow-wrap arrow-blue">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#5b8def" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="arrow-label">push</span>
+        </div>
+
+        <!-- GitHub -->
+        <div class="card card-github">
+          <div class="card-icon">&#128025;</div>
+          <div class="card-name">GitHub</div>
+          <div class="card-desc">Source repository<br/>main branch</div>
+        </div>
+
+        <!-- arrow -->
+        <div class="arrow-wrap arrow-blue">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#5b8def" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="arrow-label">trigger</span>
+        </div>
+
+        <!-- GitHub Actions -->
+        <div class="card card-actions">
+          <div class="card-icon">&#9881;&#65039;</div>
+          <div class="card-name">GitHub Actions</div>
+          <div class="card-desc">Build Docker image<br/>on push</div>
+        </div>
+
+        <!-- arrow -->
+        <div class="arrow-wrap arrow-blue">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#5b8def" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="arrow-label">push image</span>
+        </div>
+
+        <!-- GHCR -->
+        <div class="card card-ghcr">
+          <div class="card-icon">&#128230;</div>
+          <div class="card-name">GHCR</div>
+          <div class="card-desc">Container Registry<br/>ghcr.io</div>
+          <span class="card-badge" style="background:#1a2a3a;color:#79c0ff;">latest tag</span>
+        </div>
+
+        <!-- spacer -->
+        <div style="flex:1; min-width:16px;"></div>
+
+        <!-- Users -->
+        <div class="card card-user">
+          <div class="card-icon">&#128101;</div>
+          <div class="card-name">Users</div>
+          <div class="card-desc">Browser / Mobile</div>
+        </div>
+
+        <!-- arrow to cloudflare -->
+        <div class="arrow-wrap arrow-orange">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#f6821f" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="arrow-label">HTTPS</span>
+        </div>
+
+        <!-- Cloudflare -->
+        <div class="card card-cloudflare">
+          <div class="card-icon">&#9729;&#65039;</div>
+          <div class="card-name">Cloudflare</div>
+          <div class="card-desc">CDN · SSL · WAF<br/>DDoS Protection</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- connector -->
+  <div class="connector">
+    <div class="conn-arrow">
+      <div class="conn-line" style="background: linear-gradient(to bottom, #2d4a2d, #3a3e1a);"></div>
+      <div class="conn-arrow-head" style="border-top-color: #3fb950;"></div>
+    </div>
+    <span class="conn-label">DNS A Records · SSL Full (Strict) · Proxy</span>
+  </div>
+
+  <!-- =========================================================
+       CLOUDFLARE DETAIL
+  ========================================================== -->
+  <div class="layer">
+    <span class="section-label label-cloudflare">Cloudflare Layer</span>
+    <div class="zone zone-cloudflare">
+      <div class="flow-row">
+        <div class="card card-dns" style="min-width:160px;">
+          <div class="card-icon">&#127760;</div>
+          <div class="card-name">DNS (A Records)</div>
+          <div class="card-desc">
+            sabuygo.com<br/>
+            *.sabuygo.com<br/>
+            <span style="color:#4a5568;">→ Server IP</span>
+          </div>
+        </div>
+        <div class="arrow-wrap arrow-orange">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#f6821f" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card card-cloudflare" style="min-width:160px;">
+          <div class="card-icon">&#128274;</div>
+          <div class="card-name">SSL / TLS</div>
+          <div class="card-desc">Mode: Full (Strict)<br/>Auto HTTPS Redirect</div>
+        </div>
+        <div class="arrow-wrap arrow-orange">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#f6821f" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card card-cloudflare" style="min-width:160px;">
+          <div class="card-icon">&#128737;&#65039;</div>
+          <div class="card-name">WAF + DDoS</div>
+          <div class="card-desc">Web App Firewall<br/>Layer 7 Protection</div>
+        </div>
+        <div class="arrow-wrap arrow-orange">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#f6821f" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="card card-cloudflare" style="min-width:160px;">
+          <div class="card-icon">&#9992;&#65039;</div>
+          <div class="card-name">CDN Edge Cache</div>
+          <div class="card-desc">Global edge nodes<br/>Static asset cache</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- connector to server -->
+  <div class="connector">
+    <div class="conn-arrow">
+      <div class="conn-line" style="background: linear-gradient(to bottom, #3a3e1a, #c9a84c55);"></div>
+      <div class="conn-arrow-head" style="border-top-color: #c9a84c;"></div>
+    </div>
+    <span class="conn-label">
+      <span class="port-tag">:80</span>
+      <span class="port-tag">:443</span>
+      TCP to server IP
+    </span>
+  </div>
+
+  <!-- =========================================================
+       SERVER LAYER
+  ========================================================== -->
+  <div class="layer">
+    <span class="section-label label-server">KVM 1 — Ubuntu Server</span>
+    <div class="zone zone-server">
+
+      <!-- Server Header -->
+      <div class="server-header">
+        <div>
+          <div class="server-title">&#128421;&#65039; &nbsp;KVM 1 — Production Server</div>
+          <div class="server-title-sub">Ubuntu Linux &nbsp;·&nbsp; Docker Engine &nbsp;·&nbsp; All services in single host</div>
+        </div>
+        <div class="server-specs">
+          <span class="spec-pill">1 CPU Core</span>
+          <span class="spec-pill">4 GB RAM</span>
+          <span class="spec-pill">50 GB Disk</span>
+          <span class="spec-pill">Ubuntu</span>
+          <span class="spec-pill">sabuygo.com</span>
+        </div>
+      </div>
+
+      <!-- Internet Entry Point -->
+      <div class="internet-entry">
+        <div style="display:inline-flex;align-items:center;gap:10px;background:#0d1220;border:1px solid #2d3e6a44;border-radius:8px;padding:8px 18px;">
+          <span style="font-size:11px;color:#4a5568;">Internet</span>
+          <span class="port-tag">:80</span>
+          <span class="port-tag">:443</span>
+          <svg width="24" height="14" viewBox="0 0 24 14">
+            <path d="M0 7 H16 M10 1 L22 7 L10 13" stroke="#c9a84c" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Nginx Proxy Manager -->
+      <div class="proxy-block">
+        <div class="proxy-title">Nginx Proxy Manager &nbsp; — &nbsp; Reverse Proxy + SSL Termination</div>
+        <div class="proxy-routes">
+
+          <div class="route-item">
+            <div class="route-arrow">&#8594;</div>
+            <div>
+              <div class="route-domain">sabuygo.com</div>
+              <div class="route-service">Landing Page (nginx:alpine)</div>
+            </div>
+            <span class="route-port">:80</span>
+          </div>
+
+          <div class="route-item">
+            <div class="route-arrow">&#8594;</div>
+            <div>
+              <div class="route-domain">portainer.sabuygo.com</div>
+              <div class="route-service">Portainer — Container Mgmt</div>
+            </div>
+            <span class="route-port">:9000</span>
+          </div>
+
+          <div class="route-item">
+            <div class="route-arrow">&#8594;</div>
+            <div>
+              <div class="route-domain">s3.sabuygo.com</div>
+              <div class="route-service">MinIO — Object Storage</div>
+            </div>
+            <span class="route-port">:9001</span>
+          </div>
+
+          <div class="route-item">
+            <div class="route-arrow">&#8594;</div>
+            <div>
+              <div class="route-domain">monitor.sabuygo.com</div>
+              <div class="route-service">Uptime Kuma — Monitoring</div>
+            </div>
+            <span class="route-port">:3001</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Services Row -->
+      <div class="services-row">
+
+        <div class="card card-landing" style="flex:1;min-width:130px;">
+          <div class="card-icon">&#127968;</div>
+          <div class="card-name">Landing Page</div>
+          <div class="card-desc">nginx:alpine<br/>Static site container</div>
+          <span class="card-badge" style="background:#0f1a0f;color:#3fb950;">sabuygo.com</span>
+        </div>
+
+        <div class="card card-portainer" style="flex:1;min-width:130px;">
+          <div class="card-icon">&#128269;</div>
+          <div class="card-name">Portainer</div>
+          <div class="card-desc">Container management<br/>GUI dashboard</div>
+          <span class="card-badge" style="background:#1a140a;color:#f09e3a;">portainer.*</span>
+        </div>
+
+        <div class="card card-minio" style="flex:1;min-width:130px;">
+          <div class="card-icon">&#128190;</div>
+          <div class="card-name">MinIO</div>
+          <div class="card-desc">S3-compatible<br/>object storage</div>
+          <span class="card-badge" style="background:#0f100f;color:#c084fc;">s3.*</span>
+        </div>
+
+        <div class="card card-uptime" style="flex:1;min-width:130px;">
+          <div class="card-icon">&#128200;</div>
+          <div class="card-name">Uptime Kuma</div>
+          <div class="card-desc">Service monitoring<br/>status page</div>
+          <span class="card-badge" style="background:#140f1a;color:#a78bfa;">monitor.*</span>
+        </div>
+
+        <div class="card card-watchtower" style="flex:1;min-width:130px;">
+          <div class="card-icon">&#128065;&#65039;</div>
+          <div class="card-name">Watchtower</div>
+          <div class="card-desc">Auto-update daemon<br/>polls GHCR</div>
+          <span class="card-badge" style="background:#1a1508;color:#c9a84c;">every 5 min</span>
+        </div>
+
+      </div>
+
+      <!-- Watchtower Note -->
+      <div class="watchtower-note">
+        <span style="font-size:18px;">&#128065;&#65039;</span>
+        <div class="watchtower-note-text">
+          <strong>Watchtower</strong> polls GHCR every <strong>5 minutes</strong> for a new <code style="background:#251e0a;padding:1px 4px;border-radius:3px;font-size:9px;">:latest</code> image tag.
+          When a new image is detected, it automatically pulls and <strong>restarts the Landing Page container</strong> with zero manual intervention.
+        </div>
+      </div>
+
+      <!-- Docker Network & Volumes -->
+      <div class="docker-info">
+        <div class="docker-pill">
+          <div class="docker-dot" style="background:#5b8def;"></div>
+          <strong>Network:</strong> &nbsp;proxy (bridge, shared across all services)
+        </div>
+        <div class="docker-pill">
+          <div class="docker-dot" style="background:#c9a84c;"></div>
+          <strong>Volumes:</strong> &nbsp;persistent named volumes (NPM data, MinIO data, Portainer data, Uptime data)
+        </div>
+        <div class="docker-pill">
+          <div class="docker-dot" style="background:#3fb950;"></div>
+          <strong>Runtime:</strong> &nbsp;Docker Engine + docker-compose
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- connector CI/CD -->
+  <div style="margin-top:28px;"></div>
+
+  <!-- =========================================================
+       CI/CD FLOW
+  ========================================================== -->
+  <div class="layer">
+    <span class="section-label label-cicd">CI / CD Pipeline</span>
+    <div class="zone zone-cicd">
+      <div class="cicd-flow">
+
+        <div class="cicd-step">
+          <div class="cicd-step-icon">&#128187;</div>
+          <div class="cicd-step-name">git push</div>
+          <div class="cicd-step-desc">Developer<br/>main branch</div>
+        </div>
+
+        <div class="cicd-arrow arrow-purple">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#a78bfa" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cicd-time">trigger</span>
+        </div>
+
+        <div class="cicd-step">
+          <div class="cicd-step-icon">&#128025;</div>
+          <div class="cicd-step-name">GitHub</div>
+          <div class="cicd-step-desc">Repository<br/>event: push</div>
+        </div>
+
+        <div class="cicd-arrow arrow-purple">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#a78bfa" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cicd-time">auto-run</span>
+        </div>
+
+        <div class="cicd-step">
+          <div class="cicd-step-icon">&#9881;&#65039;</div>
+          <div class="cicd-step-name">GitHub Actions</div>
+          <div class="cicd-step-desc">Build Docker<br/>image</div>
+        </div>
+
+        <div class="cicd-arrow arrow-purple">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#a78bfa" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cicd-time">push :latest</span>
+        </div>
+
+        <div class="cicd-step">
+          <div class="cicd-step-icon">&#128230;</div>
+          <div class="cicd-step-name">GHCR</div>
+          <div class="cicd-step-desc">Container<br/>Registry</div>
+        </div>
+
+        <div class="cicd-arrow arrow-gold">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#c9a84c" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cicd-time">poll 5min</span>
+        </div>
+
+        <div class="cicd-step" style="border-color:#c9a84c55;background:#1a1508;">
+          <div class="cicd-step-icon">&#128065;&#65039;</div>
+          <div class="cicd-step-name" style="color:#c9a84c;">Watchtower</div>
+          <div class="cicd-step-desc" style="color:#5b4a20;">Detect new<br/>image</div>
+        </div>
+
+        <div class="cicd-arrow arrow-gold">
+          <svg width="36" height="16" viewBox="0 0 36 16">
+            <path d="M0 8 H28 M22 2 L34 8 L22 14" stroke="#c9a84c" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cicd-time">auto restart</span>
+        </div>
+
+        <div class="cicd-step" style="border-color:#3fb95055;background:#0f1a0f;">
+          <div class="cicd-step-icon">&#128640;</div>
+          <div class="cicd-step-name" style="color:#3fb950;">Live!</div>
+          <div class="cicd-step-desc" style="color:#1f4a1f;">Landing Page<br/>updated</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       LEGEND
+  ========================================================== -->
+  <div class="legend">
+    <div class="legend-title">Legend</div>
+
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#1e2a4a;border:1px solid #2d3e6a;"></div>
+      External / GitHub / Registry
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#1a1a0d;border:1px solid #f6821f44;"></div>
+      Cloudflare (CDN · SSL · WAF)
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#0f1208;border:2px solid #c9a84c;"></div>
+      Server boundary (KVM 1)
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#0f1a0f;border:1px solid #3fb950;"></div>
+      App / Landing Page service
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#1a140a;border:1px solid #f6821f44;"></div>
+      Management services
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#100d18;border:1px solid #3a2d5a;"></div>
+      CI/CD pipeline flow
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#1a1508;border:1px solid #c9a84c44;"></div>
+      Watchtower (auto-deploy)
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:linear-gradient(90deg,#5b8def,#a78bfa,#c9a84c);"></div>
+      Arrow: blue=code · purple=CI/CD · gold=auto-deploy
+    </div>
+  </div>
+
+</div><!-- end diagram-wrapper -->
+
+<div class="footer">
+  Elite Chauffeur Infrastructure &nbsp;·&nbsp; sabuygo.com &nbsp;·&nbsp; Generated 2026
+</div>
+
+</body>
+</html>
