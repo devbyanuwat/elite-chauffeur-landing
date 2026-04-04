@@ -12,6 +12,8 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy static files เข้า nginx web root
 COPY index.html /usr/share/nginx/html/index.html
 COPY images/ /usr/share/nginx/html/images/
+COPY robots.txt /usr/share/nginx/html/robots.txt
+COPY sitemap.xml /usr/share/nginx/html/sitemap.xml
 
 # Custom nginx config — กำหนด gzip, cache headers
 COPY nginx.conf /etc/nginx/conf.d/default.conf

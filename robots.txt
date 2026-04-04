@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /architecture-diagram.html
+
+Sitemap: https://sabuygo.com/sitemap.xml

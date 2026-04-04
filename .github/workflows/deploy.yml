@@ -77,3 +77,19 @@ jobs:
           echo "- Image: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY
           echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Watchtower จะ pull image ใหม่ภายใน 5 นาที" >> $GITHUB_STEP_SUMMARY
+
+      # 7. Discord — แจ้งสำเร็จ
+      - name: Notify Discord (Success)
+        if: success()
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"embeds\":[{\"title\":\"✅ Deploy สำเร็จ\",\"description\":\"**sabuygo.com** อัพเดทแล้ว\n\nCommit: \`${GITHUB_SHA::7}\`\nBy: ${{ github.actor }}\n\nWatchtower จะ pull ภายใน 5 นาที\",\"color\":5763719}]}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      # 8. Discord — แจ้ง fail
+      - name: Notify Discord (Failure)
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"embeds\":[{\"title\":\"❌ Deploy ล้มเหลว\",\"description\":\"**sabuygo.com** build ไม่ผ่าน\n\nCommit: \`${GITHUB_SHA::7}\`\nBy: ${{ github.actor }}\n\n[ดู logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\",\"color\":15548997}]}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
