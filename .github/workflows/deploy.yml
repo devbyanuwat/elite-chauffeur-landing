@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
       # Build ใหม่เฉพาะเมื่อ landing page files เปลี่ยน
       - "index.html"
@@ -57,6 +58,8 @@ jobs:
             type=sha,prefix=sha-,format=short
             # Tag เป็น latest เมื่อ push ไป main
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            # Tag เป็น dev เมื่อ push ไป dev
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
 
       # 5. Build และ Push image
       - name: Build and push Docker image
@@ -73,8 +76,16 @@ jobs:
       # 6. Summary
       - name: Build summary
         run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            ENV_NAME="Production (sabuygo.com)"
+            IMAGE_TAG="latest"
+          else
+            ENV_NAME="Dev (dev-web.sabuygo.com)"
+            IMAGE_TAG="dev"
+          fi
           echo "### Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "- Image: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: **${ENV_NAME}**" >> $GITHUB_STEP_SUMMARY
+          echo "- Image: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Watchtower จะ pull image ใหม่ภายใน 5 นาที" >> $GITHUB_STEP_SUMMARY
 
@@ -82,14 +93,26 @@ jobs:
       - name: Notify Discord (Success)
         if: success()
         run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            DOMAIN="sabuygo.com"
+            COLOR=5763719
+          else
+            DOMAIN="dev-web.sabuygo.com"
+            COLOR=3447003
+          fi
           curl -H "Content-Type: application/json" \
-            -d "{\"embeds\":[{\"title\":\"✅ Deploy สำเร็จ\",\"description\":\"**sabuygo.com** อัพเดทแล้ว\n\nCommit: \`${GITHUB_SHA::7}\`\nBy: ${{ github.actor }}\n\nWatchtower จะ pull ภายใน 5 นาที\",\"color\":5763719}]}" \
+            -d "{\"embeds\":[{\"title\":\"✅ Deploy สำเร็จ\",\"description\":\"**${DOMAIN}** อัพเดทแล้ว\n\nCommit: \`${GITHUB_SHA::7}\`\nBranch: \`${{ github.ref_name }}\`\nBy: ${{ github.actor }}\n\nWatchtower จะ pull ภายใน 5 นาที\",\"color\":${COLOR}}]}" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       # 8. Discord — แจ้ง fail
       - name: Notify Discord (Failure)
         if: failure()
         run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            DOMAIN="sabuygo.com"
+          else
+            DOMAIN="dev-web.sabuygo.com"
+          fi
           curl -H "Content-Type: application/json" \
-            -d "{\"embeds\":[{\"title\":\"❌ Deploy ล้มเหลว\",\"description\":\"**sabuygo.com** build ไม่ผ่าน\n\nCommit: \`${GITHUB_SHA::7}\`\nBy: ${{ github.actor }}\n\n[ดู logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\",\"color\":15548997}]}" \
+            -d "{\"embeds\":[{\"title\":\"❌ Deploy ล้มเหลว\",\"description\":\"**${DOMAIN}** build ไม่ผ่าน\n\nCommit: \`${GITHUB_SHA::7}\`\nBranch: \`${{ github.ref_name }}\`\nBy: ${{ github.actor }}\n\n[ดู logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\",\"color\":15548997}]}" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}

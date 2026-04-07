@@ -59,6 +59,22 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # ─────────────────────────────────────────────
+  # Landing Page (Dev) — Preview environment
+  # Domain: dev-web.sabuygo.com
+  # Image tag: :dev (build จาก branch dev)
+  # ─────────────────────────────────────────────
+  landing-dev:
+    image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:dev
+    container_name: elite-chauffeur-landing-dev
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - proxy
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────
   # Internal Docs — เอกสารภายใน (architecture, diagrams)
   # Domain: internal.sabuygo.com
   # ─────────────────────────────────────────────
