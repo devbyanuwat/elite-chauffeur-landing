@@ -981,7 +981,7 @@
         <span data-i18n="nav.book">จองเลย</span>
       </button>
     </div>
-    <button class="nav-mobile" id="navMobileBtn" onclick="toggleMobileMenu()">
+    <button class="nav-mobile" id="navMobileBtn" aria-label="เปิด/ปิดเมนู" aria-expanded="false" onclick="toggleMobileMenu()">
       <svg class="icon-hamburger" viewBox="0 0 24 24"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
       <svg class="icon-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -1885,12 +1885,30 @@
     const savedLang = localStorage.getItem('ec_lang');
     if (savedLang) setLang(savedLang);
 
-    // Navbar scroll + Go-to-top
+    // Navbar scroll + Go-to-top — ใช้ passive + rAF throttle เพื่อลด forced reflow
     const goTopBtn = document.getElementById('goTop');
+    const navbar = document.getElementById('navbar');
+    let scrollTicking = false;
+    let lastScrolled = false;
+    let lastVisible = false;
     window.addEventListener('scroll', () => {
-      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-      goTopBtn.classList.toggle('visible', window.scrollY > 400);
-    });
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const scrolled = y > 50;
+        const visible = y > 400;
+        if (scrolled !== lastScrolled) {
+          navbar.classList.toggle('scrolled', scrolled);
+          lastScrolled = scrolled;
+        }
+        if (visible !== lastVisible) {
+          goTopBtn.classList.toggle('visible', visible);
+          lastVisible = visible;
+        }
+        scrollTicking = false;
+      });
+    }, { passive: true });
 
     // === SCROLL REVEAL — Apple-style staggered entrance ===
     const revealObserver = new IntersectionObserver((entries) => {
