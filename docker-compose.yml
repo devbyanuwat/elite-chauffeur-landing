@@ -142,6 +142,9 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # GHCR credentials — สำหรับ pull image จาก private registry
+      # ต้อง `docker login ghcr.io` บน host ก่อนเพื่อสร้าง config.json
+      - /root/.docker/config.json:/config.json:ro
     environment:
       WATCHTOWER_POLL_INTERVAL: 300
       WATCHTOWER_CLEANUP: "true"
