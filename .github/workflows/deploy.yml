@@ -136,13 +136,13 @@ jobs:
           # --- Build embed JSON with jq for safety ---
           jq -n \
             --arg title "${ENV_EMOJI} Deploy Success — ${DOMAIN}" \
-            --arg desc "*${QUOTE}*\n\n[**View Site →**](${DOMAIN_URL})" \
+            --arg quote "$QUOTE" \
+            --arg domain_url "$DOMAIN_URL" \
             --argjson color "$EMBED_COLOR" \
             --arg actor "${{ github.actor }}" \
             --arg actor_url "https://github.com/${{ github.actor }}" \
             --arg actor_icon "https://github.com/${{ github.actor }}.png" \
             --arg env_label "$ENV_LABEL" \
-            --arg domain_url "$DOMAIN_URL" \
             --arg branch "${{ github.ref_name }}" \
             --arg image_tag "$IMAGE_TAG" \
             --arg short_sha "$SHORT_SHA" \
@@ -153,7 +153,7 @@ jobs:
             '{
               embeds: [{
                 title: $title,
-                description: $desc,
+                description: ("*" + $quote + "*\n\n[**View Site →**](" + $domain_url + ")"),
                 color: $color,
                 author: {
                   name: $actor,
@@ -165,7 +165,7 @@ jobs:
                 },
                 fields: [
                   { name: "🌐 Environment", value: $env_label, inline: true },
-                  { name: "🔗 URL", value: ("[" + $domain_url + "](" + $domain_url + ")"), inline: true },
+                  { name: "🔗 URL", value: ("[Open](" + $domain_url + ")"), inline: true },
                   { name: "🌿 Branch", value: ("`" + $branch + "`"), inline: true },
                   { name: "📦 Image Tag", value: ("`" + $image_tag + "`"), inline: true },
                   { name: "🆔 Commit", value: ("[`" + $short_sha + "`](" + $commit_url + ")"), inline: true },
@@ -207,7 +207,6 @@ jobs:
 
           jq -n \
             --arg title "❌ Deploy Failed — ${DOMAIN}" \
-            --arg desc "Build ไม่ผ่านค่ะ — กรุณาตรวจสอบ logs\n\n[**View Logs →**](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" \
             --argjson color 15548997 \
             --arg actor "${{ github.actor }}" \
             --arg actor_url "https://github.com/${{ github.actor }}" \
@@ -222,7 +221,7 @@ jobs:
             '{
               embeds: [{
                 title: $title,
-                description: $desc,
+                description: ("Build ไม่ผ่านค่ะ — กรุณาตรวจสอบ logs\n\n[**View Logs →**](" + $run_url + ")"),
                 color: $color,
                 author: {
                   name: $actor,
