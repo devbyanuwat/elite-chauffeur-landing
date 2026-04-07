@@ -233,26 +233,25 @@
       align-items: center; justify-content: center;
       text-align: center;
       padding: 100px 2rem 60px;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(29,29,31,0.75) 100%),
-        url('images/hero-bg.png') center/cover no-repeat;
+      background: linear-gradient(180deg, #000000 0%, #1d1d1f 100%);
       position: relative; overflow: hidden;
     }
     .hero::before {
       content: ''; position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
       width: 140%; height: 80%;
-      background: radial-gradient(ellipse at 50% 50%, rgba(184, 148, 63, 0.18) 0%, transparent 60%);
+      background: radial-gradient(ellipse at 50% 50%, rgba(184, 148, 63, 0.12) 0%, transparent 60%);
     }
     .hero::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
-      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%);
       pointer-events: none;
     }
 
     .hero-content { position: relative; z-index: 2; max-width: 900px; }
 
     .hero-logo {
-      width: 100px; height: 100px; margin-bottom: 2rem; border-radius: 16px;
+      width: 180px; height: auto; aspect-ratio: 1408 / 768;
+      margin-bottom: 2rem; border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
       opacity: 0; transform: scale(0.8);
       animation: heroLogoIn 1s 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
