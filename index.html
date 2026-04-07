@@ -39,8 +39,11 @@
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "ELITE CHAUFFEUR",
+    "alternateName": "Sabuygo",
     "description": "Premium chauffeur service platform in Bangkok, Thailand",
     "url": "https://sabuygo.com",
+    "logo": "https://sabuygo.com/images/logo.png",
+    "image": "https://sabuygo.com/images/og-cover.jpg",
     "telephone": "+66623879159",
     "address": {
       "@type": "PostalAddress",
@@ -54,6 +57,78 @@
       "opens": "00:00",
       "closes": "23:59"
     }
+  }
+  </script>
+
+  <!-- Site Navigation Schema — เพิ่มโอกาสได้ Sitelinks ใน Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sabuygo - Elite Chauffeur",
+    "url": "https://sabuygo.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sabuygo.com/#fleet?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "SiteNavigationElement",
+      "name": "บริการ",
+      "url": "https://sabuygo.com/#services"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SiteNavigationElement",
+      "name": "รถในเครือข่าย",
+      "url": "https://sabuygo.com/#fleet"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SiteNavigationElement",
+      "name": "ความปลอดภัย",
+      "url": "https://sabuygo.com/#safety"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SiteNavigationElement",
+      "name": "ติดต่อเรา",
+      "url": "https://sabuygo.com/#contact"
+    }
+  ]
+  </script>
+
+  <!-- BreadcrumbList — ช่วย Google เข้าใจโครงสร้างเว็บ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "หน้าแรก",
+        "item": "https://sabuygo.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "บริการ",
+        "item": "https://sabuygo.com/#services"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "รถในเครือข่าย",
+        "item": "https://sabuygo.com/#fleet"
+      }
+    ]
   }
   </script>
 
@@ -130,6 +205,7 @@
       text-decoration: none; font-weight: 600; font-size: 0.78rem;
       letter-spacing: 0.3px; transition: all 0.3s;
       display: flex; align-items: center; gap: 5px;
+      border: none; cursor: pointer;
     }
     .nav-cta:hover { background: var(--gold-dark); }
     .nav-cta svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; }
@@ -233,7 +309,7 @@
       font-size: 0.92rem; font-weight: 600; cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-      font-family: var(--font);
+      font-family: var(--font); -webkit-appearance: none;
     }
     .btn-primary:hover { background: var(--gold-dark); transform: scale(1.04); }
     .btn-primary svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
@@ -538,6 +614,154 @@
     .footer-trust-item svg { width: 13px; height: 13px; stroke: rgba(34,197,94,0.6); fill: none; stroke-width: 2; }
     .footer-text { color: rgba(255,255,255,0.2); font-size: 0.72rem; margin-top: 1rem; }
 
+    /* ==================== INQUIRY MODAL ==================== */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1), visibility 0.3s;
+    }
+    .modal-backdrop.open { opacity: 1; visibility: visible; }
+
+    .modal-box {
+      background: #fff; border-radius: 24px;
+      width: 100%; max-width: 600px; max-height: 92vh;
+      overflow-y: auto; position: relative;
+      transform: scale(0.92) translateY(24px);
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.08);
+    }
+    .modal-backdrop.open .modal-box { transform: scale(1) translateY(0); }
+
+    .modal-header {
+      padding: 1.8rem 2rem 1.2rem;
+      border-bottom: 0.5px solid rgba(0,0,0,0.08);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      position: sticky; top: 0; background: #fff; z-index: 1;
+      border-radius: 24px 24px 0 0;
+    }
+    .modal-header-text .modal-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 4px; display: block;
+    }
+    .modal-header-text h3 {
+      font-size: 1.3rem; font-weight: 800; color: var(--text-primary);
+      letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--bg-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.2s;
+    }
+    .modal-close:hover { background: #e5e5ea; }
+    .modal-close svg { width: 18px; height: 18px; stroke: var(--text-secondary); fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    .modal-body { padding: 1.5rem 2rem 2rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label {
+      font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);
+      letter-spacing: 0.3px;
+    }
+    .form-group label .required { color: #ef4444; margin-left: 2px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.7rem 0.9rem; border: 1px solid var(--border);
+      border-radius: 10px; font-size: 0.88rem; font-family: var(--font);
+      color: var(--text-primary); background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none; -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,148,63,0.12);
+    }
+    .form-group input.error,
+    .form-group select.error,
+    .form-group textarea.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-group select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 2.2rem; }
+    .field-error { font-size: 0.7rem; color: #ef4444; font-weight: 500; display: none; }
+    .field-error.show { display: block; }
+
+    .modal-submit-btn {
+      width: 100%; padding: 1rem; margin-top: 1.5rem;
+      background: var(--gold); color: #fff; border: none; border-radius: 980px;
+      font-size: 0.95rem; font-weight: 700; font-family: var(--font);
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      letter-spacing: 0.2px;
+    }
+    .modal-submit-btn:hover:not(:disabled) { background: var(--gold-dark); transform: scale(1.01); }
+    .modal-submit-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    .modal-submit-btn svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
+    .btn-spinner {
+      width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .modal-state { display: none; padding: 2rem; text-align: center; }
+    .modal-state.active { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+    .state-icon-wrap {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .state-icon-wrap.success { background: rgba(34,197,94,0.1); }
+    .state-icon-wrap.error-state { background: rgba(239,68,68,0.1); }
+    .state-icon-wrap svg { width: 36px; height: 36px; fill: none; stroke-width: 2; }
+    .state-icon-wrap.success svg { stroke: #16a34a; }
+    .state-icon-wrap.error-state svg { stroke: #ef4444; }
+
+    .modal-state h4 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em; }
+    .modal-state p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; max-width: 320px; }
+    .modal-state .inquiry-number {
+      background: var(--bg-secondary); border-radius: 10px;
+      padding: 0.5rem 1.2rem; font-size: 0.85rem;
+      color: var(--gold); font-weight: 700; letter-spacing: 1px;
+    }
+    .modal-state-close-btn {
+      padding: 0.75rem 2rem; border-radius: 980px;
+      border: 1.5px solid var(--border); background: #fff;
+      font-size: 0.88rem; font-weight: 600; font-family: var(--font);
+      cursor: pointer; color: var(--text-primary);
+      transition: all 0.2s;
+    }
+    .modal-state-close-btn:hover { background: var(--bg-secondary); }
+
+    .modal-error-msg {
+      background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      font-size: 0.82rem; color: #dc2626; font-weight: 500;
+      display: none; margin-top: 1rem; line-height: 1.5;
+    }
+    .modal-error-msg.show { display: block; }
+
+    .form-hint { font-size: 0.7rem; color: var(--text-tertiary); margin-top: 1rem; text-align: center; }
+    .form-hint svg { width: 12px; height: 12px; stroke: #4ade80; fill: none; stroke-width: 2; vertical-align: middle; }
+
+    @media (max-width: 580px) {
+      .modal-box { border-radius: 18px; max-height: 95vh; }
+      .modal-header { padding: 1.4rem 1.2rem 1rem; }
+      .modal-body { padding: 1.2rem 1.2rem 1.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
     /* ==================== GO TO TOP ==================== */
     .go-top {
       position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
@@ -601,6 +825,130 @@
       .why-grid { grid-template-columns: 1fr; }
       .hero-stats { gap: 1.5rem; }
     }
+
+    /* ==================== COOKIE CONSENT BANNER ==================== */
+    #cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      background: rgba(10, 10, 15, 0.97);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(184, 148, 63, 0.2);
+      padding: 1.25rem clamp(1rem, 5vw, 2.5rem);
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
+    }
+    #cookie-banner.show { transform: translateY(0); }
+    .cookie-banner-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .cookie-banner-text { flex: 1; min-width: 260px; }
+    .cookie-banner-text p { color: rgba(255,255,255,0.75); font-size: 0.82rem; line-height: 1.65; margin: 0; }
+    .cookie-banner-text a { color: var(--gold-light); text-decoration: underline; text-underline-offset: 2px; }
+    .cookie-banner-text a:hover { color: var(--gold); }
+    .cookie-banner-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .cookie-btn-accept {
+      background: var(--gold); color: #fff;
+      padding: 0.55rem 1.3rem; border-radius: 980px; border: none;
+      cursor: pointer; font-size: 0.8rem; font-weight: 600;
+      font-family: var(--font); transition: background 0.25s, transform 0.15s; white-space: nowrap;
+    }
+    .cookie-btn-accept:hover { background: var(--gold-dark); transform: translateY(-1px); }
+    .cookie-btn-necessary {
+      background: transparent; color: rgba(255,255,255,0.7);
+      padding: 0.55rem 1.3rem; border-radius: 980px;
+      border: 1px solid rgba(255,255,255,0.25); cursor: pointer;
+      font-size: 0.8rem; font-weight: 500; font-family: var(--font);
+      transition: all 0.25s; white-space: nowrap;
+    }
+    .cookie-btn-necessary:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .cookie-btn-customize {
+      background: none; border: none; cursor: pointer;
+      color: var(--gold-light); font-size: 0.8rem; font-weight: 500;
+      font-family: var(--font); text-decoration: underline;
+      text-underline-offset: 2px; padding: 0.55rem 0.5rem; transition: color 0.2s;
+    }
+    .cookie-btn-customize:hover { color: var(--gold); }
+
+    /* ==================== COOKIE CUSTOMIZE MODAL ==================== */
+    #cookie-modal-backdrop {
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      display: flex; align-items: flex-end; justify-content: center; padding: 0;
+      opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+    }
+    #cookie-modal-backdrop.open { opacity: 1; visibility: visible; }
+    #cookie-modal-backdrop.open .cookie-modal { transform: translateY(0); }
+    .cookie-modal {
+      background: #0f0f14; border: 1px solid rgba(184, 148, 63, 0.2);
+      border-bottom: none; border-radius: 20px 20px 0 0;
+      padding: 2rem 1.5rem 2.5rem; width: 100%; max-width: 560px;
+      transform: translateY(40px); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      max-height: 85vh; overflow-y: auto;
+    }
+    @media (min-width: 640px) {
+      #cookie-modal-backdrop { align-items: center; padding: 1rem; }
+      .cookie-modal { border-radius: 16px; border-bottom: 1px solid rgba(184, 148, 63, 0.2); }
+    }
+    .cookie-modal-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;
+    }
+    .cookie-modal-header h3 { color: #fff; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.3px; }
+    .cookie-modal-close {
+      background: rgba(255,255,255,0.08); border: none; border-radius: 50%;
+      width: 32px; height: 32px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .cookie-modal-close:hover { background: rgba(255,255,255,0.15); }
+    .cookie-modal-close svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
+    .cookie-modal-desc { color: rgba(255,255,255,0.5); font-size: 0.78rem; line-height: 1.6; margin-bottom: 1.5rem; }
+    .cookie-category {
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;
+      padding: 1rem 1.1rem; margin-bottom: 0.65rem; transition: border-color 0.2s;
+    }
+    .cookie-category:hover { border-color: rgba(184,148,63,0.25); }
+    .cookie-category-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .cookie-category-info { flex: 1; }
+    .cookie-category-name {
+      color: #fff; font-size: 0.86rem; font-weight: 600; margin-bottom: 0.25rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .cookie-required-tag {
+      background: rgba(184,148,63,0.12); color: var(--gold-light);
+      font-size: 0.62rem; font-weight: 500; padding: 2px 7px; border-radius: 980px;
+      border: 1px solid rgba(184,148,63,0.2);
+    }
+    .cookie-category-desc { color: rgba(255,255,255,0.4); font-size: 0.74rem; line-height: 1.5; }
+    .cookie-toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; margin-top: 2px; }
+    .cookie-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .cookie-toggle-track {
+      position: absolute; inset: 0; border-radius: 980px;
+      background: rgba(255,255,255,0.1); cursor: pointer; transition: background 0.3s;
+    }
+    .cookie-toggle-track::before {
+      content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+      background: rgba(255,255,255,0.45); top: 3px; left: 3px;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+    }
+    .cookie-toggle input:checked + .cookie-toggle-track { background: var(--gold); }
+    .cookie-toggle input:checked + .cookie-toggle-track::before { transform: translateX(18px); background: #fff; }
+    .cookie-toggle input:disabled + .cookie-toggle-track { opacity: 0.45; cursor: not-allowed; }
+    .cookie-modal-footer { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .cookie-modal-save {
+      flex: 1; background: rgba(255,255,255,0.07); color: #fff;
+      padding: 0.7rem 1rem; border-radius: 980px; border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: var(--font);
+      transition: all 0.25s; text-align: center;
+    }
+    .cookie-modal-save:hover { background: rgba(255,255,255,0.12); }
+    .cookie-modal-accept-all {
+      flex: 1; background: var(--gold); color: #fff;
+      padding: 0.7rem 1rem; border-radius: 980px; border: none;
+      cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: var(--font);
+      transition: all 0.25s; text-align: center;
+    }
+    .cookie-modal-accept-all:hover { background: var(--gold-dark); }
   </style>
 </head>
 <body>
@@ -622,10 +970,10 @@
         <span id="langTH" class="active">TH</span>
         <span id="langEN">EN</span>
       </div>
-      <a href="#contact" class="nav-cta">
+      <button onclick="openInquiryModal()" class="nav-cta" style="font-family:var(--font);">
         <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
         <span data-i18n="nav.book">จองเลย</span>
-      </a>
+      </button>
     </div>
     <button class="nav-mobile" id="navMobileBtn" onclick="toggleMobileMenu()">
       <svg class="icon-hamburger" viewBox="0 0 24 24"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
@@ -657,10 +1005,10 @@
       </div>
 
       <div class="hero-buttons">
-        <a href="#contact" class="btn-primary">
+        <button onclick="openInquiryModal()" class="btn-primary" style="font-family:var(--font);">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <span data-i18n="hero.cta">จองบริการอย่างปลอดภัย</span>
-        </a>
+        </button>
         <a href="#fleet" class="btn-secondary" data-i18n="hero.fleet">ดูรถทั้งหมด</a>
       </div>
 
@@ -1046,10 +1394,10 @@
       <span class="label">Contact Us</span>
       <h2 data-i18n="cta.title">พร้อมให้บริการ 24 ชั่วโมง</h2>
       <p data-i18n="cta.desc">ติดต่อเราเพื่อจองบริการหรือสอบถามรายละเอียดเพิ่มเติม</p>
-      <a href="https://line.me/ti/p/~61658on" target="_blank" class="btn-primary" style="display:inline-flex;">
+      <button onclick="openInquiryModal()" class="btn-primary" style="display:inline-flex;font-family:var(--font);">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <span data-i18n="cta.book">จองบริการอย่างปลอดภัย</span>
-      </a>
+      </button>
       <div class="cta-contacts">
         <div class="cta-contact-item">
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -1092,8 +1440,268 @@
         <span data-i18n="ft.priv">รักษาความลับ</span>
       </span>
     </div>
-    <p class="footer-text">&copy; 2026 ELITE CHAUFFEUR. All rights reserved.</p>
+    <p class="footer-text">&copy; 2026 ELITE CHAUFFEUR. All rights reserved. &nbsp;|&nbsp; <a href="/privacy.html" style="color:rgba(255,255,255,0.3);text-decoration:underline;text-underline-offset:2px;" onmouseover="this.style.color='rgba(184,148,63,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">นโยบายความเป็นส่วนตัว</a></p>
   </footer>
+
+  <!-- ==================== INQUIRY MODAL ==================== -->
+  <div class="modal-backdrop" id="inquiryModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box" id="modalBox">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <span class="modal-label">Inquiry Form</span>
+          <h3 id="modalTitle" data-i18n="modal.title">จองบริการรถ</h3>
+        </div>
+        <button class="modal-close" onclick="closeInquiryModal()" aria-label="Close">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Form -->
+      <div class="modal-body" id="modalFormWrap">
+        <form id="inquiryForm" novalidate>
+
+          <!-- Honeypot (anti-bot) -->
+          <div style="display:none;" aria-hidden="true">
+            <input type="text" name="website" id="hp_website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <!-- ชื่อ + เบอร์ -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f_name">
+                <span data-i18n="modal.name">ชื่อ-นามสกุล</span>
+                <span class="required">*</span>
+              </label>
+              <input type="text" id="f_name" name="customerName" placeholder="กรอกชื่อ-นามสกุล" autocomplete="name">
+              <span class="field-error" id="err_name" data-i18n="err.name">กรุณากรอกชื่อ</span>
+            </div>
+            <div class="form-group">
+              <label for="f_phone">
+                <span data-i18n="modal.phone">เบอร์โทรศัพท์</span>
+                <span class="required">*</span>
+              </label>
+              <input type="tel" id="f_phone" name="customerPhone" placeholder="0XX-XXX-XXXX" autocomplete="tel">
+              <span class="field-error" id="err_phone" data-i18n="err.phone">กรุณากรอกเบอร์โทร</span>
+            </div>
+          </div>
+
+          <!-- อีเมล + บริษัท -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f_email"><span data-i18n="modal.email">อีเมล</span></label>
+              <input type="email" id="f_email" name="customerEmail" placeholder="email@example.com" autocomplete="email">
+              <span class="field-error" id="err_email" data-i18n="err.email">รูปแบบอีเมลไม่ถูกต้อง</span>
+            </div>
+            <div class="form-group">
+              <label for="f_company"><span data-i18n="modal.company">ชื่อบริษัท</span></label>
+              <input type="text" id="f_company" name="companyName" placeholder="(ไม่บังคับ)" autocomplete="organization">
+            </div>
+          </div>
+
+          <!-- ประเภทบริการ -->
+          <div class="form-row single">
+            <div class="form-group">
+              <label for="f_service">
+                <span data-i18n="modal.service">ประเภทบริการ</span>
+                <span class="required">*</span>
+              </label>
+              <select id="f_service" name="serviceType">
+                <option value="" disabled selected data-i18n="modal.service.placeholder">-- เลือกประเภทบริการ --</option>
+                <option value="airport_transfer" data-i18n="modal.svc.airport">รับส่งสนามบิน</option>
+                <option value="daily_rental" data-i18n="modal.svc.daily">รถเช่ารายวัน</option>
+                <option value="business_transfer" data-i18n="modal.svc.biz">รับส่งธุรกิจ</option>
+                <option value="tourism" data-i18n="modal.svc.tour">ท่องเที่ยว</option>
+                <option value="other" data-i18n="modal.svc.other">อื่นๆ</option>
+              </select>
+              <span class="field-error" id="err_service" data-i18n="err.service">กรุณาเลือกประเภทบริการ</span>
+            </div>
+          </div>
+
+          <!-- วันที่ + เวลา -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f_date">
+                <span data-i18n="modal.date">วันที่ใช้บริการ</span>
+                <span class="required">*</span>
+              </label>
+              <input type="date" id="f_date" name="pickupDate">
+              <span class="field-error" id="err_date" data-i18n="err.date">กรุณาเลือกวันที่</span>
+            </div>
+            <div class="form-group">
+              <label for="f_time"><span data-i18n="modal.time">เวลารับ</span></label>
+              <input type="time" id="f_time" name="pickupTime">
+            </div>
+          </div>
+
+          <!-- จุดรับ + จุดส่ง -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f_pickup">
+                <span data-i18n="modal.pickup">จุดรับ</span>
+                <span class="required">*</span>
+              </label>
+              <input type="text" id="f_pickup" name="pickupLocation" placeholder="ระบุจุดรับ / สนามบิน / โรงแรม">
+              <span class="field-error" id="err_pickup" data-i18n="err.pickup">กรุณาระบุจุดรับ</span>
+            </div>
+            <div class="form-group">
+              <label for="f_dropoff">
+                <span data-i18n="modal.dropoff">จุดส่ง</span>
+                <span class="required">*</span>
+              </label>
+              <input type="text" id="f_dropoff" name="dropoffLocation" placeholder="ระบุจุดส่ง / ปลายทาง">
+              <span class="field-error" id="err_dropoff" data-i18n="err.dropoff">กรุณาระบุจุดส่ง</span>
+            </div>
+          </div>
+
+          <!-- ผู้โดยสาร + ประเภทรถ -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f_pax"><span data-i18n="modal.pax">จำนวนผู้โดยสาร</span></label>
+              <input type="number" id="f_pax" name="passengerCount" min="1" max="50" value="1">
+            </div>
+            <div class="form-group">
+              <label for="f_vehicle"><span data-i18n="modal.vehicle">ประเภทรถที่ต้องการ</span></label>
+              <select id="f_vehicle" name="vehicleTypePreference">
+                <option value="" selected data-i18n="modal.vehicle.any">ไม่ระบุ</option>
+                <option value="sedan" data-i18n="modal.veh.sedan">Sedan</option>
+                <option value="suv" data-i18n="modal.veh.suv">SUV / Crossover</option>
+                <option value="van" data-i18n="modal.veh.van">Van / Minivan</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- รายละเอียดเพิ่มเติม -->
+          <div class="form-row single">
+            <div class="form-group">
+              <label for="f_msg"><span data-i18n="modal.msg">รายละเอียดเพิ่มเติม</span></label>
+              <textarea id="f_msg" name="message" placeholder="ระบุความต้องการพิเศษ เส้นทาง หรือรายละเอียดอื่นๆ"></textarea>
+            </div>
+          </div>
+
+          <!-- Error banner -->
+          <div class="modal-error-msg" id="modalErrorMsg"></div>
+
+          <!-- Submit -->
+          <button type="submit" class="modal-submit-btn" id="submitBtn">
+            <span class="btn-spinner" id="btnSpinner"></span>
+            <svg id="btnIcon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span id="btnText" data-i18n="modal.submit">ส่งคำขอจอง</span>
+          </button>
+
+          <p class="form-hint">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span data-i18n="modal.hint">ข้อมูลของคุณได้รับการปกป้องและไม่เปิดเผยต่อบุคคลที่สาม</span>
+          </p>
+
+        </form>
+      </div><!-- /.modal-body -->
+
+      <!-- Success state -->
+      <div class="modal-state" id="stateSuccess">
+        <div class="state-icon-wrap success">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        <h4 data-i18n="modal.success.title">ส่งคำขอแล้ว!</h4>
+        <p data-i18n="modal.success.desc">ได้รับข้อมูลของคุณแล้ว ทีมงานจะติดต่อกลับภายใน 1-2 ชั่วโมง</p>
+        <div class="inquiry-number" id="inquiryRef"></div>
+        <button class="modal-state-close-btn" onclick="closeInquiryModal()" data-i18n="modal.close">ปิดหน้าต่าง</button>
+      </div>
+
+    </div><!-- /.modal-box -->
+  </div><!-- /.modal-backdrop -->
+
+  <!-- ==================== COOKIE CONSENT BANNER ==================== -->
+  <div id="cookie-banner" role="region" aria-label="Cookie Consent">
+    <div class="cookie-banner-inner">
+      <div class="cookie-banner-text">
+        <p data-i18n="cookie.text">เราใช้คุกกี้เพื่อให้เว็บไซต์ทำงานได้อย่างถูกต้อง วิเคราะห์การใช้งาน และแสดงเนื้อหาที่เกี่ยวข้อง ดูรายละเอียดใน <a href="/privacy.html">นโยบายความเป็นส่วนตัว</a></p>
+      </div>
+      <div class="cookie-banner-actions">
+        <button class="cookie-btn-accept" onclick="cookieAcceptAll()" data-i18n="cookie.accept">ยอมรับทั้งหมด</button>
+        <button class="cookie-btn-necessary" onclick="cookieNecessaryOnly()" data-i18n="cookie.necessary">เฉพาะที่จำเป็น</button>
+        <button class="cookie-btn-customize" onclick="cookieOpenModal()" data-i18n="cookie.customize">ตั้งค่า</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== COOKIE CUSTOMIZE MODAL ==================== -->
+  <div id="cookie-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle">
+    <div class="cookie-modal">
+      <div class="cookie-modal-header">
+        <h3 id="cookieModalTitle" data-i18n="cookie.modal.title">ตั้งค่าคุกกี้</h3>
+        <button class="cookie-modal-close" onclick="cookieCloseModal()" aria-label="Close">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <p class="cookie-modal-desc" data-i18n="cookie.modal.desc">เลือกประเภทคุกกี้ที่คุณยินยอมให้เราใช้งาน คุกกี้ที่จำเป็นไม่สามารถปิดได้เนื่องจากจำเป็นต่อการทำงานของเว็บไซต์</p>
+
+      <!-- Necessary -->
+      <div class="cookie-category">
+        <div class="cookie-category-header">
+          <div class="cookie-category-info">
+            <div class="cookie-category-name">
+              <span data-i18n="cookie.cat.necessary">จำเป็น (Necessary)</span>
+              <span class="cookie-required-tag">เปิดตลอด</span>
+            </div>
+            <p class="cookie-category-desc" data-i18n="cookie.cat.necessary.desc">คุกกี้ที่จำเป็นสำหรับการทำงานของเว็บไซต์ เช่น การจดจำภาษา การรักษาความปลอดภัย ไม่สามารถปิดได้</p>
+          </div>
+          <label class="cookie-toggle">
+            <input type="checkbox" id="toggle-necessary" checked disabled>
+            <span class="cookie-toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div class="cookie-category">
+        <div class="cookie-category-header">
+          <div class="cookie-category-info">
+            <div class="cookie-category-name" data-i18n="cookie.cat.analytics">วิเคราะห์ (Analytics)</div>
+            <p class="cookie-category-desc" data-i18n="cookie.cat.analytics.desc">ช่วยให้เราเข้าใจว่าผู้เยี่ยมชมใช้เว็บไซต์อย่างไร เพื่อปรับปรุงประสบการณ์การใช้งาน (Google Analytics)</p>
+          </div>
+          <label class="cookie-toggle">
+            <input type="checkbox" id="toggle-analytics">
+            <span class="cookie-toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Marketing -->
+      <div class="cookie-category">
+        <div class="cookie-category-header">
+          <div class="cookie-category-info">
+            <div class="cookie-category-name" data-i18n="cookie.cat.marketing">การตลาด (Marketing)</div>
+            <p class="cookie-category-desc" data-i18n="cookie.cat.marketing.desc">ใช้สำหรับแสดงโฆษณาที่เกี่ยวข้องกับความสนใจของคุณ (Facebook Pixel, Google Ads)</p>
+          </div>
+          <label class="cookie-toggle">
+            <input type="checkbox" id="toggle-marketing">
+            <span class="cookie-toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="cookie-category">
+        <div class="cookie-category-header">
+          <div class="cookie-category-info">
+            <div class="cookie-category-name" data-i18n="cookie.cat.preferences">ความชอบ (Preferences)</div>
+            <p class="cookie-category-desc" data-i18n="cookie.cat.preferences.desc">จดจำการตั้งค่าของคุณ เช่น ภาษา และธีมที่เลือก</p>
+          </div>
+          <label class="cookie-toggle">
+            <input type="checkbox" id="toggle-preferences">
+            <span class="cookie-toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="cookie-modal-footer">
+        <button class="cookie-modal-save" onclick="cookieSaveSettings()" data-i18n="cookie.save">บันทึกการตั้งค่า</button>
+        <button class="cookie-modal-accept-all" onclick="cookieAcceptAll()" data-i18n="cookie.accept.all">ยอมรับทั้งหมด</button>
+      </div>
+    </div>
+  </div>
 
   <!-- GO TO TOP -->
   <button class="go-top" id="goTop" aria-label="Go to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
@@ -1135,6 +1743,38 @@
         'cta.title':'พร้อมให้บริการ 24 ชั่วโมง','cta.desc':'ติดต่อเราเพื่อจองบริการหรือสอบถามรายละเอียดเพิ่มเติม','cta.book':'จองบริการอย่างปลอดภัย',
         'cta.loc':'กรุงเทพมหานคร','cta.trust':'ข้อมูลของคุณได้รับการปกป้องอย่างปลอดภัย',
         'ft.ins':'ประกันชั้น 1','ft.ver':'คนขับผ่านการตรวจสอบ','ft.priv':'รักษาความลับ',
+        'modal.title':'จองบริการรถ',
+        'modal.name':'ชื่อ-นามสกุล','modal.phone':'เบอร์โทรศัพท์','modal.email':'อีเมล','modal.company':'ชื่อบริษัท',
+        'modal.service':'ประเภทบริการ','modal.service.placeholder':'-- เลือกประเภทบริการ --',
+        'modal.svc.airport':'รับส่งสนามบิน','modal.svc.daily':'รถเช่ารายวัน','modal.svc.biz':'รับส่งธุรกิจ','modal.svc.tour':'ท่องเที่ยว','modal.svc.other':'อื่นๆ',
+        'modal.date':'วันที่ใช้บริการ','modal.time':'เวลารับ',
+        'modal.pickup':'จุดรับ','modal.dropoff':'จุดส่ง',
+        'modal.pax':'จำนวนผู้โดยสาร','modal.vehicle':'ประเภทรถที่ต้องการ','modal.vehicle.any':'ไม่ระบุ',
+        'modal.veh.sedan':'Sedan','modal.veh.suv':'SUV / Crossover','modal.veh.van':'Van / Minivan',
+        'modal.msg':'รายละเอียดเพิ่มเติม',
+        'modal.submit':'ส่งคำขอจอง','modal.submitting':'กำลังส่ง...',
+        'modal.hint':'ข้อมูลของคุณได้รับการปกป้องและไม่เปิดเผยต่อบุคคลที่สาม',
+        'modal.success.title':'ส่งคำขอแล้ว!','modal.success.desc':'ได้รับข้อมูลของคุณแล้ว ทีมงานจะติดต่อกลับภายใน 1-2 ชั่วโมง',
+        'modal.close':'ปิดหน้าต่าง',
+        'err.name':'กรุณากรอกชื่อ','err.phone':'กรุณากรอกเบอร์โทร','err.service':'กรุณาเลือกประเภทบริการ',
+        'err.date':'กรุณาเลือกวันที่','err.pickup':'กรุณาระบุจุดรับ','err.dropoff':'กรุณาระบุจุดส่ง',
+        'err.email':'รูปแบบอีเมลไม่ถูกต้อง',
+        'cookie.text':'เราใช้คุกกี้เพื่อให้เว็บไซต์ทำงานได้อย่างถูกต้อง วิเคราะห์การใช้งาน และแสดงเนื้อหาที่เกี่ยวข้อง ดูรายละเอียดใน <a href="/privacy.html">นโยบายความเป็นส่วนตัว</a>',
+        'cookie.accept':'ยอมรับทั้งหมด',
+        'cookie.necessary':'เฉพาะที่จำเป็น',
+        'cookie.customize':'ตั้งค่า',
+        'cookie.modal.title':'ตั้งค่าคุกกี้',
+        'cookie.modal.desc':'เลือกประเภทคุกกี้ที่คุณยินยอมให้เราใช้งาน คุกกี้ที่จำเป็นไม่สามารถปิดได้เนื่องจากจำเป็นต่อการทำงานของเว็บไซต์',
+        'cookie.cat.necessary':'จำเป็น (Necessary)',
+        'cookie.cat.necessary.desc':'คุกกี้ที่จำเป็นสำหรับการทำงานของเว็บไซต์ เช่น การจดจำภาษา การรักษาความปลอดภัย ไม่สามารถปิดได้',
+        'cookie.cat.analytics':'วิเคราะห์ (Analytics)',
+        'cookie.cat.analytics.desc':'ช่วยให้เราเข้าใจว่าผู้เยี่ยมชมใช้เว็บไซต์อย่างไร เพื่อปรับปรุงประสบการณ์การใช้งาน (Google Analytics)',
+        'cookie.cat.marketing':'การตลาด (Marketing)',
+        'cookie.cat.marketing.desc':'ใช้สำหรับแสดงโฆษณาที่เกี่ยวข้องกับความสนใจของคุณ (Facebook Pixel, Google Ads)',
+        'cookie.cat.preferences':'ความชอบ (Preferences)',
+        'cookie.cat.preferences.desc':'จดจำการตั้งค่าของคุณ เช่น ภาษา และธีมที่เลือก',
+        'cookie.save':'บันทึกการตั้งค่า',
+        'cookie.accept.all':'ยอมรับทั้งหมด',
       },
       en: {
         'nav.services':'Services','nav.fleet':'Our Fleet','nav.safety':'Safety','nav.contact':'Contact','nav.book':'BOOK NOW',
@@ -1168,6 +1808,38 @@
         'cta.title':'Available 24 Hours','cta.desc':'Contact us to book or inquire for more details.','cta.book':'Book Safely Now',
         'cta.loc':'Bangkok, Thailand','cta.trust':'Your information is securely protected.',
         'ft.ins':'Class 1 Insurance','ft.ver':'Verified Drivers','ft.priv':'Confidentiality',
+        'modal.title':'Book a Service',
+        'modal.name':'Full Name','modal.phone':'Phone Number','modal.email':'Email','modal.company':'Company Name',
+        'modal.service':'Service Type','modal.service.placeholder':'-- Select Service Type --',
+        'modal.svc.airport':'Airport Transfer','modal.svc.daily':'Daily Rental','modal.svc.biz':'Business Transfer','modal.svc.tour':'Tourism','modal.svc.other':'Other',
+        'modal.date':'Service Date','modal.time':'Pickup Time',
+        'modal.pickup':'Pickup Location','modal.dropoff':'Drop-off Location',
+        'modal.pax':'Passengers','modal.vehicle':'Vehicle Preference','modal.vehicle.any':'No Preference',
+        'modal.veh.sedan':'Sedan','modal.veh.suv':'SUV / Crossover','modal.veh.van':'Van / Minivan',
+        'modal.msg':'Additional Details',
+        'modal.submit':'Send Inquiry','modal.submitting':'Sending...',
+        'modal.hint':'Your information is protected and will not be shared with third parties.',
+        'modal.success.title':'Request Sent!','modal.success.desc':'We have received your inquiry. Our team will contact you within 1-2 hours.',
+        'modal.close':'Close',
+        'err.name':'Please enter your name','err.phone':'Please enter your phone number','err.service':'Please select a service type',
+        'err.date':'Please select a date','err.pickup':'Please enter pickup location','err.dropoff':'Please enter drop-off location',
+        'err.email':'Invalid email format',
+        'cookie.text':'We use cookies to ensure the website works correctly, analyze usage, and show relevant content. See our <a href="/privacy.html">Privacy Policy</a> for details.',
+        'cookie.accept':'Accept All',
+        'cookie.necessary':'Necessary Only',
+        'cookie.customize':'Customize',
+        'cookie.modal.title':'Cookie Settings',
+        'cookie.modal.desc':'Choose which types of cookies you allow us to use. Necessary cookies cannot be disabled as they are required for the website to function.',
+        'cookie.cat.necessary':'Necessary',
+        'cookie.cat.necessary.desc':'Essential cookies for website functionality such as language preference and security. Cannot be disabled.',
+        'cookie.cat.analytics':'Analytics',
+        'cookie.cat.analytics.desc':'Help us understand how visitors use the website so we can improve your experience. (Google Analytics)',
+        'cookie.cat.marketing':'Marketing',
+        'cookie.cat.marketing.desc':'Used to show ads relevant to your interests. (Facebook Pixel, Google Ads)',
+        'cookie.cat.preferences':'Preferences',
+        'cookie.cat.preferences.desc':'Remember your settings such as language and theme preferences.',
+        'cookie.save':'Save Settings',
+        'cookie.accept.all':'Accept All',
       }
     };
 
@@ -1264,7 +1936,274 @@
 
     const counterBar = document.querySelector('.trust-counter-bar');
     if (counterBar) counterObserver.observe(counterBar);
+
+    // === COOKIE CONSENT ===
+    const COOKIE_KEY = 'cookie_consent';
+
+    function cookieGetConsent() {
+      try { return JSON.parse(localStorage.getItem(COOKIE_KEY)); } catch(e) { return null; }
+    }
+
+    function cookieSaveConsent(prefs) {
+      const consent = {
+        necessary: true,
+        analytics: !!prefs.analytics,
+        marketing: !!prefs.marketing,
+        preferences: !!prefs.preferences,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem(COOKIE_KEY, JSON.stringify(consent));
+      return consent;
+    }
+
+    function cookieHideBanner() {
+      const banner = document.getElementById('cookie-banner');
+      banner.classList.remove('show');
+    }
+
+    function cookieOpenModal() {
+      const existing = cookieGetConsent();
+      if (existing) {
+        document.getElementById('toggle-analytics').checked = existing.analytics;
+        document.getElementById('toggle-marketing').checked = existing.marketing;
+        document.getElementById('toggle-preferences').checked = existing.preferences;
+      }
+      document.getElementById('cookie-modal-backdrop').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cookieCloseModal() {
+      document.getElementById('cookie-modal-backdrop').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function cookieAcceptAll() {
+      const consent = cookieSaveConsent({ analytics: true, marketing: true, preferences: true });
+      cookieHideBanner();
+      cookieCloseModal();
+      loadAnalytics(consent);
+      loadMarketing(consent);
+    }
+
+    function cookieNecessaryOnly() {
+      cookieSaveConsent({ analytics: false, marketing: false, preferences: false });
+      cookieHideBanner();
+    }
+
+    function cookieSaveSettings() {
+      const prefs = {
+        analytics: document.getElementById('toggle-analytics').checked,
+        marketing: document.getElementById('toggle-marketing').checked,
+        preferences: document.getElementById('toggle-preferences').checked,
+      };
+      const consent = cookieSaveConsent(prefs);
+      cookieHideBanner();
+      cookieCloseModal();
+      loadAnalytics(consent);
+      loadMarketing(consent);
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('cookie-modal-backdrop').addEventListener('click', function(e) {
+      if (e.target === this) cookieCloseModal();
+    });
+
+    // === THIRD-PARTY LOADERS (stub — fill in when ready) ===
+    function loadAnalytics(consent) {
+      if (!consent || !consent.analytics) return;
+      // TODO: Load Google Analytics
+      // Example:
+      // const s = document.createElement('script');
+      // s.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+      // s.async = true;
+      // document.head.appendChild(s);
+      // window.dataLayer = window.dataLayer || [];
+      // function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config','G-XXXXXXXXXX');
+    }
+
+    function loadMarketing(consent) {
+      if (!consent || !consent.marketing) return;
+      // TODO: Load Facebook Pixel / Google Ads
+      // Example:
+      // !function(f,b,e,v,n,t,s){...}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      // fbq('init','YOUR_PIXEL_ID'); fbq('track','PageView');
+    }
+
+    // Init: check localStorage, show banner after 1s if no consent
+    (function initCookieBanner() {
+      const existing = cookieGetConsent();
+      if (existing) {
+        // Consent already given — load scripts silently
+        loadAnalytics(existing);
+        loadMarketing(existing);
+        return;
+      }
+      // No consent yet — show banner after 1 second (smooth slide-up)
+      setTimeout(function() {
+        document.getElementById('cookie-banner').classList.add('show');
+      }, 1000);
+    })();
+
+    // === INQUIRY MODAL ===
+    const BOS_API = 'https://bos.sabuygo.com/api/public/inquiry';
+
+    function openInquiryModal() {
+      const modal = document.getElementById('inquiryModal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // reset to form view
+      document.getElementById('modalFormWrap').style.display = '';
+      document.getElementById('stateSuccess').classList.remove('active');
+    }
+
+    function closeInquiryModal() {
+      document.getElementById('inquiryModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Close on backdrop click
+    document.getElementById('inquiryModal').addEventListener('click', function(e) {
+      if (e.target === this) closeInquiryModal();
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeInquiryModal();
+    });
+
+    // === FORM VALIDATION ===
+    function getVal(id) { return document.getElementById(id).value.trim(); }
+
+    function setError(fieldId, errId, show) {
+      const field = document.getElementById(fieldId);
+      const err = document.getElementById(errId);
+      if (show) {
+        field.classList.add('error');
+        err.classList.add('show');
+      } else {
+        field.classList.remove('error');
+        err.classList.remove('show');
+      }
+      return show;
+    }
+
+    function validateForm() {
+      let hasError = false;
+      if (!getVal('f_name'))    hasError = setError('f_name', 'err_name', true) || hasError;
+      else setError('f_name', 'err_name', false);
+
+      if (!getVal('f_phone'))   hasError = setError('f_phone', 'err_phone', true) || hasError;
+      else setError('f_phone', 'err_phone', false);
+
+      const email = getVal('f_email');
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        hasError = setError('f_email', 'err_email', true) || hasError;
+      } else setError('f_email', 'err_email', false);
+
+      if (!getVal('f_service')) hasError = setError('f_service', 'err_service', true) || hasError;
+      else setError('f_service', 'err_service', false);
+
+      if (!getVal('f_date'))    hasError = setError('f_date', 'err_date', true) || hasError;
+      else setError('f_date', 'err_date', false);
+
+      if (!getVal('f_pickup'))  hasError = setError('f_pickup', 'err_pickup', true) || hasError;
+      else setError('f_pickup', 'err_pickup', false);
+
+      if (!getVal('f_dropoff')) hasError = setError('f_dropoff', 'err_dropoff', true) || hasError;
+      else setError('f_dropoff', 'err_dropoff', false);
+
+      return !hasError;
+    }
+
+    // === SUBMIT HANDLER ===
+    document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Honeypot check
+      if (document.getElementById('hp_website').value) return;
+
+      if (!validateForm()) return;
+
+      const btn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('btnSpinner');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnText = document.getElementById('btnText');
+      const errorMsg = document.getElementById('modalErrorMsg');
+
+      // Loading state
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      btnIcon.style.display = 'none';
+      btnText.textContent = T[currentLang]['modal.submitting'] || 'กำลังส่ง...';
+      errorMsg.classList.remove('show');
+
+      const payload = {
+        customerName: getVal('f_name'),
+        customerPhone: getVal('f_phone'),
+        customerEmail: getVal('f_email') || null,
+        companyName: getVal('f_company') || null,
+        serviceType: getVal('f_service'),
+        pickupLocation: getVal('f_pickup'),
+        dropoffLocation: getVal('f_dropoff'),
+        pickupDate: getVal('f_date') || null,
+        pickupTime: getVal('f_time') || null,
+        passengerCount: parseInt(document.getElementById('f_pax').value) || 1,
+        vehicleTypePreference: getVal('f_vehicle') || null,
+        message: getVal('f_msg') || null,
+      };
+
+      try {
+        const res = await fetch(BOS_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+        }
+
+        // Success
+        document.getElementById('modalFormWrap').style.display = 'none';
+        const successState = document.getElementById('stateSuccess');
+        successState.classList.add('active');
+
+        if (data.inquiryNumber) {
+          document.getElementById('inquiryRef').textContent = data.inquiryNumber;
+          document.getElementById('inquiryRef').style.display = 'block';
+        } else {
+          document.getElementById('inquiryRef').style.display = 'none';
+        }
+
+        // reset form
+        document.getElementById('inquiryForm').reset();
+
+      } catch (err) {
+        errorMsg.textContent = err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+        errorMsg.classList.add('show');
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnIcon.style.display = '';
+        btnText.textContent = T[currentLang]['modal.submit'] || 'ส่งคำขอจอง';
+      }
+    });
+
+    // Clear error on input
+    ['f_name','f_phone','f_email','f_service','f_date','f_pickup','f_dropoff'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', function() {
+        this.classList.remove('error');
+        const errEl = document.getElementById('err_' + id.replace('f_', ''));
+        if (errEl) errEl.classList.remove('show');
+      });
+    });
   </script>
 
 </body>
 </html>
+
+<!-- dev rebuild trigger 1775531740 -->
+<!-- trigger 1775551029 -->

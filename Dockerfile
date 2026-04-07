@@ -11,6 +11,7 @@ RUN rm -rf /usr/share/nginx/html/*
 
 # Copy static files เข้า nginx web root
 COPY index.html /usr/share/nginx/html/index.html
+COPY privacy.html /usr/share/nginx/html/privacy.html
 COPY images/ /usr/share/nginx/html/images/
 COPY robots.txt /usr/share/nginx/html/robots.txt
 COPY sitemap.xml /usr/share/nginx/html/sitemap.xml
