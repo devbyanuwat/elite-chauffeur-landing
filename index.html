@@ -132,7 +132,8 @@
   }
   </script>
 
-  <!-- Preload LCP element (hero logo) — ลด LCP time -->
+  <!-- Preload LCP elements — ลด LCP time -->
+  <link rel="preload" as="image" href="images/hero-bg.webp" fetchpriority="high">
   <link rel="preload" as="image" href="images/logo.webp" fetchpriority="high">
   <!-- Preconnect เพื่อให้ DNS/TCP/TLS เริ่มก่อน — ลด render blocking -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -240,7 +241,9 @@
       align-items: center; justify-content: center;
       text-align: center;
       padding: 100px 2rem 60px;
-      background: linear-gradient(180deg, #000000 0%, #1d1d1f 100%);
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(29,29,31,0.75) 100%),
+        url('images/hero-bg.webp') center/cover no-repeat;
       position: relative; overflow: hidden;
     }
     .hero::before {
