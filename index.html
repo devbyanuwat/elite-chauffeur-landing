@@ -132,7 +132,12 @@
   }
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Preconnect เพื่อให้ DNS/TCP/TLS เริ่มก่อน — ลด render blocking -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Load fonts แบบ non-blocking + ตัด weights ที่ไม่ใช้ -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap"></noscript>
 
   <style>
     /* ============================================================
@@ -957,7 +962,7 @@
   <!-- NAV -->
   <nav id="navbar">
     <a href="#" class="nav-brand">
-      <img src="images/logo.webp" alt="ELITE CHAUFFEUR" class="nav-logo">
+      <img src="images/logo.webp" alt="ELITE CHAUFFEUR" class="nav-logo" width="36" height="36">
       <span class="nav-brand-text">ELITE CHAUFFEUR</span>
     </a>
     <ul class="nav-links">
@@ -985,7 +990,7 @@
   <!-- ==================== HERO ==================== -->
   <section class="hero" id="hero">
     <div class="hero-content">
-      <img src="images/logo.webp" alt="ELITE CHAUFFEUR Logo" class="hero-logo">
+      <img src="images/logo.webp" alt="ELITE CHAUFFEUR Logo" class="hero-logo" width="180" height="98">
       <div class="hero-tagline">Premium Chauffeur Service</div>
       <h1 data-i18n="hero.title">Your Journey,<br>Our Excellence</h1>
       <p data-i18n="hero.desc">แพลตฟอร์มบริการรถเช่าพร้อมคนขับระดับพรีเมียม เชื่อมต่อคุณกับเครือข่ายรถและคนขับที่ผ่านการคัดสรรอย่างเข้มงวด ปลอดภัย สะดวกสบาย ดูแลทุกการเดินทางด้วยมาตรฐานสูงสุด</p>
@@ -1090,7 +1095,7 @@
       <div class="services-grid">
         <div class="service-card reveal reveal-delay-1">
           <div class="service-img-wrap">
-            <img loading="lazy" src="images/service1.webp" alt="Airport Transfer" class="service-img">
+            <img loading="lazy" src="images/service1.webp" alt="Airport Transfer" class="service-img" width="600" height="400">
             <div class="service-safety-badge">
               <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               INSURED
@@ -1103,7 +1108,7 @@
         </div>
         <div class="service-card reveal reveal-delay-2">
           <div class="service-img-wrap">
-            <img loading="lazy" src="images/service2.webp" alt="Business Transfer" class="service-img">
+            <img loading="lazy" src="images/service2.webp" alt="Business Transfer" class="service-img" width="600" height="400">
             <div class="service-safety-badge">
               <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
               VERIFIED
@@ -1116,7 +1121,7 @@
         </div>
         <div class="service-card reveal reveal-delay-3">
           <div class="service-img-wrap">
-            <img loading="lazy" src="images/service3.webp" alt="Car Rental" class="service-img">
+            <img loading="lazy" src="images/service3.webp" alt="Car Rental" class="service-img" width="600" height="400">
             <div class="service-safety-badge">
               <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               PROTECTED
@@ -1146,7 +1151,7 @@
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
           </div>
           <div class="fleet-img-wrap">
-            <img loading="lazy" src="images/car2.webp" alt="Toyota Alphard" class="fleet-img">
+            <img loading="lazy" src="images/car2.webp" alt="Toyota Alphard" class="fleet-img" width="600" height="400">
           </div>
           <div class="fleet-info">
             <h3>Toyota Alphard</h3>
@@ -1165,7 +1170,7 @@
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
           </div>
           <div class="fleet-img-wrap">
-            <img loading="lazy" src="images/car3.webp" alt="Toyota Fortuner" class="fleet-img">
+            <img loading="lazy" src="images/car3.webp" alt="Toyota Fortuner" class="fleet-img" width="600" height="400">
           </div>
           <div class="fleet-info">
             <h3>Toyota Fortuner Legender</h3>
@@ -1184,7 +1189,7 @@
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
           </div>
           <div class="fleet-img-wrap">
-            <img loading="lazy" src="images/car1.webp" alt="Mitsubishi Xpander Cross" class="fleet-img">
+            <img loading="lazy" src="images/car1.webp" alt="Mitsubishi Xpander Cross" class="fleet-img" width="600" height="400">
           </div>
           <div class="fleet-info">
             <h3>Mitsubishi Xpander Cross</h3>
@@ -1203,7 +1208,7 @@
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
           </div>
           <div class="fleet-img-wrap">
-            <img loading="lazy" src="images/car4.webp" alt="Toyota Corolla Altis" class="fleet-img">
+            <img loading="lazy" src="images/car4.webp" alt="Toyota Corolla Altis" class="fleet-img" width="600" height="400">
           </div>
           <div class="fleet-info">
             <h3>Toyota Corolla Altis</h3>
@@ -1422,7 +1427,7 @@
 
   <!-- ==================== FOOTER ==================== -->
   <footer>
-    <img src="images/logo.webp" alt="ELITE CHAUFFEUR" class="footer-logo">
+    <img src="images/logo.webp" alt="ELITE CHAUFFEUR" class="footer-logo" width="36" height="36">
     <div class="footer-trust">
       <span class="footer-trust-item">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
