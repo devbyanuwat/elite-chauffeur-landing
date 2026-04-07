@@ -222,7 +222,7 @@
     }
     .lang-toggle span {
       padding: 3px 10px; border-radius: 980px; transition: all 0.25s;
-      color: var(--text-tertiary);
+      color: var(--text-primary);
     }
     .lang-toggle span.active { background: var(--gold); color: #fff; }
 
@@ -337,7 +337,7 @@
     .stat-icon { margin-bottom: 6px; }
     .stat-icon svg { width: 20px; height: 20px; stroke: var(--gold-light); fill: none; stroke-width: 1.5; }
     .stat-number { font-size: 2.5rem; font-weight: 800; color: #fff; display: block; letter-spacing: -0.02em; line-height: 1; }
-    .stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 500; margin-top: 4px; }
+    .stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.65); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 500; margin-top: 4px; }
 
     /* ==================== SCROLL ANIMATIONS ==================== */
     .reveal {
@@ -370,11 +370,11 @@
     .safety-shield { flex-shrink: 0; }
     .safety-shield svg { width: 72px; height: 72px; }
     .safety-shield-text { flex: 1; }
-    .safety-shield-text h3 {
+    .safety-shield-text h2 {
       font-size: 1.5rem; font-weight: 700; color: var(--text-primary);
       margin-bottom: 0.6rem; display: flex; align-items: center; gap: 10px;
     }
-    .safety-shield-text h3 .verified-icon { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; }
+    .safety-shield-text h2 .verified-icon { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; }
     .safety-shield-text p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8; font-weight: 400; }
     .safety-features { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.2rem; }
     .safety-feature-tag {
@@ -403,7 +403,7 @@
     }
     .section-headline .label {
       font-size: 0.72rem; font-weight: 700; letter-spacing: 3px;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; display: block;
+      text-transform: uppercase; color: var(--gold-dark); margin-bottom: 1rem; display: block;
     }
     .section-headline h2 {
       font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 800;
@@ -484,7 +484,7 @@
     .fleet-card:hover .fleet-img { transform: scale(1.06); }
     .fleet-info { padding: 1.2rem 1.5rem 1.5rem; }
     .fleet-info h3 { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
-    .fleet-type { font-size: 0.72rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+    .fleet-type { font-size: 0.72rem; color: var(--gold-dark); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
     .fleet-price {
       margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--border);
       font-size: 0.85rem; color: var(--text-secondary);
@@ -492,7 +492,7 @@
     .fleet-price span { color: var(--gold); font-weight: 700; font-size: 1.15rem; }
     .fleet-safety-row { display: flex; justify-content: center; gap: 0.8rem; margin-top: 0.8rem; flex-wrap: wrap; }
     .fleet-safety-tag {
-      font-size: 0.65rem; color: var(--text-tertiary); display: flex; align-items: center; gap: 3px;
+      font-size: 0.65rem; color: var(--text-secondary); display: flex; align-items: center; gap: 3px;
     }
     .fleet-safety-tag svg { width: 12px; height: 12px; stroke: var(--green); fill: none; stroke-width: 2; }
 
@@ -549,7 +549,7 @@
       line-height: 1; letter-spacing: -0.03em;
     }
     .trust-counter-num span { color: var(--green); }
-    .trust-counter-label { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+    .trust-counter-label { font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
 
     /* ==================== WHY US — ICON GRID ==================== */
     .why-grid {
@@ -615,10 +615,10 @@
     .footer-trust { display: flex; justify-content: center; gap: 1.8rem; margin-top: 1rem; flex-wrap: wrap; }
     .footer-trust-item {
       display: flex; align-items: center; gap: 5px;
-      font-size: 0.7rem; color: rgba(255,255,255,0.3);
+      font-size: 0.7rem; color: rgba(255,255,255,0.7);
     }
-    .footer-trust-item svg { width: 13px; height: 13px; stroke: rgba(34,197,94,0.6); fill: none; stroke-width: 2; }
-    .footer-text { color: rgba(255,255,255,0.2); font-size: 0.72rem; margin-top: 1rem; }
+    .footer-trust-item svg { width: 13px; height: 13px; stroke: rgba(34,197,94,0.9); fill: none; stroke-width: 2; }
+    .footer-text { color: rgba(255,255,255,0.6); font-size: 0.72rem; margin-top: 1rem; }
 
     /* ==================== INQUIRY MODAL ==================== */
     .modal-backdrop {
@@ -652,7 +652,7 @@
     }
     .modal-header-text .modal-label {
       font-size: 0.65rem; font-weight: 700; letter-spacing: 3px;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 4px; display: block;
+      text-transform: uppercase; color: var(--gold-dark); margin-bottom: 4px; display: block;
     }
     .modal-header-text h3 {
       font-size: 1.3rem; font-weight: 800; color: var(--text-primary);
@@ -758,7 +758,7 @@
     }
     .modal-error-msg.show { display: block; }
 
-    .form-hint { font-size: 0.7rem; color: var(--text-tertiary); margin-top: 1rem; text-align: center; }
+    .form-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 1rem; text-align: center; }
     .form-hint svg { width: 12px; height: 12px; stroke: #4ade80; fill: none; stroke-width: 2; vertical-align: middle; }
 
     @media (max-width: 580px) {
@@ -876,6 +876,16 @@
     }
     .cookie-btn-customize:hover { color: var(--gold); }
 
+    /* ==================== SKIP NAVIGATION ==================== */
+    .skip-nav {
+      position: absolute; top: -100%; left: 0;
+      background: var(--gold); color: #fff;
+      padding: 0.5rem 1rem; font-size: 0.88rem; font-weight: 600;
+      text-decoration: none; z-index: 9999;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-nav:focus { top: 0; }
+
     /* ==================== COOKIE CUSTOMIZE MODAL ==================== */
     #cookie-modal-backdrop {
       position: fixed; inset: 0; z-index: 10000;
@@ -925,7 +935,7 @@
       font-size: 0.62rem; font-weight: 500; padding: 2px 7px; border-radius: 980px;
       border: 1px solid rgba(184,148,63,0.2);
     }
-    .cookie-category-desc { color: rgba(255,255,255,0.4); font-size: 0.74rem; line-height: 1.5; }
+    .cookie-category-desc { color: rgba(255,255,255,0.55); font-size: 0.74rem; line-height: 1.5; }
     .cookie-toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; margin-top: 2px; }
     .cookie-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
     .cookie-toggle-track {
@@ -959,9 +969,13 @@
 </head>
 <body>
 
+  <!-- SKIP NAVIGATION — สำหรับ keyboard users -->
+  <a href="#main-content" class="skip-nav">ข้ามไปยังเนื้อหาหลัก</a>
+
   <!-- NAV -->
-  <nav id="navbar">
-    <a href="#" class="nav-brand">
+  <header>
+  <nav id="navbar" aria-label="เมนูหลัก">
+    <a href="#hero" class="nav-brand" aria-label="ELITE CHAUFFEUR - กลับหน้าแรก">
       <img src="images/logo.webp" alt="ELITE CHAUFFEUR" class="nav-logo" width="36" height="36">
       <span class="nav-brand-text">ELITE CHAUFFEUR</span>
     </a>
@@ -972,9 +986,9 @@
       <li><a href="#contact" data-i18n="nav.contact">ติดต่อเรา</a></li>
     </ul>
     <div class="nav-right">
-      <div class="lang-toggle" id="langToggle" onclick="toggleLang()">
-        <span id="langTH" class="active">TH</span>
-        <span id="langEN">EN</span>
+      <div class="lang-toggle" id="langToggle" role="group" aria-label="เลือกภาษา" onclick="toggleLang()">
+        <span id="langTH" class="active" aria-label="ภาษาไทย" aria-pressed="true">TH</span>
+        <span id="langEN" aria-label="English" aria-pressed="false">EN</span>
       </div>
       <button onclick="openInquiryModal()" class="nav-cta" style="font-family:var(--font);">
         <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
@@ -986,6 +1000,9 @@
       <svg class="icon-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </nav>
+  </header>
+
+  <main id="main-content">
 
   <!-- ==================== HERO ==================== -->
   <section class="hero" id="hero">
@@ -1044,7 +1061,7 @@
   </section>
 
   <!-- ==================== SAFETY PROMISE BANNER ==================== -->
-  <div class="safety-banner">
+  <div class="safety-banner" role="region" aria-label="Safety First Promise">
     <div class="safety-banner-inner reveal">
       <div class="safety-shield">
         <svg viewBox="0 0 24 24" style="width:72px;height:72px;stroke:#22C55E;fill:rgba(34,197,94,0.08);stroke-width:1.2;">
@@ -1053,10 +1070,10 @@
         </svg>
       </div>
       <div class="safety-shield-text">
-        <h3>
+        <h2>
           <span data-i18n="safety.promise.title">Safety First Promise</span>
           <svg class="verified-icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-        </h3>
+        </h2>
         <p data-i18n="safety.promise.desc">ทุกการเดินทางกับ ELITE CHAUFFEUR ผ่านมาตรฐานความปลอดภัยสูงสุด รถและคนขับทุกคันในเครือข่ายต้องผ่านการตรวจประวัติอาชญากรรม ทดสอบทักษะการขับขี่ และอบรมมาตรฐานบริการก่อนเข้าร่วมเครือข่าย</p>
         <div class="safety-features">
           <div class="safety-feature-tag">
@@ -1314,7 +1331,7 @@
   </section>
 
   <!-- ==================== TRUST COUNTERS ==================== -->
-  <div class="trust-counter-bar">
+  <div class="trust-counter-bar" role="region" aria-label="สถิติความน่าเชื่อถือ">
     <div class="trust-counters reveal">
       <div class="trust-counter">
         <div class="trust-counter-icon">
@@ -1425,6 +1442,8 @@
     </div>
   </section>
 
+  </main><!-- /#main-content -->
+
   <!-- ==================== FOOTER ==================== -->
   <footer>
     <img src="images/logo.webp" alt="ELITE CHAUFFEUR" class="footer-logo" width="36" height="36">
@@ -1446,7 +1465,7 @@
         <span data-i18n="ft.priv">รักษาความลับ</span>
       </span>
     </div>
-    <p class="footer-text">&copy; 2026 ELITE CHAUFFEUR. All rights reserved. &nbsp;|&nbsp; <a href="/privacy.html" style="color:rgba(255,255,255,0.3);text-decoration:underline;text-underline-offset:2px;" onmouseover="this.style.color='rgba(184,148,63,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">นโยบายความเป็นส่วนตัว</a></p>
+    <p class="footer-text">&copy; 2026 ELITE CHAUFFEUR. All rights reserved. &nbsp;|&nbsp; <a href="/privacy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;text-underline-offset:2px;" onmouseover="this.style.color='rgba(184,148,63,1)'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">นโยบายความเป็นส่วนตัว</a></p>
   </footer>
 
   <!-- ==================== INQUIRY MODAL ==================== -->
@@ -1653,8 +1672,8 @@
             </div>
             <p class="cookie-category-desc" data-i18n="cookie.cat.necessary.desc">คุกกี้ที่จำเป็นสำหรับการทำงานของเว็บไซต์ เช่น การจดจำภาษา การรักษาความปลอดภัย ไม่สามารถปิดได้</p>
           </div>
-          <label class="cookie-toggle">
-            <input type="checkbox" id="toggle-necessary" checked disabled>
+          <label class="cookie-toggle" aria-label="คุกกี้จำเป็น (เปิดตลอด)">
+            <input type="checkbox" id="toggle-necessary" checked disabled aria-label="จำเป็น (Necessary)">
             <span class="cookie-toggle-track"></span>
           </label>
         </div>
@@ -1667,8 +1686,8 @@
             <div class="cookie-category-name" data-i18n="cookie.cat.analytics">วิเคราะห์ (Analytics)</div>
             <p class="cookie-category-desc" data-i18n="cookie.cat.analytics.desc">ช่วยให้เราเข้าใจว่าผู้เยี่ยมชมใช้เว็บไซต์อย่างไร เพื่อปรับปรุงประสบการณ์การใช้งาน (Google Analytics)</p>
           </div>
-          <label class="cookie-toggle">
-            <input type="checkbox" id="toggle-analytics">
+          <label class="cookie-toggle" aria-label="คุกกี้วิเคราะห์ (Analytics)">
+            <input type="checkbox" id="toggle-analytics" aria-label="วิเคราะห์ (Analytics)">
             <span class="cookie-toggle-track"></span>
           </label>
         </div>
@@ -1681,8 +1700,8 @@
             <div class="cookie-category-name" data-i18n="cookie.cat.marketing">การตลาด (Marketing)</div>
             <p class="cookie-category-desc" data-i18n="cookie.cat.marketing.desc">ใช้สำหรับแสดงโฆษณาที่เกี่ยวข้องกับความสนใจของคุณ (Facebook Pixel, Google Ads)</p>
           </div>
-          <label class="cookie-toggle">
-            <input type="checkbox" id="toggle-marketing">
+          <label class="cookie-toggle" aria-label="คุกกี้การตลาด (Marketing)">
+            <input type="checkbox" id="toggle-marketing" aria-label="การตลาด (Marketing)">
             <span class="cookie-toggle-track"></span>
           </label>
         </div>
@@ -1695,8 +1714,8 @@
             <div class="cookie-category-name" data-i18n="cookie.cat.preferences">ความชอบ (Preferences)</div>
             <p class="cookie-category-desc" data-i18n="cookie.cat.preferences.desc">จดจำการตั้งค่าของคุณ เช่น ภาษา และธีมที่เลือก</p>
           </div>
-          <label class="cookie-toggle">
-            <input type="checkbox" id="toggle-preferences">
+          <label class="cookie-toggle" aria-label="คุกกี้ความชอบ (Preferences)">
+            <input type="checkbox" id="toggle-preferences" aria-label="ความชอบ (Preferences)">
             <span class="cookie-toggle-track"></span>
           </label>
         </div>
@@ -1854,8 +1873,12 @@
     function setLang(lang) {
       currentLang = lang;
       document.documentElement.lang = lang;
-      document.getElementById('langTH').classList.toggle('active', lang === 'th');
-      document.getElementById('langEN').classList.toggle('active', lang === 'en');
+      const thEl = document.getElementById('langTH');
+      const enEl = document.getElementById('langEN');
+      thEl.classList.toggle('active', lang === 'th');
+      enEl.classList.toggle('active', lang === 'en');
+      thEl.setAttribute('aria-pressed', lang === 'th' ? 'true' : 'false');
+      enEl.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (T[lang][key]) el.innerHTML = T[lang][key];
@@ -1873,11 +1896,14 @@
       const btn = document.getElementById('navMobileBtn');
       nav.classList.toggle('show');
       btn.classList.toggle('active');
+      btn.setAttribute('aria-expanded', nav.classList.contains('show') ? 'true' : 'false');
     }
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', () => {
         document.querySelector('.nav-links').classList.remove('show');
-        document.getElementById('navMobileBtn').classList.remove('active');
+        const btn = document.getElementById('navMobileBtn');
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
       });
     });
 
