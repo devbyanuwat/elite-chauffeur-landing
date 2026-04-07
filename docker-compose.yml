@@ -146,6 +146,10 @@ services:
       WATCHTOWER_POLL_INTERVAL: 300
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_LABEL_ENABLE: "true"
+      # Discord notifications — แจ้งทุกครั้งที่ pull/restart container
+      WATCHTOWER_NOTIFICATIONS: shoutrrr
+      WATCHTOWER_NOTIFICATION_URL: ${WATCHTOWER_NOTIFICATION_URL}
+      WATCHTOWER_NOTIFICATION_REPORT: "true"
       # ถ้า image อยู่ใน private registry ต้องตั้ง credentials
       # REPO_USER: ${DOCKER_HUB_USERNAME}
       # REPO_PASS: ${DOCKER_HUB_TOKEN}
