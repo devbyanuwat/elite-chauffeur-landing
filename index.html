@@ -132,6 +132,8 @@
   }
   </script>
 
+  <!-- Preload LCP element (hero logo) — ลด LCP time -->
+  <link rel="preload" as="image" href="images/logo.webp" fetchpriority="high">
   <!-- Preconnect เพื่อให้ DNS/TCP/TLS เริ่มก่อน — ลด render blocking -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
