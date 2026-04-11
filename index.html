@@ -2502,13 +2502,10 @@
                 <span data-i18n="modal.service">ประเภทบริการ</span>
                 <span class="required">*</span>
               </label>
+              <!-- Options populated dynamically from bos.sabuygo.com/api/public/service-types -->
+              <!-- Fallback hardcoded values injected by JS if fetch fails — see loadServiceTypes() -->
               <select id="f_service" name="serviceType">
                 <option value="" disabled selected data-i18n="modal.service.placeholder">-- เลือกประเภทบริการ --</option>
-                <option value="airport_transfer" data-i18n="modal.svc.airport">รับส่งสนามบิน</option>
-                <option value="daily_rental" data-i18n="modal.svc.daily">รถเช่ารายวัน</option>
-                <option value="business_transfer" data-i18n="modal.svc.biz">รับส่งธุรกิจ</option>
-                <option value="tourism" data-i18n="modal.svc.tour">ท่องเที่ยว</option>
-                <option value="other" data-i18n="modal.svc.other">อื่นๆ</option>
               </select>
               <span class="field-error" id="err_service" data-i18n="err.service">กรุณาเลือกประเภทบริการ</span>
             </div>
@@ -2742,7 +2739,6 @@
         'modal.title':'จองบริการรถ',
         'modal.name':'ชื่อ-นามสกุล','modal.phone':'เบอร์โทรศัพท์','modal.email':'อีเมล','modal.company':'ชื่อบริษัท',
         'modal.service':'ประเภทบริการ','modal.service.placeholder':'-- เลือกประเภทบริการ --',
-        'modal.svc.airport':'รับส่งสนามบิน','modal.svc.daily':'รถเช่ารายวัน','modal.svc.biz':'รับส่งธุรกิจ','modal.svc.tour':'ท่องเที่ยว','modal.svc.other':'อื่นๆ',
         'modal.date':'วันที่ใช้บริการ','modal.time':'เวลารับ',
         'modal.pickup':'จุดรับ','modal.dropoff':'จุดส่ง',
         'modal.pax':'จำนวนผู้โดยสาร','modal.vehicle':'ประเภทรถที่ต้องการ','modal.vehicle.any':'ไม่ระบุ',
@@ -2808,7 +2804,6 @@
         'modal.title':'Book a Service',
         'modal.name':'Full Name','modal.phone':'Phone Number','modal.email':'Email','modal.company':'Company Name',
         'modal.service':'Service Type','modal.service.placeholder':'-- Select Service Type --',
-        'modal.svc.airport':'Airport Transfer','modal.svc.daily':'Daily Rental','modal.svc.biz':'Business Transfer','modal.svc.tour':'Tourism','modal.svc.other':'Other',
         'modal.date':'Service Date','modal.time':'Pickup Time',
         'modal.pickup':'Pickup Location','modal.dropoff':'Drop-off Location',
         'modal.pax':'Passengers','modal.vehicle':'Vehicle Preference','modal.vehicle.any':'No Preference',
@@ -2855,12 +2850,71 @@
         const key = el.getAttribute('data-i18n');
         if (T[lang][key]) el.innerHTML = T[lang][key];
       });
+      populateServiceSelect();
       localStorage.setItem('ec_lang', lang);
     }
 
     function toggleLang() {
       setLang(currentLang === 'th' ? 'en' : 'th');
     }
+
+    // === SERVICE TYPES — fetched from BOS public API with hardcoded fallback ===
+    // Source of truth: elite-chauffeur-backoffice/src/lib/service-types.ts
+    // Endpoint:        GET https://bos.sabuygo.com/api/public/service-types
+    // The fallback array mirrors the canonical list so the form still works
+    // if the API is unreachable (network issue, BOS downtime, etc.).
+    const SERVICE_TYPES_API = 'https://bos.sabuygo.com/api/public/service-types';
+    const SERVICE_TYPES_FALLBACK = [
+      { code: 'one_way',        labelTh: 'เช่ารถไปอย่างเดียว',   labelEn: 'One-way Transfer',         order: 1 },
+      { code: 'wait_return',    labelTh: 'เช่าแบบรอรับกลับ',     labelEn: 'Round-trip Wait & Return', order: 2 },
+      { code: 'hourly_charter', labelTh: 'เช่าเหมารายชั่วโมง',    labelEn: 'Hourly Charter',            order: 3 },
+      { code: 'daily_charter',  labelTh: 'เช่าเหมารายวัน',       labelEn: 'Daily Charter',             order: 4 },
+    ];
+    let serviceTypes = SERVICE_TYPES_FALLBACK;
+
+    function populateServiceSelect() {
+      const select = document.getElementById('f_service');
+      if (!select) return;
+      const currentValue = select.value;
+      // keep the first placeholder option, remove the rest
+      while (select.children.length > 1) {
+        select.removeChild(select.lastChild);
+      }
+      [...serviceTypes]
+        .sort((a, b) => (a.order || 0) - (b.order || 0))
+        .forEach(type => {
+          const opt = document.createElement('option');
+          opt.value = type.code;
+          opt.textContent = currentLang === 'en'
+            ? (type.labelEn || type.labelTh)
+            : (type.labelTh || type.labelEn);
+          select.appendChild(opt);
+        });
+      // preserve current selection if it still exists in the new list
+      if (currentValue && [...select.options].some(o => o.value === currentValue)) {
+        select.value = currentValue;
+      }
+    }
+
+    async function loadServiceTypes() {
+      try {
+        const res = await fetch(SERVICE_TYPES_API, { cache: 'default' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          serviceTypes = data;
+          populateServiceSelect();
+        }
+      } catch (err) {
+        // Silent — hardcoded fallback already rendered on init. Log for debugging.
+        console.warn('[service-types] fetch failed, using fallback', err);
+      }
+    }
+
+    // Render fallback immediately so the form is usable even before fetch resolves,
+    // then swap in the fresh list from BOS as soon as it arrives.
+    populateServiceSelect();
+    loadServiceTypes();
 
     // Mobile menu
     function toggleMobileMenu() {
