@@ -135,6 +135,9 @@
   }
   </script>
 
+  <!-- Cloudflare Turnstile — anti-bot widget (async, non-blocking) -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
   <!-- Preload LCP element (hero logo) — ลด LCP time -->
   <link rel="preload" as="image" href="images/logo.webp" fetchpriority="high">
   <!-- Preconnect เพื่อให้ DNS/TCP/TLS เริ่มก่อน — ลด render blocking -->
@@ -2572,6 +2575,9 @@
             </div>
           </div>
 
+          <!-- Cloudflare Turnstile — bot verification (managed/invisible) -->
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAC8rSRNcEAP9HepX" data-theme="light" data-size="normal"></div>
+
           <!-- Error banner -->
           <div class="modal-error-msg" id="modalErrorMsg"></div>
 
@@ -3213,6 +3219,10 @@
       btnText.textContent = T[currentLang]['modal.submitting'] || 'กำลังส่ง...';
       errorMsg.classList.remove('show');
 
+      // Collect Turnstile token from the hidden input injected by the widget
+      const turnstileInput = document.querySelector('[name="cf-turnstile-response"]');
+      const turnstileToken = turnstileInput ? turnstileInput.value : null;
+
       const payload = {
         customerName: getVal('f_name'),
         customerPhone: getVal('f_phone'),
@@ -3226,6 +3236,7 @@
         passengerCount: parseInt(document.getElementById('f_pax').value) || 1,
         vehicleTypePreference: getVal('f_vehicle') || null,
         message: getVal('f_msg') || null,
+        turnstileToken,
       };
 
       try {
@@ -3264,6 +3275,10 @@
         spinner.style.display = 'none';
         btnIcon.style.display = '';
         btnText.textContent = T[currentLang]['modal.submit'] || 'ส่งคำขอจอง';
+        // Reset Turnstile widget so a new token is generated on retry
+        if (typeof turnstile !== 'undefined' && turnstile.reset) {
+          turnstile.reset();
+        }
       }
     });
 
