@@ -12,11 +12,12 @@ on:
       - main
       - dev
     paths:
-      # Build ใหม่เฉพาะเมื่อ landing page files เปลี่ยน
+      # Build ใหม่เมื่อ landing page files หรือ workflow เปลี่ยน
       - "index.html"
       - "images/**"
       - "Dockerfile"
       - "nginx.conf"
+      - ".github/workflows/deploy.yml"
 
 env:
   REGISTRY: ghcr.io
