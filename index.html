@@ -1042,6 +1042,102 @@
     .why-item { display: none; }
     .why-icon { display: none; }
 
+    /* ==================== DRIVER RECRUITMENT ==================== */
+    .driver-recruit {
+      padding: clamp(5rem, 10vw, 8rem) clamp(1.25rem, 5vw, 3rem);
+      background: oklch(94% 0.025 82);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .driver-recruit-inner {
+      max-width: var(--content-width);
+      margin: 0 auto;
+    }
+    .driver-recruit-label {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      display: block;
+      margin-bottom: 1.25rem;
+    }
+    .driver-recruit-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 3.6vw, 2.75rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.12;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      max-width: 18ch;
+    }
+    .driver-recruit-desc {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      max-width: 52ch;
+      margin-bottom: 2.5rem;
+    }
+    .driver-recruit-perks {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      border-top: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+    .driver-recruit-perk {
+      padding: 1.5rem 1.5rem 1.5rem 0;
+      border-right: 1px solid var(--border);
+    }
+    .driver-recruit-perk:last-child { border-right: none; }
+    .perk-value {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2vw, 1.5rem);
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+      margin-bottom: 0.4rem;
+    }
+    .perk-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.01em;
+    }
+    .driver-recruit-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.95rem 1.9rem;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--bg-primary);
+      background: var(--text-primary);
+      border: 1px solid var(--text-primary);
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 0.3s var(--ease-out), border-color 0.3s;
+    }
+    .driver-recruit-cta:hover {
+      background: var(--gold-dark);
+      border-color: var(--gold-dark);
+    }
+
+    @media (max-width: 720px) {
+      .driver-recruit-perks { grid-template-columns: 1fr; }
+      .driver-recruit-perk {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1.25rem 0;
+      }
+      .driver-recruit-perk:last-child { border-bottom: none; }
+    }
+
     /* ==================== CTA — light, editorial, left-aligned ==================== */
     .cta-section {
       background: var(--bg-primary);
@@ -1952,6 +2048,7 @@
       <li><a href="#services" data-i18n="nav.services">บริการ</a></li>
       <li><a href="#fleet" data-i18n="nav.fleet">รถในเครือข่าย</a></li>
       <li><a href="#safety" data-i18n="nav.safety">ความปลอดภัย</a></li>
+      <li><a href="#driver" data-i18n="nav.driver">สมัครคนขับ</a></li>
       <li><a href="#contact" data-i18n="nav.contact">ติดต่อเรา</a></li>
     </ul>
     <div class="nav-right">
@@ -2380,6 +2477,38 @@
     </div>
   </section>
 
+  <!-- ==================== DRIVER RECRUITMENT ==================== -->
+  <section class="driver-recruit" id="driver">
+    <div class="driver-recruit-inner reveal">
+      <div class="driver-recruit-content">
+        <span class="driver-recruit-label">พาร์ทเนอร์คนขับ</span>
+        <h2 class="driver-recruit-title">ร่วมเป็นคนขับกับ<br>Elite Chauffeur</h2>
+        <p class="driver-recruit-desc">
+          เปิดรับพาร์ทเนอร์คนขับที่มีรถส่วนตัว ไม่ต้องลงทุนเพิ่ม
+          เลือกเวลาทำงานเอง รับรายได้ต่อทริป
+          พร้อมระบบจัดการงานผ่านเว็บ ไม่ต้องดาวน์โหลดแอป
+        </p>
+        <div class="driver-recruit-perks">
+          <div class="driver-recruit-perk">
+            <span class="perk-value">฿15,000–30,000</span>
+            <span class="perk-label">รายได้เฉลี่ย/เดือน</span>
+          </div>
+          <div class="driver-recruit-perk">
+            <span class="perk-value">อิสระ</span>
+            <span class="perk-label">เลือกรับงานเอง</span>
+          </div>
+          <div class="driver-recruit-perk">
+            <span class="perk-value">ไม่มีค่าสมัคร</span>
+            <span class="perk-label">เริ่มต้นฟรี</span>
+          </div>
+        </div>
+        <a href="https://driver.sabuygo.com/register" class="driver-recruit-cta">
+          สมัครเป็นพาร์ทเนอร์คนขับ
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ==================== CTA / CONTACT ==================== -->
   <section class="cta-section" id="contact">
     <div class="cta-content reveal">
@@ -2710,7 +2839,7 @@
     // === i18n TRANSLATIONS ===
     const T = {
       th: {
-        'nav.services':'บริการ','nav.fleet':'รถในเครือข่าย','nav.safety':'ความปลอดภัย','nav.contact':'ติดต่อเรา','nav.book':'จองเลย',
+        'nav.services':'บริการ','nav.fleet':'รถในเครือข่าย','nav.safety':'ความปลอดภัย','nav.driver':'สมัครคนขับ','nav.contact':'ติดต่อเรา','nav.book':'จองเลย',
         'hero.title':'Your Journey,<br>Our Excellence',
         'hero.desc':'แพลตฟอร์มบริการรถเช่าพร้อมคนขับระดับพรีเมียม เชื่อมต่อคุณกับเครือข่ายรถและคนขับที่ผ่านการคัดสรรอย่างเข้มงวด ปลอดภัย สะดวกสบาย ดูแลทุกการเดินทางด้วยมาตรฐานสูงสุด',
         'badge.insurance':'ประกันชั้น 1 ทุกคัน','badge.verified':'คนขับผ่านการตรวจสอบ','badge.247':'บริการ 24 ชม.',
@@ -2775,7 +2904,7 @@
         'cookie.accept.all':'ยอมรับทั้งหมด',
       },
       en: {
-        'nav.services':'Services','nav.fleet':'Our Fleet','nav.safety':'Safety','nav.contact':'Contact','nav.book':'BOOK NOW',
+        'nav.services':'Services','nav.fleet':'Our Fleet','nav.safety':'Safety','nav.driver':'Drive with Us','nav.contact':'Contact','nav.book':'BOOK NOW',
         'hero.title':'Your Journey,<br>Our Excellence',
         'hero.desc':'Premium chauffeur service platform connecting you with a rigorously vetted network of vehicles and drivers. Safe, comfortable, and committed to the highest standards for every journey.',
         'badge.insurance':'Class 1 Insurance','badge.verified':'Verified Drivers','badge.247':'24/7 Service',
