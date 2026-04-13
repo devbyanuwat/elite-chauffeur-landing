@@ -2570,7 +2570,12 @@
     <p class="footer-text">&copy; 2026 ELITE CHAUFFEUR. All rights reserved. &nbsp;|&nbsp; <a href="/privacy.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;text-underline-offset:2px;" onmouseover="this.style.color='rgba(184,148,63,1)'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">นโยบายความเป็นส่วนตัว</a></p>
   </footer>
 
-  <!-- ==================== INQUIRY MODAL ==================== -->
+  <!-- ==================== INQUIRY MODAL ====================
+       ⚠️ ฟอร์มจองมี 2 ที่ — แก้ fields ต้องแก้ทั้งคู่:
+         1. ที่นี่ (landing modal, static HTML)
+         2. BOS /booking page (Next.js, LINE LIFF) → src/app/booking/page.tsx
+       ทั้งคู่ POST ไปที่ bos.sabuygo.com/api/public/inquiry
+  -->
   <div class="modal-backdrop" id="inquiryModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-box" id="modalBox">
 
