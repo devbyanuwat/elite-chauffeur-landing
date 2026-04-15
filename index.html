@@ -2184,15 +2184,13 @@
       gap: 0.625rem;
     }
 
-    /* Turnstile inside card — compact */
+    /* Turnstile inside card — flexible (300x65 horizontal) fits narrower than
+       compact (150x140 vertical). ไม่ต้อง scale เพราะ flexible เตี้ยอยู่แล้ว */
     .qf-turnstile-wrap {
       margin: 0.5rem 0 0.75rem;
-      display: flex;
-      justify-content: flex-start;
     }
-    .qf-turnstile-wrap .cf-turnstile iframe {
-      transform: scale(0.88);
-      transform-origin: left top;
+    .qf-turnstile-wrap .cf-turnstile {
+      max-width: 100%;
     }
 
     /* Submit button */
@@ -2726,18 +2724,18 @@
         </div>
         <div class="hero-line-text">
           <strong>LINE @031cvnva</strong>
-          <span>ตอบไว ไม่ต้องรอ</span>
+          <span data-i18n="qf.line.sub">ตอบไว ไม่ต้องรอ</span>
         </div>
       </a>
       <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="hero-line-mobile-btn" aria-label="เพิ่มเพื่อน LINE @031cvnva">
-        💬 เพิ่มเพื่อน LINE @031cvnva
+        <span data-i18n="qf.line.mobile">💬 เพิ่มเพื่อน LINE @031cvnva</span>
       </a>
 
       <!-- Quick inquiry card -->
       <div class="hero-quick-card" role="form" aria-labelledby="qfCardTitle">
         <!-- Form view -->
         <div id="qfFormWrap">
-          <p class="hero-quick-card-title" id="qfCardTitle">สอบถามด่วน · ตอบกลับใน 15 นาที</p>
+          <p class="hero-quick-card-title" id="qfCardTitle" data-i18n="qf.title">สอบถามด่วน · ตอบกลับใน 15 นาที</p>
 
           <form id="quickInquiryForm" novalidate>
             <!-- Vehicle preference — filled by car modal "จองรถคันนี้" -->
@@ -2747,20 +2745,21 @@
             <!-- 1+2. ชื่อ + เบอร์โทร (2-col inline เพื่อประหยัดพื้นที่) -->
             <div class="qf-row">
               <div class="qf-group">
-                <label for="qf_name">ชื่อ-นามสกุล <span class="qf-req" aria-hidden="true">*</span></label>
+                <label for="qf_name"><span data-i18n="qf.name">ชื่อ-นามสกุล</span> <span class="qf-req" aria-hidden="true">*</span></label>
                 <input
                   type="text"
                   id="qf_name"
                   name="customerName"
                   placeholder="ชื่อ-นามสกุล"
+                  data-i18n-placeholder="qf.name"
                   autocomplete="name"
                   required
                   aria-required="true"
                 >
-                <span class="qf-inline-error" id="qferr_name">กรุณากรอกชื่อ</span>
+                <span class="qf-inline-error" id="qferr_name" data-i18n="qf.err.name">กรุณากรอกชื่อ</span>
               </div>
               <div class="qf-group">
-                <label for="qf_phone">เบอร์โทรศัพท์ <span class="qf-req" aria-hidden="true">*</span></label>
+                <label for="qf_phone"><span data-i18n="qf.phone">เบอร์โทรศัพท์</span> <span class="qf-req" aria-hidden="true">*</span></label>
                 <input
                   type="tel"
                   id="qf_phone"
@@ -2771,27 +2770,27 @@
                   required
                   aria-required="true"
                 >
-                <span class="qf-inline-error" id="qferr_phone">เบอร์ 9-10 หลัก</span>
+                <span class="qf-inline-error" id="qferr_phone" data-i18n="qf.err.phone">เบอร์ 9-10 หลัก</span>
               </div>
             </div>
 
             <!-- 3. บริการ -->
             <div class="qf-group">
-              <label for="qf_service">บริการ <span class="qf-req" aria-hidden="true">*</span></label>
+              <label for="qf_service"><span data-i18n="qf.service">บริการ</span> <span class="qf-req" aria-hidden="true">*</span></label>
               <select id="qf_service" name="serviceType" required aria-required="true">
-                <option value="" disabled selected>-- เลือกประเภทบริการ --</option>
-                <option value="one_way">รับ-ส่งสนามบิน / One-way</option>
-                <option value="wait_return">รอรับกลับ / Round-trip</option>
-                <option value="hourly_charter">เหมารายชั่วโมง</option>
-                <option value="daily_charter">เหมารายวัน / ต่างจังหวัด</option>
+                <option value="" disabled selected data-i18n="qf.service.placeholder">-- เลือกประเภทบริการ --</option>
+                <option value="one_way" data-i18n="qf.svc.one_way">รับ-ส่งสนามบิน / One-way</option>
+                <option value="wait_return" data-i18n="qf.svc.wait_return">รอรับกลับ / Round-trip</option>
+                <option value="hourly_charter" data-i18n="qf.svc.hourly">เหมารายชั่วโมง</option>
+                <option value="daily_charter" data-i18n="qf.svc.daily">เหมารายวัน / ต่างจังหวัด</option>
               </select>
-              <span class="qf-inline-error" id="qferr_service">กรุณาเลือกประเภทบริการ</span>
+              <span class="qf-inline-error" id="qferr_service" data-i18n="qf.err.service">กรุณาเลือกประเภทบริการ</span>
             </div>
 
             <!-- 4 + 5. วันที่ + เวลา -->
             <div class="qf-row">
               <div class="qf-group">
-                <label for="qf_date">วันที่เดินทาง <span class="qf-req" aria-hidden="true">*</span></label>
+                <label for="qf_date"><span data-i18n="qf.date">วันที่เดินทาง</span> <span class="qf-req" aria-hidden="true">*</span></label>
                 <input
                   type="date"
                   id="qf_date"
@@ -2799,10 +2798,10 @@
                   required
                   aria-required="true"
                 >
-                <span class="qf-inline-error" id="qferr_date">กรุณาเลือกวันที่</span>
+                <span class="qf-inline-error" id="qferr_date" data-i18n="qf.err.date">กรุณาเลือกวันที่</span>
               </div>
               <div class="qf-group">
-                <label for="qf_time">เวลารับ <span class="qf-req" aria-hidden="true">*</span></label>
+                <label for="qf_time"><span data-i18n="qf.time">เวลารับ</span> <span class="qf-req" aria-hidden="true">*</span></label>
                 <input
                   type="time"
                   id="qf_time"
@@ -2811,13 +2810,13 @@
                   required
                   aria-required="true"
                 >
-                <span class="qf-inline-error" id="qferr_time">กรุณาระบุเวลา</span>
+                <span class="qf-inline-error" id="qferr_time" data-i18n="qf.err.time">กรุณาระบุเวลา</span>
               </div>
             </div>
 
             <!-- Cloudflare Turnstile — required by BOS API -->
             <div class="qf-turnstile-wrap">
-              <div class="cf-turnstile" id="qfTurnstile" data-sitekey="0x4AAAAAAC8rSRNcEAP9HepX" data-theme="light" data-size="compact"></div>
+              <div class="cf-turnstile" id="qfTurnstile" data-sitekey="0x4AAAAAAC8rSRNcEAP9HepX" data-theme="light" data-size="flexible"></div>
             </div>
 
             <!-- Error banner -->
@@ -2826,14 +2825,14 @@
             <!-- Submit -->
             <button type="submit" class="qf-submit" id="qfSubmitBtn">
               <span class="qf-spinner" id="qfSpinner" aria-hidden="true"></span>
-              <span id="qfBtnText">ส่งคำขอ &rarr;</span>
+              <span id="qfBtnText" data-i18n="qf.submit">ส่งคำขอ &rarr;</span>
             </button>
 
             <!-- Trust signal — รวมเหลือบรรทัดเดียว (response time ย้ายไปอยู่ title) -->
             <div class="qf-trust" aria-label="ข้อมูลความปลอดภัย">
               <div class="qf-trust-item">
                 <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                ข้อมูลเป็นความลับ · เวลาทำการ 8:00–22:00
+                <span data-i18n="qf.trust">ข้อมูลเป็นความลับ · เวลาทำการ 8:00–22:00</span>
               </div>
             </div>
           </form>
@@ -2844,8 +2843,8 @@
           <div class="qf-state-icon">
             <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
           </div>
-          <h4>ได้รับคำขอแล้ว</h4>
-          <p>ทีมจะติดต่อกลับใน 15 นาที<br>หรือเพิ่ม LINE เพื่อแชทโดยตรง</p>
+          <h4 data-i18n="qf.success.title">ได้รับคำขอแล้ว</h4>
+          <p data-i18n="qf.success.desc">ทีมจะติดต่อกลับใน 15 นาที<br>หรือเพิ่ม LINE เพื่อแชทโดยตรง</p>
         </div>
       </div><!-- /.hero-quick-card -->
 
@@ -3679,6 +3678,32 @@
         'cookie.cat.preferences.desc':'จดจำการตั้งค่าของคุณ เช่น ภาษา และธีมที่เลือก',
         'cookie.save':'บันทึกการตั้งค่า',
         'cookie.accept.all':'ยอมรับทั้งหมด',
+        // Hero quick inquiry form
+        'qf.title':'สอบถามด่วน · ตอบกลับใน 15 นาที',
+        'qf.name':'ชื่อ-นามสกุล',
+        'qf.phone':'เบอร์โทรศัพท์',
+        'qf.service':'บริการ',
+        'qf.service.placeholder':'-- เลือกประเภทบริการ --',
+        'qf.svc.one_way':'รับ-ส่งสนามบิน / One-way',
+        'qf.svc.wait_return':'รอรับกลับ / Round-trip',
+        'qf.svc.hourly':'เหมารายชั่วโมง',
+        'qf.svc.daily':'เหมารายวัน / ต่างจังหวัด',
+        'qf.date':'วันที่เดินทาง',
+        'qf.time':'เวลารับ',
+        'qf.submit':'ส่งคำขอ &rarr;',
+        'qf.submitting':'กำลังส่ง...',
+        'qf.trust':'ข้อมูลเป็นความลับ · เวลาทำการ 8:00–22:00',
+        'qf.err.name':'กรุณากรอกชื่อ',
+        'qf.err.phone':'เบอร์ 9-10 หลัก',
+        'qf.err.service':'กรุณาเลือกประเภทบริการ',
+        'qf.err.date':'กรุณาเลือกวันที่',
+        'qf.err.time':'กรุณาระบุเวลา',
+        'qf.err.submit':'ส่งไม่สำเร็จ ลองใหม่หรือเพิ่ม LINE @031cvnva',
+        'qf.success.title':'ได้รับคำขอแล้ว',
+        'qf.success.desc':'ทีมจะติดต่อกลับใน 15 นาที<br>หรือเพิ่ม LINE เพื่อแชทโดยตรง',
+        'qf.line.sub':'ตอบไว ไม่ต้องรอ',
+        'qf.line.mobile':'💬 เพิ่มเพื่อน LINE @031cvnva',
+        'qf.helper':'เลือก {car} — กรอกข้อมูลเพื่อสอบถามราคา',
       },
       en: {
         'nav.services':'Services','nav.fleet':'Our Fleet','nav.safety':'Safety','nav.driver':'Drive with Us','nav.contact':'Contact','nav.book':'BOOK NOW',
@@ -3744,6 +3769,32 @@
         'cookie.cat.preferences.desc':'Remember your settings such as language and theme preferences.',
         'cookie.save':'Save Settings',
         'cookie.accept.all':'Accept All',
+        // Hero quick inquiry form
+        'qf.title':'Quick Inquiry · We reply within 15 min',
+        'qf.name':'Full Name',
+        'qf.phone':'Phone Number',
+        'qf.service':'Service',
+        'qf.service.placeholder':'-- Select Service Type --',
+        'qf.svc.one_way':'Airport Transfer / One-way',
+        'qf.svc.wait_return':'Wait & Return / Round-trip',
+        'qf.svc.hourly':'Hourly Charter',
+        'qf.svc.daily':'Daily Charter / Long Distance',
+        'qf.date':'Travel Date',
+        'qf.time':'Pickup Time',
+        'qf.submit':'Send Inquiry &rarr;',
+        'qf.submitting':'Sending...',
+        'qf.trust':'Confidential · Business hours 8:00–22:00',
+        'qf.err.name':'Please enter your name',
+        'qf.err.phone':'Phone must be 9–10 digits',
+        'qf.err.service':'Please select a service type',
+        'qf.err.date':'Please select a date',
+        'qf.err.time':'Please enter a time',
+        'qf.err.submit':'Failed to send. Please retry or add LINE @031cvnva',
+        'qf.success.title':'Request Received',
+        'qf.success.desc':'Our team will contact you within 15 minutes<br>Or add LINE to chat directly',
+        'qf.line.sub':'Quick response, no wait',
+        'qf.line.mobile':'💬 Add LINE @031cvnva',
+        'qf.helper':'Selected {car} — fill in your details for a quote',
       }
     };
 
@@ -3761,6 +3812,11 @@
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (T[lang][key]) el.innerHTML = T[lang][key];
+      });
+      // placeholder สำหรับ input/textarea — innerHTML ใช้กับ placeholder ไม่ได้
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (T[lang][key]) el.setAttribute('placeholder', T[lang][key]);
       });
       populateServiceSelect();
       localStorage.setItem('ec_lang', lang);
@@ -4300,10 +4356,10 @@
           : null;
         const turnstileToken = turnstileInput ? turnstileInput.value : null;
 
-        // Loading state
+        // Loading state — lang-aware labels
         submitBtn.disabled = true;
         spinner.style.display = 'inline-block';
-        btnText.textContent = 'กำลังส่ง...';
+        btnText.textContent = (T[currentLang] && T[currentLang]['qf.submitting']) || 'กำลังส่ง...';
         errBanner.classList.remove('show');
 
         const vehiclePref = (document.getElementById('qf_vehicle') || {}).value || null;
@@ -4336,13 +4392,14 @@
           success.classList.add('show');
 
         } catch (err) {
-          const msg = err.message || 'ส่งไม่สำเร็จ ลองใหม่หรือเพิ่ม LINE @031cvnva';
-          errBanner.textContent = msg;
+          const fallbackErr = (T[currentLang] && T[currentLang]['qf.err.submit']) || 'ส่งไม่สำเร็จ ลองใหม่หรือเพิ่ม LINE @031cvnva';
+          errBanner.textContent = err.message || fallbackErr;
           errBanner.classList.add('show');
         } finally {
           submitBtn.disabled = false;
           spinner.style.display = 'none';
-          btnText.textContent = 'ส่งคำขอ →';
+          // HTML-safe restore (contains `&rarr;`)
+          btnText.innerHTML = (T[currentLang] && T[currentLang]['qf.submit']) || 'ส่งคำขอ &rarr;';
           // Reset Turnstile widget for retry
           if (typeof turnstile !== 'undefined' && turnstile.reset) {
             turnstile.reset(document.getElementById('qfTurnstile'));
@@ -4509,10 +4566,11 @@
         var vehField = document.getElementById('qf_vehicle');
         if (vehField) vehField.value = car.name;
 
-        // Show helper above form
+        // Show helper above form (lang-aware — currentLang set ตาม toggle)
         var helper = document.getElementById('qfVehicleHelper');
         if (helper) {
-          helper.textContent = 'เลือก ' + car.name + ' — กรอกข้อมูลเพื่อสอบถามราคา';
+          var tpl = (T[currentLang] && T[currentLang]['qf.helper']) || 'เลือก {car} — กรอกข้อมูลเพื่อสอบถามราคา';
+          helper.textContent = tpl.replace('{car}', car.name);
           helper.style.display = 'block';
         }
 
