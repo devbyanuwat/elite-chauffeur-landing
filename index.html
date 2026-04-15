@@ -2030,6 +2030,305 @@
       text-align: center;
     }
     .cookie-modal-accept-all:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
+
+    /* ==================== HERO LEAD CAPTURE — 2-col layout ==================== */
+    .hero {
+      grid-template-columns: minmax(0, 1fr) 420px;
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: center;
+    }
+
+    .hero-right {
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      animation: ecFadeUp 1s 0.6s var(--ease-out) forwards;
+      /* Align card with the top of hero content on large screens */
+      align-self: start;
+      padding-top: clamp(0rem, 4vh, 3rem);
+    }
+
+    /* LINE CTA — compact single row: QR + label (desktop)
+       — ปรับให้เตี้ยลง ~30px เทียบของเดิม เพื่อให้ hero-right ไม่ยาวกว่า hero */
+    .hero-line-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.75rem 0.55rem 0.55rem;
+      margin-bottom: 0.625rem;
+      text-decoration: none;
+    }
+    .hero-line-qr {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: block;
+    }
+    .hero-line-qr-wrap { display: flex; align-items: center; }
+    .hero-line-text { flex: 1; min-width: 0; line-height: 1.3; }
+    .hero-line-text strong {
+      display: inline;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.01em;
+      margin-right: 0.3rem;
+    }
+    .hero-line-text span {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.005em;
+    }
+    .hero-line-mobile-btn {
+      display: none;
+      width: 100%;
+      background: #06C755;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 1.25rem;
+      font-family: var(--font);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      margin-bottom: 0.875rem;
+      transition: background 0.2s;
+      letter-spacing: 0.005em;
+    }
+    .hero-line-mobile-btn:hover { background: #05b04b; }
+
+    /* Quick inquiry card — compact (padding/margins เล็กลงจากเดิม ~20%) */
+    .hero-quick-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.125rem 1.25rem;
+      box-shadow: 0 4px 24px oklch(15% 0.010 85 / 0.08), 0 1px 4px oklch(15% 0.010 85 / 0.04);
+    }
+    .hero-quick-card-title {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.875rem;
+      letter-spacing: -0.005em;
+      line-height: 1.3;
+    }
+
+    /* Form inside quick card */
+    .qf-group {
+      margin-bottom: 0.625rem;
+    }
+    .qf-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.01em;
+    }
+    .qf-group label .qf-req {
+      color: var(--gold-dark);
+      margin-left: 2px;
+    }
+    .qf-group input,
+    .qf-group select {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 400;
+      line-height: 1.4;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .qf-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.6rem center;
+      padding-right: 2rem;
+    }
+    .qf-group input:focus,
+    .qf-group select:focus {
+      outline: none;
+      border-color: var(--gold-dark);
+      box-shadow: 0 0 0 3px oklch(from var(--gold) l c h / 0.12);
+    }
+    .qf-group input.qf-error,
+    .qf-group select.qf-error {
+      border-color: oklch(52% 0.18 25);
+    }
+    .qf-inline-error {
+      display: none;
+      font-size: 0.68rem;
+      color: oklch(52% 0.18 25);
+      margin-top: 0.25rem;
+      letter-spacing: 0.005em;
+    }
+    .qf-inline-error.show { display: block; }
+
+    .qf-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.625rem;
+    }
+
+    /* Turnstile inside card — compact */
+    .qf-turnstile-wrap {
+      margin: 0.5rem 0 0.75rem;
+      display: flex;
+      justify-content: flex-start;
+    }
+    .qf-turnstile-wrap .cf-turnstile iframe {
+      transform: scale(0.88);
+      transform-origin: left top;
+    }
+
+    /* Submit button */
+    .qf-submit {
+      width: 100%;
+      background: var(--gold-dark);
+      color: var(--bg-primary);
+      border: 1px solid var(--gold-dark);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: background 0.25s, border-color 0.25s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    .qf-submit:hover:not(:disabled) {
+      background: oklch(from var(--gold-dark) calc(l - 0.06) c h);
+      border-color: oklch(from var(--gold-dark) calc(l - 0.06) c h);
+      transform: translateY(-1px);
+    }
+    .qf-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .qf-spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: qfSpin 0.7s linear infinite;
+    }
+    @keyframes qfSpin { to { transform: rotate(360deg); } }
+
+    /* Trust signals */
+    .qf-trust {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .qf-trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.005em;
+    }
+    .qf-trust-item svg {
+      width: 11px;
+      height: 11px;
+      stroke: var(--gold-dark);
+      fill: none;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    /* Success / error states inside card */
+    .qf-state {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 0.5rem;
+    }
+    .qf-state.show { display: block; }
+    .qf-state-icon {
+      width: 48px;
+      height: 48px;
+      background: oklch(96% 0.020 155);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.875rem;
+    }
+    .qf-state-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--green);
+      fill: none;
+      stroke-width: 1.75;
+    }
+    .qf-state h4 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .qf-state p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .qf-error-banner {
+      display: none;
+      background: oklch(97% 0.015 25);
+      border: 1px solid oklch(85% 0.06 25);
+      border-radius: 6px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.75rem;
+      color: oklch(40% 0.14 25);
+      margin-top: 0.625rem;
+      line-height: 1.5;
+    }
+    .qf-error-banner.show { display: block; }
+
+    /* === Responsive — mobile: collapse to 1-col, LINE CTA switches === */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .hero-right {
+        padding-top: 0;
+        order: 2; /* form goes below hero copy on mobile */
+      }
+      .hero-content { order: 1; }
+      .hero-line-qr-wrap { display: none; }
+      .hero-line-cta { display: none; }
+      .hero-line-mobile-btn { display: block; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-quick-card { padding: 1.25rem; }
+      .qf-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -2124,6 +2423,144 @@
         </div>
       </div>
     </div>
+
+    <!-- ==================== HERO RIGHT — Lead Capture ==================== -->
+    <aside class="hero-right" aria-label="สอบถามราคาและจองรถ">
+
+      <!-- LINE CTA — desktop: QR card / mobile: button (toggled via CSS) -->
+      <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="hero-line-cta" aria-label="เพิ่มเพื่อน LINE @031cvnva">
+        <div class="hero-line-qr-wrap">
+          <img
+            src="https://qr-official.line.me/sid/L/031cvnva.png"
+            alt="LINE QR code @031cvnva"
+            class="hero-line-qr"
+            width="40"
+            height="40"
+            loading="lazy"
+          >
+        </div>
+        <div class="hero-line-text">
+          <strong>LINE @031cvnva</strong>
+          <span>ตอบไว ไม่ต้องรอ</span>
+        </div>
+      </a>
+      <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="hero-line-mobile-btn" aria-label="เพิ่มเพื่อน LINE @031cvnva">
+        💬 เพิ่มเพื่อน LINE @031cvnva
+      </a>
+
+      <!-- Quick inquiry card -->
+      <div class="hero-quick-card" role="form" aria-labelledby="qfCardTitle">
+        <!-- Form view -->
+        <div id="qfFormWrap">
+          <p class="hero-quick-card-title" id="qfCardTitle">สอบถามด่วน · ตอบกลับใน 15 นาที</p>
+
+          <form id="quickInquiryForm" novalidate>
+            <!-- 1+2. ชื่อ + เบอร์โทร (2-col inline เพื่อประหยัดพื้นที่) -->
+            <div class="qf-row">
+              <div class="qf-group">
+                <label for="qf_name">ชื่อ-นามสกุล <span class="qf-req" aria-hidden="true">*</span></label>
+                <input
+                  type="text"
+                  id="qf_name"
+                  name="customerName"
+                  placeholder="ชื่อ-นามสกุล"
+                  autocomplete="name"
+                  required
+                  aria-required="true"
+                >
+                <span class="qf-inline-error" id="qferr_name">กรุณากรอกชื่อ</span>
+              </div>
+              <div class="qf-group">
+                <label for="qf_phone">เบอร์โทรศัพท์ <span class="qf-req" aria-hidden="true">*</span></label>
+                <input
+                  type="tel"
+                  id="qf_phone"
+                  name="customerPhone"
+                  placeholder="0XX-XXX-XXXX"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  required
+                  aria-required="true"
+                >
+                <span class="qf-inline-error" id="qferr_phone">เบอร์ 9-10 หลัก</span>
+              </div>
+            </div>
+
+            <!-- 3. บริการ -->
+            <div class="qf-group">
+              <label for="qf_service">บริการ <span class="qf-req" aria-hidden="true">*</span></label>
+              <select id="qf_service" name="serviceType" required aria-required="true">
+                <option value="" disabled selected>-- เลือกประเภทบริการ --</option>
+                <option value="one_way">รับ-ส่งสนามบิน / One-way</option>
+                <option value="wait_return">รอรับกลับ / Round-trip</option>
+                <option value="hourly_charter">เหมารายชั่วโมง</option>
+                <option value="daily_charter">เหมารายวัน / ต่างจังหวัด</option>
+              </select>
+              <span class="qf-inline-error" id="qferr_service">กรุณาเลือกประเภทบริการ</span>
+            </div>
+
+            <!-- 4 + 5. วันที่ + เวลา -->
+            <div class="qf-row">
+              <div class="qf-group">
+                <label for="qf_date">วันที่เดินทาง <span class="qf-req" aria-hidden="true">*</span></label>
+                <input
+                  type="date"
+                  id="qf_date"
+                  name="pickupDate"
+                  required
+                  aria-required="true"
+                >
+                <span class="qf-inline-error" id="qferr_date">กรุณาเลือกวันที่</span>
+              </div>
+              <div class="qf-group">
+                <label for="qf_time">เวลารับ <span class="qf-req" aria-hidden="true">*</span></label>
+                <input
+                  type="time"
+                  id="qf_time"
+                  name="pickupTime"
+                  value="09:00"
+                  required
+                  aria-required="true"
+                >
+                <span class="qf-inline-error" id="qferr_time">กรุณาระบุเวลา</span>
+              </div>
+            </div>
+
+            <!-- Cloudflare Turnstile — required by BOS API -->
+            <div class="qf-turnstile-wrap">
+              <div class="cf-turnstile" id="qfTurnstile" data-sitekey="0x4AAAAAAC8rSRNcEAP9HepX" data-theme="light" data-size="compact"></div>
+            </div>
+
+            <!-- Error banner -->
+            <div class="qf-error-banner" id="qfErrorBanner" role="alert"></div>
+
+            <!-- Submit -->
+            <button type="submit" class="qf-submit" id="qfSubmitBtn">
+              <span class="qf-spinner" id="qfSpinner" aria-hidden="true"></span>
+              <span id="qfBtnText">ส่งคำขอ &rarr;</span>
+            </button>
+
+            <!-- Trust signal — รวมเหลือบรรทัดเดียว (response time ย้ายไปอยู่ title) -->
+            <div class="qf-trust" aria-label="ข้อมูลความปลอดภัย">
+              <div class="qf-trust-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                ข้อมูลเป็นความลับ · เวลาทำการ 8:00–22:00
+              </div>
+            </div>
+          </form>
+        </div><!-- /#qfFormWrap -->
+
+        <!-- Success state -->
+        <div class="qf-state" id="qfSuccess" role="status" aria-live="polite">
+          <div class="qf-state-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <h4>ได้รับคำขอแล้ว</h4>
+          <p>ทีมจะติดต่อกลับใน 15 นาที<br>หรือเพิ่ม LINE เพื่อแชทโดยตรง</p>
+        </div>
+      </div><!-- /.hero-quick-card -->
+
+    </aside><!-- /.hero-right -->
   </section>
 
   <!-- ==================== SAFETY PROMISE BANNER ==================== -->
@@ -3425,6 +3862,157 @@
         if (errEl) errEl.classList.remove('show');
       });
     });
+
+    // === HERO QUICK INQUIRY FORM ===
+    // Separate from the full modal form — 5 fields, posts to same BOS endpoint
+    // with source: 'landing_hero'
+
+    (function initQuickForm() {
+      const form     = document.getElementById('quickInquiryForm');
+      const formWrap = document.getElementById('qfFormWrap');
+      const success  = document.getElementById('qfSuccess');
+      const submitBtn = document.getElementById('qfSubmitBtn');
+      const spinner  = document.getElementById('qfSpinner');
+      const btnText  = document.getElementById('qfBtnText');
+      const errBanner = document.getElementById('qfErrorBanner');
+
+      if (!form) return;
+
+      // Set default date to today
+      const qfDate = document.getElementById('qf_date');
+      if (qfDate && !qfDate.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm   = String(today.getMonth() + 1).padStart(2, '0');
+        const dd   = String(today.getDate()).padStart(2, '0');
+        qfDate.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      // --- Validation helpers ---
+      function qfGetVal(id) {
+        return (document.getElementById(id).value || '').trim();
+      }
+
+      function qfSetErr(inputId, errId, show) {
+        const input = document.getElementById(inputId);
+        const err   = document.getElementById(errId);
+        if (!input || !err) return show;
+        if (show) {
+          input.classList.add('qf-error');
+          err.classList.add('show');
+        } else {
+          input.classList.remove('qf-error');
+          err.classList.remove('show');
+        }
+        return show;
+      }
+
+      function qfValidate() {
+        let hasErr = false;
+
+        // Name
+        if (!qfGetVal('qf_name')) { qfSetErr('qf_name', 'qferr_name', true); hasErr = true; }
+        else qfSetErr('qf_name', 'qferr_name', false);
+
+        // Phone — 9-10 digits (Thai)
+        const phone = qfGetVal('qf_phone').replace(/[-\s]/g, '');
+        if (!phone || !/^\d{9,10}$/.test(phone)) {
+          qfSetErr('qf_phone', 'qferr_phone', true); hasErr = true;
+        } else qfSetErr('qf_phone', 'qferr_phone', false);
+
+        // Service
+        if (!qfGetVal('qf_service')) { qfSetErr('qf_service', 'qferr_service', true); hasErr = true; }
+        else qfSetErr('qf_service', 'qferr_service', false);
+
+        // Date
+        if (!qfGetVal('qf_date')) { qfSetErr('qf_date', 'qferr_date', true); hasErr = true; }
+        else qfSetErr('qf_date', 'qferr_date', false);
+
+        // Time
+        if (!qfGetVal('qf_time')) { qfSetErr('qf_time', 'qferr_time', true); hasErr = true; }
+        else qfSetErr('qf_time', 'qferr_time', false);
+
+        return !hasErr;
+      }
+
+      // --- Clear error on input/change ---
+      ['qf_name','qf_phone','qf_service','qf_date','qf_time'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function() {
+          const errId = 'qferr_' + id.replace('qf_', '');
+          qfSetErr(id, errId, false);
+        });
+        el.addEventListener('change', function() {
+          const errId = 'qferr_' + id.replace('qf_', '');
+          qfSetErr(id, errId, false);
+        });
+      });
+
+      // --- Submit ---
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!qfValidate()) return;
+
+        // Collect Turnstile token from the compact widget in this card
+        // The widget renders a hidden input named 'cf-turnstile-response'.
+        // There are two Turnstile widgets on the page (modal + this card) so
+        // we scope the query to the qfTurnstile container.
+        const qfContainer = document.getElementById('qfTurnstile');
+        const turnstileInput = qfContainer
+          ? qfContainer.querySelector('[name="cf-turnstile-response"]')
+          : null;
+        const turnstileToken = turnstileInput ? turnstileInput.value : null;
+
+        // Loading state
+        submitBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+        btnText.textContent = 'กำลังส่ง...';
+        errBanner.classList.remove('show');
+
+        const payload = {
+          customerName:  qfGetVal('qf_name'),
+          customerPhone: qfGetVal('qf_phone').replace(/[-\s]/g, ''),
+          serviceType:   qfGetVal('qf_service'),
+          pickupDate:    qfGetVal('qf_date') || null,
+          pickupTime:    qfGetVal('qf_time') || null,
+          source:        'landing_hero',
+          turnstileToken,
+        };
+
+        try {
+          const res = await fetch(BOS_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+          }
+
+          // Success — swap form for success state
+          formWrap.style.display = 'none';
+          success.classList.add('show');
+
+        } catch (err) {
+          const msg = err.message || 'ส่งไม่สำเร็จ ลองใหม่หรือเพิ่ม LINE @031cvnva';
+          errBanner.textContent = msg;
+          errBanner.classList.add('show');
+        } finally {
+          submitBtn.disabled = false;
+          spinner.style.display = 'none';
+          btnText.textContent = 'ส่งคำขอ →';
+          // Reset Turnstile widget for retry
+          if (typeof turnstile !== 'undefined' && turnstile.reset) {
+            turnstile.reset(document.getElementById('qfTurnstile'));
+          }
+        }
+      });
+    })();
   </script>
 
 </body>
