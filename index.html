@@ -2329,6 +2329,291 @@
       .hero-quick-card { padding: 1.25rem; }
       .qf-row { grid-template-columns: 1fr; }
     }
+
+    /* ============================================================
+       FLEET CARD — clickable hint
+       ============================================================ */
+    .fleet-card[data-car] {
+      cursor: pointer;
+    }
+    .fleet-card[data-car]:focus-visible {
+      outline: 2px solid var(--gold-dark);
+      outline-offset: 3px;
+    }
+    .fleet-card-hint {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--gold-dark);
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .fleet-card[data-car]:hover .fleet-card-hint,
+    .fleet-card[data-car]:focus-visible .fleet-card-hint {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fleet-card-hint { transition: none; }
+    }
+
+    /* ============================================================
+       CAR DETAIL MODAL
+       ============================================================ */
+    .car-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .car-modal[hidden] { display: none; }
+
+    .car-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: oklch(from var(--bg-dark) l c h / 0.62);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      cursor: pointer;
+    }
+
+    .car-modal-panel {
+      position: relative;
+      z-index: 1;
+      background: var(--bg-primary);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90dvh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      box-shadow: 0 32px 80px oklch(0% 0 0 / 0.28), 0 0 0 1px var(--border);
+      animation: car-modal-in 0.25s cubic-bezier(0.34, 1.08, 0.64, 1) both;
+    }
+    @keyframes car-modal-in {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .car-modal-panel { animation: none; }
+    }
+
+    /* Mobile: full-screen sheet */
+    @media (max-width: 600px) {
+      .car-modal {
+        padding: 0;
+        align-items: flex-end;
+      }
+      .car-modal-panel {
+        max-width: 100%;
+        max-height: 92dvh;
+        border-radius: 18px 18px 0 0;
+        animation: car-modal-in-mobile 0.28s cubic-bezier(0.34, 1.08, 0.64, 1) both;
+      }
+      @keyframes car-modal-in-mobile {
+        from { opacity: 0; transform: translateY(40px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .car-modal-panel { animation: none; }
+      }
+    }
+
+    /* Close button */
+    .car-modal-close {
+      position: absolute;
+      top: 0.875rem;
+      right: 0.875rem;
+      z-index: 10;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: background 0.15s, color 0.15s;
+    }
+    .car-modal-close:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .car-modal-close:focus-visible { outline: 2px solid var(--gold-dark); outline-offset: 2px; }
+    .car-modal-close svg {
+      width: 1rem; height: 1rem;
+      stroke: currentColor; stroke-width: 2;
+      stroke-linecap: round; fill: none;
+    }
+
+    /* Hero image */
+    .car-modal-hero {
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      border-radius: 18px 18px 0 0;
+      background: var(--bg-secondary);
+    }
+    .car-modal-hero img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Body */
+    .car-modal-body {
+      padding: 1.5rem 1.75rem 2rem;
+    }
+
+    .car-modal-type {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .car-modal-name {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.375rem;
+      line-height: 1.2;
+    }
+
+    .car-modal-tagline {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    /* Specs 3-col */
+    .car-modal-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .car-spec {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      text-align: center;
+    }
+    .car-spec svg {
+      width: 1.25rem; height: 1.25rem;
+      stroke: var(--gold-dark); stroke-width: 1.75;
+      fill: none; stroke-linecap: round; stroke-linejoin: round;
+      margin-bottom: 0.125rem;
+    }
+    .car-spec-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .car-spec-label {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+    }
+
+    /* Features list */
+    .car-modal-features {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 400px) {
+      .car-modal-features { grid-template-columns: 1fr; }
+    }
+    .car-modal-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .car-modal-features li svg {
+      width: 1rem; height: 1rem;
+      stroke: var(--gold-dark); stroke-width: 2;
+      fill: none; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* Actions */
+    .car-modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .car-modal-book {
+      flex: 1;
+      min-width: 140px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      background: var(--gold-dark);
+      color: var(--bg-primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--font);
+      letter-spacing: 0.02em;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+      text-align: center;
+    }
+    .car-modal-book:hover { opacity: 0.88; transform: translateY(-1px); }
+    .car-modal-book:active { opacity: 1; transform: translateY(0); }
+    .car-modal-book:focus-visible { outline: 2px solid var(--gold-dark); outline-offset: 3px; }
+    .car-modal-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .car-modal-line:hover { border-color: var(--gold-dark); color: var(--gold-dark); }
+    .car-modal-line:focus-visible { outline: 2px solid var(--gold-dark); outline-offset: 3px; }
+
+    /* qf vehicle helper */
+    .qf-vehicle-helper {
+      font-size: 0.82rem;
+      color: var(--gold-dark);
+      background: var(--gold-wash);
+      border: 1px solid oklch(from var(--gold) l c h / 0.3);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    /* scroll lock */
+    body.modal-open { overflow: hidden; }
   </style>
 </head>
 <body>
@@ -2455,6 +2740,10 @@
           <p class="hero-quick-card-title" id="qfCardTitle">สอบถามด่วน · ตอบกลับใน 15 นาที</p>
 
           <form id="quickInquiryForm" novalidate>
+            <!-- Vehicle preference — filled by car modal "จองรถคันนี้" -->
+            <input type="hidden" id="qf_vehicle" name="vehicleTypePreference" value="">
+            <p id="qfVehicleHelper" class="qf-vehicle-helper" style="display:none"></p>
+
             <!-- 1+2. ชื่อ + เบอร์โทร (2-col inline เพื่อประหยัดพื้นที่) -->
             <div class="qf-row">
               <div class="qf-group">
@@ -2665,7 +2954,7 @@
         <p data-i18n="fleet.desc">คัดสรรจากเครือข่ายพาร์ทเนอร์ที่ผ่านมาตรฐาน รถใหม่ สะอาด ผ่านการตรวจสภาพทุกคัน พร้อมประกันชั้น 1 ให้บริการคุณอย่างมั่นใจ</p>
       </div>
       <div class="fleet-grid">
-        <div class="fleet-card reveal reveal-delay-1">
+        <div class="fleet-card reveal reveal-delay-1" data-car="alphard" role="button" tabindex="0" aria-label="ดูรายละเอียด Toyota Alphard">
           <div class="fleet-insurance-badge">
             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
@@ -2682,9 +2971,10 @@
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Dashcam</span>
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Inspected</span>
             </div>
+            <div class="fleet-card-hint">ดูรายละเอียด →</div>
           </div>
         </div>
-        <div class="fleet-card reveal reveal-delay-2">
+        <div class="fleet-card reveal reveal-delay-2" data-car="fortuner" role="button" tabindex="0" aria-label="ดูรายละเอียด Toyota Fortuner Legender">
           <div class="fleet-insurance-badge">
             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
@@ -2701,9 +2991,10 @@
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Dashcam</span>
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Inspected</span>
             </div>
+            <div class="fleet-card-hint">ดูรายละเอียด →</div>
           </div>
         </div>
-        <div class="fleet-card reveal reveal-delay-3">
+        <div class="fleet-card reveal reveal-delay-3" data-car="xpander" role="button" tabindex="0" aria-label="ดูรายละเอียด Mitsubishi Xpander Cross">
           <div class="fleet-insurance-badge">
             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
@@ -2720,9 +3011,10 @@
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Dashcam</span>
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Inspected</span>
             </div>
+            <div class="fleet-card-hint">ดูรายละเอียด →</div>
           </div>
         </div>
-        <div class="fleet-card reveal reveal-delay-4">
+        <div class="fleet-card reveal reveal-delay-4" data-car="altis" role="button" tabindex="0" aria-label="ดูรายละเอียด Toyota Corolla Altis">
           <div class="fleet-insurance-badge">
             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span data-i18n="fleet.ins">ประกันชั้น 1</span>
@@ -2739,6 +3031,7 @@
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Dashcam</span>
               <span class="fleet-safety-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Inspected</span>
             </div>
+            <div class="fleet-card-hint">ดูรายละเอียด →</div>
           </div>
         </div>
       </div>
@@ -3276,6 +3569,48 @@
   <button class="go-top" id="goTop" aria-label="Go to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
     <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
+
+  <!-- ==================== CAR DETAIL MODAL ==================== -->
+  <div class="car-modal" id="carModal" role="dialog" aria-modal="true" aria-labelledby="carModalTitle" hidden>
+    <div class="car-modal-backdrop" data-close></div>
+    <div class="car-modal-panel" role="document">
+      <button class="car-modal-close" type="button" data-close aria-label="ปิด">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="car-modal-hero">
+        <img id="carModalImg" alt="" loading="lazy">
+      </div>
+      <div class="car-modal-body">
+        <p class="car-modal-type" id="carModalType"></p>
+        <h3 class="car-modal-name" id="carModalTitle"></h3>
+        <p class="car-modal-tagline" id="carModalTagline"></p>
+        <div class="car-modal-specs">
+          <div class="car-spec">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <span class="car-spec-val" id="carModalPax"></span>
+            <span class="car-spec-label">ผู้โดยสาร</span>
+          </div>
+          <div class="car-spec">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            <span class="car-spec-val" id="carModalLuggage"></span>
+            <span class="car-spec-label">กระเป๋า</span>
+          </div>
+          <div class="car-spec">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+            <span class="car-spec-val" id="carModalPrice"></span>
+            <span class="car-spec-label">/วัน</span>
+          </div>
+        </div>
+        <ul class="car-modal-features" id="carModalFeatures"></ul>
+        <div class="car-modal-actions">
+          <button class="car-modal-book" type="button" id="carModalBook">จองรถคันนี้ &rarr;</button>
+          <a class="car-modal-line" href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">
+            สอบถาม LINE
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     // === i18n TRANSLATIONS ===
@@ -3971,13 +4306,15 @@
         btnText.textContent = 'กำลังส่ง...';
         errBanner.classList.remove('show');
 
+        const vehiclePref = (document.getElementById('qf_vehicle') || {}).value || null;
         const payload = {
-          customerName:  qfGetVal('qf_name'),
-          customerPhone: qfGetVal('qf_phone').replace(/[-\s]/g, ''),
-          serviceType:   qfGetVal('qf_service'),
-          pickupDate:    qfGetVal('qf_date') || null,
-          pickupTime:    qfGetVal('qf_time') || null,
-          source:        'landing_hero',
+          customerName:          qfGetVal('qf_name'),
+          customerPhone:         qfGetVal('qf_phone').replace(/[-\s]/g, ''),
+          serviceType:           qfGetVal('qf_service'),
+          pickupDate:            qfGetVal('qf_date') || null,
+          pickupTime:            qfGetVal('qf_time') || null,
+          vehicleTypePreference: vehiclePref || undefined,
+          source:                'landing_hero',
           turnstileToken,
         };
 
@@ -4011,6 +4348,183 @@
             turnstile.reset(document.getElementById('qfTurnstile'));
           }
         }
+      });
+    })();
+
+    // === CAR DETAIL MODAL ===
+    (function initCarModal() {
+      const FLEET_DETAILS = {
+        alphard: {
+          name: 'Toyota Alphard',
+          type: 'Luxury Van',
+          image: 'images/car2.webp',
+          priceFrom: 5000,
+          passengers: 7,
+          luggageLarge: 4,
+          luggageSmall: 2,
+          features: ['Captain seats', 'Entertainment system', 'ระบบแอร์คู่', 'เบาะปรับเอน'],
+          tagline: 'รถพรีเมียมสำหรับ VIP / ครอบครัว / งานรับรอง'
+        },
+        fortuner: {
+          name: 'Toyota Fortuner Legender',
+          type: 'Premium SUV',
+          image: 'images/car3.webp',
+          priceFrom: 3500,
+          passengers: 7,
+          luggageLarge: 3,
+          luggageSmall: 2,
+          features: ['ขับสูง พร้อมลุย', 'Adaptive cruise', '7-seat 3 rows', 'ประกันชั้น 1'],
+          tagline: 'เหมาะต่างจังหวัด / ถนนทุกสภาพ'
+        },
+        xpander: {
+          name: 'Mitsubishi Xpander Cross',
+          type: 'Crossover MPV',
+          image: 'images/car1.webp',
+          priceFrom: 2500,
+          passengers: 7,
+          luggageLarge: 3,
+          luggageSmall: 2,
+          features: ['Ground clearance สูง', 'ประหยัดน้ำมัน', 'Cross Design', 'เบาะ tumble'],
+          tagline: 'คุ้ม คุ้ม / Family-friendly'
+        },
+        altis: {
+          name: 'Toyota Corolla Altis',
+          type: 'Executive Sedan',
+          image: 'images/car4.webp',
+          priceFrom: 2000,
+          passengers: 4,
+          luggageLarge: 3,
+          luggageSmall: 1,
+          features: ['Smooth & Quiet', 'Smart entry', 'ประหยัด / นุ่ม', 'Business-class feel'],
+          tagline: 'สำหรับเดินทางธุรกิจ / airport transfer'
+        }
+      };
+
+      const modal = document.getElementById('carModal');
+      if (!modal) return;
+
+      const els = {
+        img:     document.getElementById('carModalImg'),
+        type:    document.getElementById('carModalType'),
+        title:   document.getElementById('carModalTitle'),
+        tagline: document.getElementById('carModalTagline'),
+        pax:     document.getElementById('carModalPax'),
+        luggage: document.getElementById('carModalLuggage'),
+        price:   document.getElementById('carModalPrice'),
+        features: document.getElementById('carModalFeatures'),
+        book:    document.getElementById('carModalBook'),
+      };
+
+      function formatLuggage(car) {
+        var parts = [];
+        if (car.luggageLarge) parts.push(car.luggageLarge + ' ใบใหญ่');
+        if (car.luggageSmall) parts.push(car.luggageSmall + ' ใบเล็ก');
+        return parts.join(' + ');
+      }
+
+      function formatPrice(n) {
+        return '฿' + n.toLocaleString('th-TH') + '+';
+      }
+
+      var lastFocused = null;
+
+      function openModal(carKey) {
+        var car = FLEET_DETAILS[carKey];
+        if (!car) return;
+
+        lastFocused = document.activeElement;
+
+        els.img.src = car.image;
+        els.img.alt = car.name;
+        els.type.textContent = car.type;
+        els.title.textContent = car.name;
+        els.tagline.textContent = car.tagline;
+        els.pax.textContent = car.passengers;
+        els.luggage.textContent = formatLuggage(car);
+        els.price.textContent = formatPrice(car.priceFrom);
+        els.features.innerHTML = car.features.map(function(f) {
+          return '<li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>' + f + '</li>';
+        }).join('');
+        els.book.dataset.car = carKey;
+
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+
+        // Focus close button
+        var closeBtn = modal.querySelector('.car-modal-close');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeModal() {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+        // Restore focus
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+        lastFocused = null;
+      }
+
+      // Card click & keyboard
+      document.querySelectorAll('.fleet-card[data-car]').forEach(function(card) {
+        card.addEventListener('click', function() { openModal(card.dataset.car); });
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(card.dataset.car);
+          }
+        });
+      });
+
+      // Close via backdrop or close button
+      modal.addEventListener('click', function(e) {
+        if (e.target.closest('[data-close]')) closeModal();
+      });
+
+      // ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.hidden) closeModal();
+      });
+
+      // Focus trap — keep Tab within modal
+      modal.addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab' || modal.hidden) return;
+        var focusable = modal.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+
+      // Book this car
+      els.book.addEventListener('click', function() {
+        var carKey = els.book.dataset.car;
+        var car    = FLEET_DETAILS[carKey];
+        if (!car) return;
+
+        // Fill hidden vehicle preference
+        var vehField = document.getElementById('qf_vehicle');
+        if (vehField) vehField.value = car.name;
+
+        // Show helper above form
+        var helper = document.getElementById('qfVehicleHelper');
+        if (helper) {
+          helper.textContent = 'เลือก ' + car.name + ' — กรอกข้อมูลเพื่อสอบถามราคา';
+          helper.style.display = 'block';
+        }
+
+        closeModal();
+
+        // Scroll to form & focus name field
+        var heroRight = document.querySelector('.hero-right');
+        if (heroRight) heroRight.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(function() {
+          var nameField = document.getElementById('qf_name');
+          if (nameField) nameField.focus();
+        }, 350);
       });
     })();
   </script>
