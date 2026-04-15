@@ -2814,9 +2814,9 @@
               </div>
             </div>
 
-            <!-- 6 + 7. จุดรับ + จุดส่ง (optional — ถ้ามีช่วย admin quote เร็วขึ้น) -->
+            <!-- 6 + 7. จุดรับ + จุดส่ง (required) -->
             <div class="qf-group">
-              <label for="qf_pickup"><span data-i18n="qf.pickup">จุดรับ (ถ้ามี)</span></label>
+              <label for="qf_pickup"><span data-i18n="qf.pickup">จุดรับ</span> <span class="qf-req" aria-hidden="true">*</span></label>
               <input
                 type="text"
                 id="qf_pickup"
@@ -2824,10 +2824,13 @@
                 placeholder="เช่น สนามบินสุวรรณภูมิ, โรงแรม..."
                 data-i18n-placeholder="qf.pickup.placeholder"
                 autocomplete="off"
+                required
+                aria-required="true"
               >
+              <span class="qf-inline-error" id="qferr_pickup" data-i18n="qf.err.pickup">กรุณากรอกจุดรับ</span>
             </div>
             <div class="qf-group">
-              <label for="qf_dropoff"><span data-i18n="qf.dropoff">จุดส่ง (ถ้ามี)</span></label>
+              <label for="qf_dropoff"><span data-i18n="qf.dropoff">จุดส่ง</span> <span class="qf-req" aria-hidden="true">*</span></label>
               <input
                 type="text"
                 id="qf_dropoff"
@@ -2835,7 +2838,10 @@
                 placeholder="เช่น พัทยา, หัวหิน, กรุงเทพฯ..."
                 data-i18n-placeholder="qf.dropoff.placeholder"
                 autocomplete="off"
+                required
+                aria-required="true"
               >
+              <span class="qf-inline-error" id="qferr_dropoff" data-i18n="qf.err.dropoff">กรุณากรอกจุดส่ง</span>
             </div>
 
             <!-- Cloudflare Turnstile — required by BOS API -->
@@ -3728,10 +3734,12 @@
         'qf.line.sub':'ตอบไว ไม่ต้องรอ',
         'qf.line.mobile':'💬 เพิ่มเพื่อน LINE @031cvnva',
         'qf.helper':'เลือก {car} — กรอกข้อมูลเพื่อสอบถามราคา',
-        'qf.pickup':'จุดรับ (ถ้ามี)',
+        'qf.pickup':'จุดรับ',
         'qf.pickup.placeholder':'เช่น สนามบินสุวรรณภูมิ, โรงแรม...',
-        'qf.dropoff':'จุดส่ง (ถ้ามี)',
+        'qf.err.pickup':'กรุณากรอกจุดรับ',
+        'qf.dropoff':'จุดส่ง',
         'qf.dropoff.placeholder':'เช่น พัทยา, หัวหิน, กรุงเทพฯ...',
+        'qf.err.dropoff':'กรุณากรอกจุดส่ง',
       },
       en: {
         'nav.services':'Services','nav.fleet':'Our Fleet','nav.safety':'Safety','nav.driver':'Drive with Us','nav.contact':'Contact','nav.book':'BOOK NOW',
@@ -3823,10 +3831,12 @@
         'qf.line.sub':'Quick response, no wait',
         'qf.line.mobile':'💬 Add LINE @031cvnva',
         'qf.helper':'Selected {car} — fill in your details for a quote',
-        'qf.pickup':'Pickup Location (optional)',
+        'qf.pickup':'Pickup Location',
         'qf.pickup.placeholder':'e.g. Suvarnabhumi Airport, Hotel...',
-        'qf.dropoff':'Drop-off Location (optional)',
+        'qf.err.pickup':'Please enter pickup location',
+        'qf.dropoff':'Drop-off Location',
         'qf.dropoff.placeholder':'e.g. Pattaya, Hua Hin, Bangkok...',
+        'qf.err.dropoff':'Please enter drop-off location',
       }
     };
 
@@ -4355,11 +4365,19 @@
         if (!qfGetVal('qf_time')) { qfSetErr('qf_time', 'qferr_time', true); hasErr = true; }
         else qfSetErr('qf_time', 'qferr_time', false);
 
+        // Pickup location (required)
+        if (!qfGetVal('qf_pickup').trim()) { qfSetErr('qf_pickup', 'qferr_pickup', true); hasErr = true; }
+        else qfSetErr('qf_pickup', 'qferr_pickup', false);
+
+        // Dropoff location (required)
+        if (!qfGetVal('qf_dropoff').trim()) { qfSetErr('qf_dropoff', 'qferr_dropoff', true); hasErr = true; }
+        else qfSetErr('qf_dropoff', 'qferr_dropoff', false);
+
         return !hasErr;
       }
 
       // --- Clear error on input/change ---
-      ['qf_name','qf_phone','qf_service','qf_date','qf_time'].forEach(id => {
+      ['qf_name','qf_phone','qf_service','qf_date','qf_time','qf_pickup','qf_dropoff'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener('input', function() {
