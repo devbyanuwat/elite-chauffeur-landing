@@ -2814,6 +2814,30 @@
               </div>
             </div>
 
+            <!-- 6 + 7. จุดรับ + จุดส่ง (optional — ถ้ามีช่วย admin quote เร็วขึ้น) -->
+            <div class="qf-group">
+              <label for="qf_pickup"><span data-i18n="qf.pickup">จุดรับ (ถ้ามี)</span></label>
+              <input
+                type="text"
+                id="qf_pickup"
+                name="pickupLocation"
+                placeholder="เช่น สนามบินสุวรรณภูมิ, โรงแรม..."
+                data-i18n-placeholder="qf.pickup.placeholder"
+                autocomplete="off"
+              >
+            </div>
+            <div class="qf-group">
+              <label for="qf_dropoff"><span data-i18n="qf.dropoff">จุดส่ง (ถ้ามี)</span></label>
+              <input
+                type="text"
+                id="qf_dropoff"
+                name="dropoffLocation"
+                placeholder="เช่น พัทยา, หัวหิน, กรุงเทพฯ..."
+                data-i18n-placeholder="qf.dropoff.placeholder"
+                autocomplete="off"
+              >
+            </div>
+
             <!-- Cloudflare Turnstile — required by BOS API -->
             <div class="qf-turnstile-wrap">
               <div class="cf-turnstile" id="qfTurnstile" data-sitekey="0x4AAAAAAC8rSRNcEAP9HepX" data-theme="light" data-size="flexible"></div>
@@ -3704,6 +3728,10 @@
         'qf.line.sub':'ตอบไว ไม่ต้องรอ',
         'qf.line.mobile':'💬 เพิ่มเพื่อน LINE @031cvnva',
         'qf.helper':'เลือก {car} — กรอกข้อมูลเพื่อสอบถามราคา',
+        'qf.pickup':'จุดรับ (ถ้ามี)',
+        'qf.pickup.placeholder':'เช่น สนามบินสุวรรณภูมิ, โรงแรม...',
+        'qf.dropoff':'จุดส่ง (ถ้ามี)',
+        'qf.dropoff.placeholder':'เช่น พัทยา, หัวหิน, กรุงเทพฯ...',
       },
       en: {
         'nav.services':'Services','nav.fleet':'Our Fleet','nav.safety':'Safety','nav.driver':'Drive with Us','nav.contact':'Contact','nav.book':'BOOK NOW',
@@ -3795,6 +3823,10 @@
         'qf.line.sub':'Quick response, no wait',
         'qf.line.mobile':'💬 Add LINE @031cvnva',
         'qf.helper':'Selected {car} — fill in your details for a quote',
+        'qf.pickup':'Pickup Location (optional)',
+        'qf.pickup.placeholder':'e.g. Suvarnabhumi Airport, Hotel...',
+        'qf.dropoff':'Drop-off Location (optional)',
+        'qf.dropoff.placeholder':'e.g. Pattaya, Hua Hin, Bangkok...',
       }
     };
 
@@ -4363,12 +4395,16 @@
         errBanner.classList.remove('show');
 
         const vehiclePref = (document.getElementById('qf_vehicle') || {}).value || null;
+        const pickupLoc   = qfGetVal('qf_pickup').trim();
+        const dropoffLoc  = qfGetVal('qf_dropoff').trim();
         const payload = {
           customerName:          qfGetVal('qf_name'),
           customerPhone:         qfGetVal('qf_phone').replace(/[-\s]/g, ''),
           serviceType:           qfGetVal('qf_service'),
           pickupDate:            qfGetVal('qf_date') || null,
           pickupTime:            qfGetVal('qf_time') || null,
+          pickupLocation:        pickupLoc || undefined,
+          dropoffLocation:       dropoffLoc || undefined,
           vehicleTypePreference: vehiclePref || undefined,
           source:                'landing_hero',
           turnstileToken,
