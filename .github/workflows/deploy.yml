@@ -14,7 +14,12 @@ on:
     paths:
       # Build ใหม่เมื่อ landing page files หรือ workflow เปลี่ยน
       - "index.html"
+      - "privacy.html"
       - "images/**"
+      - "airport-transfer/**"
+      - "routes/**"
+      - "sitemap.xml"
+      - "robots.txt"
       - "Dockerfile"
       - "nginx.conf"
       - ".github/workflows/deploy.yml"

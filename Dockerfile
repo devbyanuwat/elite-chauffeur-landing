@@ -16,6 +16,10 @@ COPY images/ /usr/share/nginx/html/images/
 COPY robots.txt /usr/share/nginx/html/robots.txt
 COPY sitemap.xml /usr/share/nginx/html/sitemap.xml
 
+# SEO landing pages (subpath routing — nginx serves via try_files $uri/)
+COPY airport-transfer/ /usr/share/nginx/html/airport-transfer/
+COPY routes/ /usr/share/nginx/html/routes/
+
 # Custom nginx config — กำหนด gzip, cache headers
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
