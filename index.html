@@ -3000,6 +3000,54 @@
     </div>
   </section>
 
+  <!-- ==================== POPULAR PAGES (SEO landings) ==================== -->
+  <section class="section section-pages" style="padding: clamp(48px, 7vw, 80px) clamp(1.25rem, 5vw, 3rem); background: var(--bg-primary); border-bottom: 1px solid var(--border);">
+    <div class="section-inner" style="max-width: var(--content-wide);">
+      <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 500; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-tertiary); display: block; margin-bottom: 0.4rem;">Popular Routes</span>
+          <h2 style="font-size: clamp(1.4rem, 2.4vw, 1.75rem); font-weight: 600; letter-spacing: -0.015em;" data-i18n="popular.title">เส้นทางยอดนิยม · ดูรายละเอียด</h2>
+        </div>
+      </div>
+      <div class="popular-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+        <a href="/airport-transfer/suvarnabhumi-bkk/" class="page-link-card">
+          <span class="plc-label" data-i18n="popular.airport">Airport Transfer</span>
+          <h4 data-i18n="popular.bkk.t">สุวรรณภูมิ (BKK)</h4>
+          <p data-i18n="popular.bkk.d">ราคาคงที่ · Flight tracking · รอรับด้วยป้ายชื่อ</p>
+          <span class="plc-arrow" data-i18n="popular.cta">ดูรายละเอียด →</span>
+        </a>
+        <a href="/airport-transfer/don-mueang-dmk/" class="page-link-card">
+          <span class="plc-label" data-i18n="popular.airport">Airport Transfer</span>
+          <h4 data-i18n="popular.dmk.t">ดอนเมือง (DMK)</h4>
+          <p data-i18n="popular.dmk.d">T1 / T2 · ราคาคงที่ · Flight tracking</p>
+          <span class="plc-arrow" data-i18n="popular.cta">ดูรายละเอียด →</span>
+        </a>
+        <a href="/routes/bangkok-to-pattaya/" class="page-link-card">
+          <span class="plc-label" data-i18n="popular.intercity">Intercity</span>
+          <h4 data-i18n="popular.pattaya.t">กรุงเทพ → พัทยา</h4>
+          <p data-i18n="popular.pattaya.d">147 กม. · 1.45 ชม. · One-way / Round-trip / Day-trip</p>
+          <span class="plc-arrow" data-i18n="popular.cta">ดูรายละเอียด →</span>
+        </a>
+        <a href="/routes/bangkok-to-hua-hin/" class="page-link-card">
+          <span class="plc-label" data-i18n="popular.intercity">Intercity</span>
+          <h4 data-i18n="popular.huahin.t">กรุงเทพ → หัวหิน</h4>
+          <p data-i18n="popular.huahin.d">200 กม. · 3 ชม. · One-way / Round-trip / Day-trip</p>
+          <span class="plc-arrow" data-i18n="popular.cta">ดูรายละเอียด →</span>
+        </a>
+      </div>
+    </div>
+    <style>
+      .page-link-card { display: block; padding: 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 3px; text-decoration: none; color: var(--text-primary); transition: border-color 0.25s, transform 0.25s var(--ease-out), background 0.25s; }
+      .page-link-card:hover { border-color: var(--gold); transform: translateY(-2px); background: var(--bg-primary); }
+      .page-link-card .plc-label { font-size: 0.68rem; font-weight: 500; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-tertiary); display: block; margin-bottom: 0.5rem; }
+      .page-link-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.35; color: var(--text-primary); }
+      .page-link-card p { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
+      .page-link-card .plc-arrow { font-size: 0.78rem; font-weight: 500; color: var(--gold-dark); letter-spacing: 0.01em; }
+      @media (max-width: 900px) { .popular-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+      @media (max-width: 500px) { .popular-grid { grid-template-columns: 1fr !important; } }
+    </style>
+  </section>
+
   <!-- ==================== FLEET ==================== -->
   <section class="section section-alt" id="fleet">
     <div class="section-inner" style="max-width:var(--content-wide);">
@@ -3681,6 +3729,12 @@
         'safety.promise.desc':'ทุกการเดินทางกับ SABUYGO ผ่านมาตรฐานความปลอดภัยสูงสุด รถและคนขับทุกคันในเครือข่ายต้องผ่านการตรวจประวัติอาชญากรรม ทดสอบทักษะการขับขี่ และอบรมมาตรฐานบริการก่อนเข้าร่วมเครือข่าย',
         'tag.ins':'ประกันชั้น 1','tag.bg':'ตรวจประวัติคนขับ','tag.training':'อบรมมาตรฐาน','tag.privacy':'ความเป็นส่วนตัว',
         'svc.title':'บริการของเรา','svc.desc':'ครอบคลุมทุกความต้องการ ไม่ว่าจะเป็นการเดินทางธุรกิจ ท่องเที่ยว หรือรับ-ส่งสนามบิน',
+        'popular.title':'เส้นทางยอดนิยม · ดูรายละเอียด',
+        'popular.airport':'Airport Transfer','popular.intercity':'Intercity','popular.cta':'ดูรายละเอียด →',
+        'popular.bkk.t':'สุวรรณภูมิ (BKK)','popular.bkk.d':'ราคาคงที่ · Flight tracking · รอรับด้วยป้ายชื่อ',
+        'popular.dmk.t':'ดอนเมือง (DMK)','popular.dmk.d':'T1 / T2 · ราคาคงที่ · Flight tracking',
+        'popular.pattaya.t':'กรุงเทพ → พัทยา','popular.pattaya.d':'147 กม. · 1.45 ชม. · One-way / Round-trip / Day-trip',
+        'popular.huahin.t':'กรุงเทพ → หัวหิน','popular.huahin.d':'200 กม. · 3 ชม. · One-way / Round-trip / Day-trip',
         'svc.airport.desc':'รับ-ส่งสนามบินตรงเวลา คนขับรอรับด้วยป้ายชื่อ พร้อมช่วยกระเป๋า ติดตามเที่ยวบินเรียลไทม์ ให้คุณเริ่มต้นการเดินทางอย่างราบรื่นและปลอดภัย',
         'svc.biz.desc':'บริการรถพร้อมคนขับสำหรับนักธุรกิจ ประชุม สัมมนา หรือรับรองลูกค้า คนขับในเครือข่ายผ่านการคัดสรรเป็นพิเศษ ดูแลด้วยความเป็นมืออาชีพ รักษาความลับสูงสุด',
         'svc.rental.desc':'เช่ารถพร้อมคนขับรายวัน รายเดือน จากเครือข่ายพาร์ทเนอร์ที่ผ่านการคัดสรร รถสภาพดี ผ่านการตรวจสภาพก่อนทุกทริป ประกันภัยชั้น 1 ครอบคลุมทุกเส้นทาง',
@@ -3778,6 +3832,12 @@
         'safety.promise.desc':'Every journey with SABUYGO meets the highest safety standards. All vehicles and drivers in our network must pass criminal background checks, driving skill assessments, and service standard training before joining.',
         'tag.ins':'Class 1 Insurance','tag.bg':'Background Check','tag.training':'Certified Training','tag.privacy':'Privacy Protected',
         'svc.title':'Our Services','svc.desc':'Covering all your needs — business travel, tourism, or airport transfers.',
+        'popular.title':'Popular Routes · Detailed Pages',
+        'popular.airport':'Airport Transfer','popular.intercity':'Intercity','popular.cta':'See details →',
+        'popular.bkk.t':'Suvarnabhumi (BKK)','popular.bkk.d':'Fixed fare · Flight tracking · Name-board meet',
+        'popular.dmk.t':'Don Mueang (DMK)','popular.dmk.d':'T1 / T2 · Fixed fare · Flight tracking',
+        'popular.pattaya.t':'Bangkok → Pattaya','popular.pattaya.d':'147 km · 1h 45min · One-way / Round-trip / Day-trip',
+        'popular.huahin.t':'Bangkok → Hua Hin','popular.huahin.d':'200 km · 3h · One-way / Round-trip / Day-trip',
         'svc.airport.desc':'On-time airport pickup and drop-off. Your driver waits with a name sign, assists with luggage, and monitors your flight in real-time for a smooth and safe journey.',
         'svc.biz.desc':'Chauffeur service for business professionals — meetings, conferences, or client entertainment. Specially selected network drivers deliver professional service with utmost confidentiality.',
         'svc.rental.desc':'Daily or monthly car rental with driver from our vetted partner network. Well-maintained vehicles, inspected before every trip, with Class 1 insurance on all routes.',
