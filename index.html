@@ -365,6 +365,27 @@
     .hero::before,
     .hero::after { content: none; }
 
+    /* Ambient video — full-bleed across viewport, softened to a mood cue */
+    .hero-ambient {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.18;
+      filter: saturate(0.72) brightness(0.96);
+      pointer-events: none;
+      z-index: 0;
+    }
+    @media (max-width: 900px) {
+      .hero-ambient { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-ambient { display: none; }
+    }
+
     .hero-content {
       position: relative;
       z-index: 1;
@@ -2651,6 +2672,12 @@
 
   <!-- ==================== HERO ==================== -->
   <section class="hero" id="hero">
+    <video class="hero-ambient" autoplay muted loop playsinline
+           poster="images/hero-ambient-poster.webp"
+           aria-hidden="true" preload="auto">
+      <source src="images/hero-ambient.webm" type="video/webm">
+      <source src="images/hero-ambient.mp4" type="video/mp4">
+    </video>
     <div class="hero-content">
       <img src="images/logo.webp" alt="SABUYGO Logo" class="hero-logo" width="180" height="98">
       <div class="hero-tagline">Premium Chauffeur Service</div>
