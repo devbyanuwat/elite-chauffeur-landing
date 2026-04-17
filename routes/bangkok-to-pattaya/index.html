@@ -621,23 +621,25 @@
       submitBtn.textContent = T[currentLang]['qf.submitting'];
 
       try {
+        // Map trip_type → BOS serviceType: one_way / wait_return (round) / daily (day-trip)
+        const tripToService = { one_way: 'one_way', round_trip: 'wait_return', day_trip: 'daily' };
         const res = await fetch('https://bos.sabuygo.com/api/public/inquiry', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name, phone,
-            service_type: 'intercity',
-            trip_type: trip,
-            route: 'bangkok-to-pattaya',
-            pickup,
-            dropoff: 'Pattaya',
-            date, time,
+            customerName: name,
+            customerPhone: phone.replace(/[-\s]/g, ''),
+            serviceType: tripToService[trip] || 'one_way',
+            pickupLocation: pickup,
+            dropoffLocation: 'Pattaya',
+            pickupDate: date,
+            pickupTime: time,
             source: 'route-pattaya',
-            lang: currentLang,
-            turnstile_token: turnstileToken
+            turnstileToken
           })
         });
-        if (!res.ok) throw new Error('submit_failed');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'submit_failed');
         form.innerHTML = `
           <div class="success">
             <h4>${T[currentLang]['qf.success.title']}</h4>
