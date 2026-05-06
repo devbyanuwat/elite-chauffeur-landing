@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://sabuygo.com/routes/bangkok-to-pattaya/">
   <meta property="og:title" content="รถเช่าพร้อมคนขับ กรุงเทพ-พัทยา | SABUYGO">
-  <meta property="og:description" content="บริการรถเช่าพร้อมคนขับ กรุงเทพ-พัทยา ระยะทาง 147 กม. รถระดับพรีเมียม ราคาคงที่ ประกันชั้น 1">
+  <meta property="og:description" content="บริการรถเช่าพร้อมคนขับ กรุงเทพ-พัทยา ระยะทาง 147 กม. รถระดับพรีเมียม ราคาคงที่ ประกัน + พ.ร.บ.">
   <meta property="og:image" content="https://sabuygo.com/images/logo.webp">
   <meta property="og:locale" content="th_TH">
   <meta property="og:locale:alternate" content="en_US">
@@ -171,6 +171,13 @@
     .price-table .price-currency { font-size: 0.78rem; color: var(--text-tertiary); font-weight: 400; }
     .price-note { margin-top: 1rem; font-size: 0.8rem; color: var(--text-tertiary); }
     .price-note strong { color: var(--text-secondary); font-weight: 500; }
+    /* Routes rate card variant: balanced 40/20/20/20 columns + right-aligned numerics */
+    .price-table--routes { table-layout: fixed; }
+    .price-table--routes col.col-route { width: 40%; }
+    .price-table--routes col.col-price { width: 20%; }
+    .price-table--routes thead th + th,
+    .price-table--routes tbody td + td { text-align: right; }
+    .price-table--routes .price-unavailable { color: var(--text-tertiary); font-size: 0.86rem; }
     @media (max-width: 700px) {
       .price-table thead { display: none; }
       .price-table tbody tr { display: block; padding: 1rem; border-bottom: 1px solid var(--border); }
@@ -256,7 +263,7 @@
             <span class="lbl" data-i18n="stat.time.lbl">ชม. เดินทาง</span>
           </div>
           <div class="route-stat">
-            <span class="num" data-i18n="stat.start.num">฿2,000</span>
+            <span class="num" data-i18n="stat.start.num">฿1,500</span>
             <span class="lbl" data-i18n="stat.start.lbl">เริ่มต้น (sedan one-way)</span>
           </div>
         </div>
@@ -337,31 +344,142 @@
         <tbody>
           <tr>
             <td data-label="ประเภทรถ"><span class="veh-name">Toyota Corolla Altis</span><span class="veh-type">Sedan · 3 ผู้โดยสาร · 2 กระเป๋า</span></td>
-            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">2,000</span></td>
-            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">3,500</span></td>
-            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">4,500</span></td>
+            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">1,500</span></td>
+            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">2,625</span></td>
+            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">3,375</span></td>
           </tr>
           <tr>
             <td data-label="ประเภทรถ"><span class="veh-name">Mitsubishi Xpander Cross</span><span class="veh-type">Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า</span></td>
-            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">2,300</span></td>
-            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">4,000</span></td>
-            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">5,000</span></td>
+            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">3,150</span></td>
+            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">4,050</span></td>
           </tr>
           <tr>
             <td data-label="ประเภทรถ"><span class="veh-name">Toyota Fortuner Legender</span><span class="veh-type">Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า</span></td>
-            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">2,800</span></td>
-            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">5,000</span></td>
-            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">6,500</span></td>
+            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">3,150</span></td>
+            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">4,050</span></td>
           </tr>
           <tr>
             <td data-label="ประเภทรถ"><span class="veh-name">Toyota Alphard</span><span class="veh-type">Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า</span></td>
-            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">4,500</span></td>
-            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">7,500</span></td>
-            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">9,500</span></td>
+            <td data-label="One-way"><span class="price-currency">฿</span><span class="price">2,400</span></td>
+            <td data-label="Round-trip"><span class="price-currency">฿</span><span class="price">4,200</span></td>
+            <td data-label="Day-trip"><span class="price-currency">฿</span><span class="price">5,400</span></td>
           </tr>
         </tbody>
       </table>
       <p class="price-note" data-i18n="price.footnote"><strong>หมายเหตุ:</strong> Round-trip รวมเวลารอที่พัทยา 6 ชม. (ถ้าเกินคิดเพิ่มชั่วโมงละ 250-400 บาท) · Day-trip รวม 10 ชม. ตั้งแต่รับจนส่ง · ราคา final ยืนยันหลังกรอกฟอร์ม · เส้นทางเดียวกับขากลับ พัทยา → กรุงเทพ ราคาเท่ากัน</p>
+    </div>
+  </section>
+
+  <!-- Other Routes Rate Card -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-headline reveal">
+        <span class="label" data-i18n="rates.label">Other Routes</span>
+        <div>
+          <h2 data-i18n="rates.h2">เส้นทางยอดนิยมจากพัทยา · ราคาเริ่มต้น (One-way)</h2>
+          <p data-i18n="rates.desc">ราคากลางมาตรฐาน · ทุกเส้นทางวิ่งได้สองทาง ราคาเท่ากัน · รวมค่าทางด่วน · ประกัน + พ.ร.บ. ทุกคัน</p>
+        </div>
+      </div>
+
+      <table class="price-table price-table--routes reveal">
+        <colgroup>
+          <col class="col-route">
+          <col class="col-price">
+          <col class="col-price">
+          <col class="col-price">
+        </colgroup>
+        <thead>
+          <tr>
+            <th data-i18n="rates.col.route">เส้นทาง</th>
+            <th data-i18n="rates.col.sedan">Sedan<span class="desc" data-i18n="rates.col.sedan.d">Altis · 3 ที่นั่ง</span></th>
+            <th data-i18n="rates.col.suv">SUV / MPV<span class="desc" data-i18n="rates.col.suv.d">Fortuner · Xpander · 6 ที่นั่ง</span></th>
+            <th data-i18n="rates.col.van">VAN<span class="desc" data-i18n="rates.col.van.d">Alphard · 6 ที่นั่ง</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">สุวรรณภูมิ ↔ พัทยา</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,200</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">1,500</span></td>
+            <td data-label="VAN"><span class="price-currency">฿</span><span class="price">2,000</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">ดอนเมือง ↔ พัทยา</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,500</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="VAN"><span class="price-currency">฿</span><span class="price">2,500</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">บางบัวทอง ↔ พัทยา</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">2,000</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,300</span></td>
+            <td data-label="VAN"><span class="price-currency">฿</span><span class="price">3,000</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">ดอนเมือง ↔ สัตหีบ</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">2,000</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,300</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">สุวรรณภูมิ ↔ สัตหีบ</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,500</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">สุวรรณภูมิ ↔ บ้านเพ</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,100</span></td>
+            <td data-label="VAN"><span class="price-currency">฿</span><span class="price">2,800</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">ดอนเมือง ↔ บ้านเพ</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">2,200</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,500</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">พัทยา → ปทุมธานี</span><span class="veh-type">ราคาเริ่มต้น · หลายโซน</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,100</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">สุวรรณภูมิ ↔ ปลวกแดง</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,800</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,100</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">สุขุมวิท ↔ ปลวกแดง</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">2,000</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,300</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">ดอนเมือง ↔ ปลวกแดง</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">2,200</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,500</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">พัทยา ↔ หัวหิน</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">3,200</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">3,500</span></td>
+            <td data-label="VAN"><span class="price-currency">฿</span><span class="price">4,000</span></td>
+          </tr>
+          <tr>
+            <td data-label="เส้นทาง"><span class="veh-name">พัทยา ↔ รังสิต</span></td>
+            <td data-label="Sedan"><span class="price-currency">฿</span><span class="price">1,700</span></td>
+            <td data-label="SUV / MPV"><span class="price-currency">฿</span><span class="price">2,000</span></td>
+            <td data-label="VAN"><span class="price-unavailable">สอบถาม</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="price-note" data-i18n="rates.footnote"><strong>หมายเหตุ:</strong> ราคาในตารางเป็น <strong>One-way (เที่ยวเดียว)</strong> ขั้นต่ำตามราคากลางกลุ่ม (มีผล 5 พ.ค. 2569) · บาง zone อาจมีค่าเพิ่มเติมตามจุดรับ-ส่งจริง · Round-trip / Day-trip กรุณาสอบถามผ่านฟอร์ม · ราคา final ยืนยันหลังเจ้าหน้าที่ตรวจเส้นทาง</p>
     </div>
   </section>
 
@@ -379,8 +497,8 @@
       <div class="included-grid reveal">
         <div class="included-item">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <h4 data-i18n="inc.ins.t">ประกันชั้น 1</h4>
-          <p data-i18n="inc.ins.d">ประกันชั้น 1 + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง</p>
+          <h4 data-i18n="inc.ins.t">ประกัน + พ.ร.บ.</h4>
+          <p data-i18n="inc.ins.d">ประกัน + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง</p>
         </div>
         <div class="included-item">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 010 20"/></svg>
@@ -509,7 +627,7 @@
         'price.col.day':'Day-trip 10 ชม.','price.col.day.d':'เที่ยวได้หลายจุด',
         'price.footnote':'<strong>หมายเหตุ:</strong> Round-trip รวมเวลารอที่พัทยา 6 ชม. (ถ้าเกินคิดเพิ่มชั่วโมงละ 250-400 บาท) · Day-trip รวม 10 ชม. ตั้งแต่รับจนส่ง · ราคา final ยืนยันหลังกรอกฟอร์ม · เส้นทางเดียวกับขากลับ พัทยา → กรุงเทพ ราคาเท่ากัน',
         'inc.label':'Service Scope','inc.h2':'ทุกการจองรวม','inc.desc':'มาตรฐานบริการทุกเที่ยวเส้นทาง กรุงเทพ-พัทยา',
-        'inc.ins.t':'ประกันชั้น 1','inc.ins.d':'ประกันชั้น 1 + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง',
+        'inc.ins.t':'ประกัน + พ.ร.บ.','inc.ins.d':'ประกัน + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง',
         'inc.toll.t':'ค่าทางด่วน รวม','inc.toll.d':'มอเตอร์เวย์ 7 (ขาไป + กลับ) รวมในราคาแล้ว ไม่ต้องจ่ายแยก',
         'inc.flex.t':'เวลายืดหยุ่น','inc.flex.d':'ปรับเวลารับ-ส่งได้ก่อน 6 ชม. โดยไม่มีค่าธรรมเนียม',
         'inc.contact.t':'ติดต่อคนขับได้','inc.contact.d':'LINE คนขับโดยตรงตลอดเส้นทาง — ปลอดภัย ไม่หาย ไม่ต้องเปลี่ยนเบอร์',
@@ -531,7 +649,7 @@
         'nav.back':'← Home','nav.book':'Book Now',
         'crumb.home':'Home','crumb.current':'Bangkok → Pattaya',
         'hero.h1':'Premium Chauffeur<br>Bangkok → Pattaya',
-        'hero.sub':'147 km via Motorway 7 · 1h 45min travel · One-way / Round-trip / Day-trip options · Class 1 insurance on every vehicle',
+        'hero.sub':'147 km via Motorway 7 · 1h 45min travel · One-way / Round-trip / Day-trip options · Full insurance coverage on every vehicle',
         'stat.dist.num':'147','stat.dist.lbl':'km',
         'stat.time.num':'1h45','stat.time.lbl':'travel time',
         'stat.start.num':'฿2,000','stat.start.lbl':'from (sedan one-way)',
@@ -552,7 +670,7 @@
         'price.col.day':'Day-trip 10h','price.col.day.d':'multiple stops',
         'price.footnote':'<strong>Note:</strong> Round-trip includes 6h wait at Pattaya (overtime 250-400 THB/hr) · Day-trip is 10h pickup-to-drop · Final quote confirmed after inquiry · Same rate applies in reverse direction (Pattaya → Bangkok).',
         'inc.label':'Service Scope','inc.h2':'Every booking includes','inc.desc':'Service standard for every Bangkok-Pattaya transfer',
-        'inc.ins.t':'Class 1 Insurance','inc.ins.d':'Class 1 insurance + compulsory motor insurance covering passengers and property throughout the route',
+        'inc.ins.t':'Full Insurance Coverage','inc.ins.d':'Full insurance coverage + compulsory motor insurance covering passengers and property throughout the route',
         'inc.toll.t':'Tolls Included','inc.toll.d':'Motorway 7 (both ways) included in the rate — no separate toll payment',
         'inc.flex.t':'Flexible Timing','inc.flex.d':'Pickup/return time can be adjusted up to 6 hours before with no fee',
         'inc.contact.t':'Direct Driver Contact','inc.contact.d':'LINE chat directly with your driver throughout the trip — safe, no lost contact, no number swap',
