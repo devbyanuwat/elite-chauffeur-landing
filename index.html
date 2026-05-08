@@ -41,24 +41,40 @@
   <meta name="theme-color" content="#FFFFFF">
   <meta name="msapplication-TileColor" content="#FFFFFF">
 
-  <!-- Structured Data -->
+  <!-- Structured Data — LimousineService + LocalBusiness (multi-type for AI categorization) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": ["LimousineService", "LocalBusiness"],
     "name": "SABUYGO",
-    "alternateName": "Sabuygo",
-    "description": "Premium chauffeur service platform in Bangkok, Thailand",
+    "alternateName": ["Sabuygo", "สบายโก"],
+    "description": "Premium chauffeur and limousine service in Bangkok and across Thailand. บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ พัทยา หัวหิน และทั่วไทย",
     "url": "https://sabuygo.com",
     "logo": "https://sabuygo.com/images/logo.webp",
     "image": "https://sabuygo.com/images/logo.webp",
     "telephone": "+66623879159",
+    "priceRange": "$$$",
+    "areaServed": [
+      { "@type": "City", "name": "Bangkok" },
+      { "@type": "City", "name": "Pattaya" },
+      { "@type": "City", "name": "Hua Hin" },
+      { "@type": "Airport", "name": "Suvarnabhumi Airport", "iataCode": "BKK" },
+      { "@type": "Airport", "name": "Don Mueang International Airport", "iataCode": "DMK" },
+      { "@type": "Country", "name": "Thailand" }
+    ],
+    "serviceArea": {
+      "@type": "AdministrativeArea",
+      "name": "Thailand"
+    },
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Bangkok",
+      "addressRegion": "Bangkok",
       "addressCountry": "TH"
     },
-    "priceRange": "$$",
+    "sameAs": [
+      "https://line.me/R/ti/p/@031cvnva"
+    ],
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
@@ -68,18 +84,15 @@
   }
   </script>
 
-  <!-- Site Navigation Schema — เพิ่มโอกาสได้ Sitelinks ใน Google -->
+  <!-- WebSite — bilingual hint for AI engines (no SearchAction; site has no real search) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Sabuygo",
+    "alternateName": "SABUYGO",
     "url": "https://sabuygo.com",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://sabuygo.com/#fleet?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
+    "inLanguage": ["th-TH", "en-US"]
   }
   </script>
 
