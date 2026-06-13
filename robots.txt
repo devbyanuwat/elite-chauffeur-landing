@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /internal/
 
-Sitemap: https://sabuygo.com/sitemap.xml
+Sitemap: https://sabuygo.com/sitemap_index.xml

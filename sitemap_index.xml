@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sitemap index — รวม sitemap หลักของเว็บ + sitemap บทความ (gen โดย BOS) -->
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://sabuygo.com/sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://sabuygo.com/blog/sitemap-blog.xml</loc>
+  </sitemap>
+</sitemapindex>

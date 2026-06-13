@@ -15,6 +15,7 @@ COPY privacy.html /usr/share/nginx/html/privacy.html
 COPY images/ /usr/share/nginx/html/images/
 COPY robots.txt /usr/share/nginx/html/robots.txt
 COPY sitemap.xml /usr/share/nginx/html/sitemap.xml
+COPY sitemap_index.xml /usr/share/nginx/html/sitemap_index.xml
 
 # SEO landing pages (subpath routing — nginx serves via try_files $uri/)
 COPY airport-transfer/ /usr/share/nginx/html/airport-transfer/

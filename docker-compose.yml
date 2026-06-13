@@ -53,6 +53,9 @@ services:
     restart: unless-stopped
     expose:
       - "80"
+    volumes:
+      # บทความ — BOS generator เขียนลง shared volume, nginx เสิร์ฟ /blog (read-only)
+      - blog_content:/usr/share/nginx/html/blog:ro
     networks:
       - proxy
     labels:
@@ -69,6 +72,8 @@ services:
     restart: unless-stopped
     expose:
       - "80"
+    volumes:
+      - blog_content:/usr/share/nginx/html/blog:ro
     networks:
       - proxy
     labels:
@@ -169,6 +174,9 @@ volumes:
   portainer_data:
   minio_data:
   uptime_kuma_data:
+  # shared blog content (BOS เขียน / landing อ่าน) — สร้างครั้งเดียว: docker volume create blog_content
+  blog_content:
+    external: true
 
 # ─────────────────────────────────────────────
 # Networks
