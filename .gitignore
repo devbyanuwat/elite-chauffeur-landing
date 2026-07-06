@@ -8,3 +8,8 @@
 # Editor + internal design references (local only)
 .vscode/
 refs/
+
+# Session-pasted screenshots + local mockups/tooling (local only)
+mqx*.png
+.od-skills/
+mockups/
