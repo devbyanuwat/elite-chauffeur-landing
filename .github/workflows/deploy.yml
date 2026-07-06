@@ -94,3 +94,5 @@ jobs:
           echo "- Image: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Watchtower จะ pull image ใหม่ภายใน 5 นาที" >> $GITHUB_STEP_SUMMARY
+
+# dev-image bootstrap: trigger first :dev build on this registry owner
