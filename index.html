@@ -368,20 +368,27 @@
       user-select: none;
     }
 
-    .lang-toggle span {
-      padding: 0 0.45rem;
+    .lang-toggle button {
+      padding: 0.3rem 0.5rem;
+      border: none;
+      background: none;
       border-radius: 0;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: 500;
+      letter-spacing: inherit;
       transition: color 0.2s;
       color: var(--text-tertiary);
+      cursor: pointer;
     }
 
-    .lang-toggle span.active {
+    .lang-toggle button.active {
       background: transparent;
       color: var(--text-primary);
       font-weight: 600;
     }
 
-    .lang-toggle span+span {
+    .lang-toggle button+button {
       border-left: 1px solid var(--border);
     }
 
@@ -3625,8 +3632,17 @@
         gap: 0.5rem;
       }
 
+      /* Hide tab label visually but keep it for screen readers + i18n (icon stays) */
       .hero-tab span {
-        display: none;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       .hero-tab {
@@ -4005,6 +4021,22 @@
     body.modal-open {
       overflow: hidden;
     }
+
+    /* ==================== iOS — prevent focus-zoom on form inputs ====================
+       iOS Safari zooms in when a focused input's font-size is < 16px. Force 16px on
+       mobile so tapping a field never triggers an unwanted zoom. */
+    @media (max-width: 768px) {
+
+      .qf-group input,
+      .qf-group select,
+      .hero-booking-card .qf-group input,
+      .hero-booking-card .qf-group select,
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 
@@ -4029,9 +4061,9 @@
         <li><a href="#contact" data-i18n="nav.contact">ติดต่อเรา</a></li>
       </ul>
       <div class="nav-right">
-        <div class="lang-toggle" id="langToggle" role="group" aria-label="เลือกภาษา" onclick="toggleLang()">
-          <span id="langTH" class="active" aria-label="ภาษาไทย" aria-pressed="true">TH</span>
-          <span id="langEN" aria-label="English" aria-pressed="false">EN</span>
+        <div class="lang-toggle" id="langToggle" role="group" aria-label="เลือกภาษา / Select language">
+          <button type="button" id="langTH" class="active" aria-label="ภาษาไทย" aria-pressed="true" onclick="setLang('th')">TH</button>
+          <button type="button" id="langEN" aria-label="English" aria-pressed="false" onclick="setLang('en')">EN</button>
         </div>
         <button onclick="openInquiryModal()" class="nav-cta" style="font-family:var(--font);">
           <svg viewBox="0 0 24 24">
@@ -5014,7 +5046,7 @@
   </footer>
 
   <!-- ==================== INQUIRY MODAL ====================
-       ⚠️ ฟอร์มจองมี 2 ที่ — แก้ fields ต้องแก้ทั้งคู่:
+       NOTE: ฟอร์มจองมี 2 ที่ — แก้ fields ต้องแก้ทั้งคู่:
          1. ที่นี่ (landing modal, static HTML)
          2. BOS /booking page (Next.js, LINE LIFF) → src/app/booking/page.tsx
        ทั้งคู่ POST ไปที่ bos.sabuygo.com/api/public/inquiry
@@ -5474,7 +5506,7 @@
         'qf.success.title': 'ได้รับคำขอแล้ว',
         'qf.success.desc': 'ทีมจะติดต่อกลับใน 15 นาที<br>หรือเพิ่ม LINE เพื่อแชทโดยตรง',
         'qf.line.sub': 'ตอบไว ไม่ต้องรอ',
-        'qf.line.mobile': '💬 เพิ่มเพื่อน LINE @031cvnva',
+        'qf.line.mobile': 'เพิ่มเพื่อน LINE @031cvnva',
         'qf.helper': 'เลือก {car} — กรอกข้อมูลเพื่อสอบถามราคา',
         'qf.pickup': 'จุดรับ',
         'qf.pickup.placeholder': 'เช่น สุวรรณภูมิ, โรงแรม...',
@@ -5590,7 +5622,7 @@
         'qf.success.title': 'Request Received',
         'qf.success.desc': 'Our team will contact you within 15 minutes<br>Or add LINE to chat directly',
         'qf.line.sub': 'Quick response, no wait',
-        'qf.line.mobile': '💬 Add LINE @031cvnva',
+        'qf.line.mobile': 'Add LINE @031cvnva',
         'qf.helper': 'Selected {car} — fill in your details for a quote',
         'qf.pickup': 'Pickup',
         'qf.pickup.placeholder': 'e.g. Suvarnabhumi, Hotel...',
@@ -5892,6 +5924,8 @@
       banner.classList.remove('show');
     }
 
+    let cookieLastFocused = null;
+
     function cookieOpenModal() {
       const existing = cookieGetConsent();
       if (existing) {
@@ -5899,13 +5933,21 @@
         document.getElementById('toggle-marketing').checked = existing.marketing;
         document.getElementById('toggle-preferences').checked = existing.preferences;
       }
-      document.getElementById('cookie-modal-backdrop').classList.add('open');
+      cookieLastFocused = document.activeElement;
+      const backdrop = document.getElementById('cookie-modal-backdrop');
+      backdrop.classList.add('open');
       document.body.style.overflow = 'hidden';
+      const closeBtn = backdrop.querySelector('.cookie-modal-close');
+      if (closeBtn) closeBtn.focus();
     }
 
     function cookieCloseModal() {
-      document.getElementById('cookie-modal-backdrop').classList.remove('open');
+      const backdrop = document.getElementById('cookie-modal-backdrop');
+      if (!backdrop.classList.contains('open')) return;
+      backdrop.classList.remove('open');
       document.body.style.overflow = '';
+      if (cookieLastFocused && cookieLastFocused.focus) cookieLastFocused.focus();
+      cookieLastFocused = null;
     }
 
     function cookieAcceptAll() {
@@ -5937,6 +5979,13 @@
     // Close modal on backdrop click
     document.getElementById('cookie-modal-backdrop').addEventListener('click', function (e) {
       if (e.target === this) cookieCloseModal();
+    });
+
+    // Trap Tab + close on ESC within the cookie dialog while open
+    document.getElementById('cookie-modal-backdrop').addEventListener('keydown', function (e) {
+      if (!this.classList.contains('open')) return;
+      if (e.key === 'Escape') { cookieCloseModal(); return; }
+      trapFocus(this, e);
     });
 
     // === THIRD-PARTY LOADERS (stub — fill in when ready) ===
@@ -5978,23 +6027,52 @@
     // === INQUIRY MODAL ===
     const BOS_API = 'https://bos.sabuygo.com/api/public/inquiry';
 
+    // Shared focus trap — keep Tab within an open modal/dialog container
+    function trapFocus(container, e) {
+      if (e.key !== 'Tab') return;
+      const focusable = [...container.querySelectorAll(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )].filter(el => el.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
+    let inquiryLastFocused = null;
+
     function openInquiryModal() {
       const modal = document.getElementById('inquiryModal');
+      inquiryLastFocused = document.activeElement;
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
       // reset to form view
       document.getElementById('modalFormWrap').style.display = '';
       document.getElementById('stateSuccess').classList.remove('active');
+      // move focus into the dialog
+      const target = modal.querySelector('.modal-close');
+      if (target) target.focus();
     }
 
     function closeInquiryModal() {
-      document.getElementById('inquiryModal').classList.remove('open');
+      const modal = document.getElementById('inquiryModal');
+      if (!modal.classList.contains('open')) return;
+      modal.classList.remove('open');
       document.body.style.overflow = '';
+      // restore focus to the element that opened the modal
+      if (inquiryLastFocused && inquiryLastFocused.focus) inquiryLastFocused.focus();
+      inquiryLastFocused = null;
     }
 
     // Close on backdrop click
     document.getElementById('inquiryModal').addEventListener('click', function (e) {
       if (e.target === this) closeInquiryModal();
+    });
+
+    // Keep Tab within the dialog while open
+    document.getElementById('inquiryModal').addEventListener('keydown', function (e) {
+      if (this.classList.contains('open')) trapFocus(this, e);
     });
 
     // Close on ESC key
@@ -6485,8 +6563,8 @@
         closeModal();
 
         // Scroll to form & focus name field
-        var heroRight = document.querySelector('.hero-right');
-        if (heroRight) heroRight.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var heroCard = document.querySelector('.hero-booking-card');
+        if (heroCard) heroCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setTimeout(function () {
           var nameField = document.getElementById('qf_name');
           if (nameField) nameField.focus();
