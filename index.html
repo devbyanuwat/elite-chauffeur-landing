@@ -158,7 +158,7 @@
 
   <!-- Preload LCP elements: full-bleed hero photo + nav logo — ลด LCP time -->
   <link rel="preload" as="image" href="images/hero-bg.travelv1-baseline.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="images/logo.webp">
+  <link rel="preload" as="image" href="images/sabuygo-logo.webp">
   <!-- Preconnect เพื่อให้ DNS/TCP/TLS เริ่มก่อน — ลด render blocking -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -193,30 +193,40 @@
       /* Secondary accent — sea teal (replaces verification green) */
       --green: oklch(56% 0.080 210);
       --green-dark: oklch(42% 0.075 215);
+      /* Brand accent — SABUYGO sun yellow (guest, not resident: hero em + rare badges only) */
+      --sun: oklch(87% 0.155 92);
+      --sun-soft: oklch(96% 0.06 95);
       /* Ink — warm cocoa, never pure #000 */
       --text-primary: oklch(24% 0.018 60);
       --text-secondary: oklch(46% 0.015 60);
-      --text-tertiary: oklch(62% 0.012 60);
+      --text-tertiary: oklch(54% 0.014 60);
       /* Paper — soft sand, never pure #fff */
       --bg-primary: oklch(98% 0.008 75);
       --bg-secondary: oklch(95% 0.014 70);
+      --bg-card: oklch(99.5% 0.004 80);
       --bg-dark: oklch(20% 0.022 235);
       --bg-dark-soft: oklch(28% 0.020 230);
       --border: oklch(88% 0.014 70);
       --border-dark: oklch(34% 0.018 230);
+      --danger: oklch(54% 0.19 27);
       /* Fraunces (display, Latin only) + Hanken Grotesk + Anuphan (body) */
       --font: 'Hanken Grotesk', 'Anuphan', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-display: 'Fraunces', 'Hanken Grotesk', 'Anuphan', Georgia, serif;
-      --section-spacing: clamp(80px, 12vw, 160px);
-      --content-width: 1120px;
+      --section-spacing: clamp(72px, 11vw, 144px);
+      --content-width: 1140px;
       --content-wide: 1400px;
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --tracking-wide: 0.18em;
       /* Radius scale */
-      --r-sm: 2px;
-      --r-md: 8px;
+      --r-sm: 8px;
+      --r-md: 16px;
+      --r-lg: 24px;
       --r-pill: 999px;
       --r-circle: 50%;
+      /* Shadow scale */
+      --shadow-sm: 0 1px 2px oklch(24% 0.02 60 / 0.04), 0 2px 8px oklch(24% 0.02 60 / 0.05);
+      --shadow-md: 0 4px 12px oklch(24% 0.02 60 / 0.06), 0 12px 32px oklch(24% 0.02 60 / 0.08);
+      --shadow-lg: 0 8px 24px oklch(24% 0.02 60 / 0.08), 0 24px 60px oklch(24% 0.02 60 / 0.12);
     }
 
     html {
@@ -231,6 +241,12 @@
       background: var(--bg-primary);
       overflow-x: hidden;
       line-height: 1.5;
+    }
+
+    h1,
+    h2,
+    h3 {
+      text-wrap: balance;
     }
 
     /* ==================== NAVIGATION — thin, quiet, composed ==================== */
@@ -266,17 +282,16 @@
     }
 
     .nav-logo {
-      height: 28px;
+      height: 38px;
       width: auto;
-      border-radius: 3px;
     }
 
     .nav-brand-text {
-      font-family: var(--font-display);
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-family: var(--font);
+      font-size: 1.02rem;
+      font-weight: 700;
       color: var(--text-primary);
-      letter-spacing: var(--tracking-wide);
+      letter-spacing: 0.04em;
     }
 
     .nav-links {
@@ -323,26 +338,30 @@
     }
 
     .nav-cta {
-      background: transparent;
-      color: var(--text-primary);
-      padding: 0.55rem 1.15rem;
-      border-radius: 2px;
+      background: var(--gold-dark);
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--r-pill);
       text-decoration: none;
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-size: 0.76rem;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.8rem;
       letter-spacing: 0.015em;
-      transition: background 0.3s var(--ease-out), color 0.3s;
+      transition: background 0.25s var(--ease-out), transform 0.25s var(--ease-out);
       display: flex;
       align-items: center;
       gap: 0.45rem;
-      border: 1px solid var(--text-primary);
+      border: 1.5px solid transparent;
       cursor: pointer;
     }
 
     .nav-cta:hover {
-      background: var(--text-primary);
-      color: var(--bg-primary);
+      background: oklch(44% 0.108 42);
+    }
+
+    .nav-cta:active {
+      transform: scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .nav-cta svg {
@@ -369,7 +388,7 @@
     }
 
     .lang-toggle button {
-      padding: 0.3rem 0.5rem;
+      padding: 0.5rem 0.7rem;
       border: none;
       background: none;
       border-radius: 0;
@@ -399,8 +418,8 @@
       color: var(--text-primary);
       cursor: pointer;
       padding: 0.4rem;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       align-items: center;
       justify-content: center;
     }
@@ -573,7 +592,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.45rem;
-      padding: 0.75rem 0.9rem;
+      padding: 0.8rem 0.9rem;
       background: transparent;
       border: none;
       border-bottom: 2px solid transparent;
@@ -597,6 +616,10 @@
     .hero-tab:hover {
       color: var(--text-primary);
       background: oklch(from var(--bg-primary) l c h / 0.5);
+    }
+
+    .hero-tab:active {
+      transform: scale(0.97);
     }
 
     .hero-tab.is-active {
@@ -763,14 +786,30 @@
     .hero h1 em {
       font-style: italic;
       font-weight: 500;
-      color: oklch(86% 0.115 70);
+      color: inherit;
       font-feature-settings: "ss01" 1;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* SABUYGO sun highlighter — brand accent, appears once per page */
+    .hero h1 em::after {
+      content: "";
+      position: absolute;
+      left: -0.04em;
+      right: -0.04em;
+      bottom: 0.06em;
+      height: 0.26em;
+      background: var(--sun);
+      opacity: 0.65;
+      z-index: -1;
+      border-radius: var(--r-sm);
     }
 
     :lang(th) .hero h1 em {
       font-style: normal;
       font-weight: 700;
-      color: oklch(86% 0.115 70);
+      color: inherit;
     }
 
     :lang(th) .hero h1 {
@@ -853,28 +892,37 @@
     }
 
     .btn-primary {
-      background: var(--text-primary);
-      color: var(--bg-primary);
-      padding: 0.95rem 1.9rem;
-      border: 1px solid var(--text-primary);
-      border-radius: 2px;
-      font-size: 0.85rem;
-      font-weight: 500;
+      background: var(--gold-dark);
+      color: #fff;
+      padding: 0.95rem 1.7rem;
+      border: 1.5px solid transparent;
+      border-radius: var(--r-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
       letter-spacing: 0.01em;
+      line-height: 1;
       cursor: pointer;
-      transition: background 0.3s var(--ease-out), color 0.3s, border-color 0.3s, transform 0.3s;
+      transition: background 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out),
+        border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out);
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.625rem;
-      font-family: var(--font-display);
+      font-family: var(--font);
+      box-shadow: 0 6px 18px oklch(48% 0.105 42 / 0.28);
       -webkit-appearance: none;
     }
 
     .btn-primary:hover {
-      background: var(--gold-dark);
-      border-color: var(--gold-dark);
-      transform: translateY(-1px);
+      background: oklch(44% 0.108 42);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px oklch(48% 0.105 42 / 0.34);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .btn-primary svg {
@@ -888,22 +936,32 @@
     .btn-secondary {
       background: transparent;
       color: var(--text-primary);
-      padding: 0.5rem 0;
-      border: none;
-      border-bottom: 1px solid var(--text-primary);
-      border-radius: 0;
-      font-size: 0.85rem;
-      font-weight: 500;
+      padding: 0.95rem 1.7rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
       letter-spacing: 0.01em;
+      line-height: 1;
       cursor: pointer;
-      transition: color 0.3s, border-color 0.3s;
+      transition: color 0.25s var(--ease-out), border-color 0.25s var(--ease-out),
+        transform 0.25s var(--ease-out);
       text-decoration: none;
-      font-family: var(--font-display);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.625rem;
+      font-family: var(--font);
     }
 
     .btn-secondary:hover {
-      color: var(--gold-dark);
-      border-bottom-color: var(--gold-dark);
+      border-color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .hero-stats {
@@ -1267,7 +1325,7 @@
       overflow: hidden;
       aspect-ratio: 3 / 2;
       order: 1;
-      border-radius: 6px;
+      border-radius: var(--r-md);
     }
 
     .service-img {
@@ -1351,10 +1409,11 @@
     }
 
     .fleet-card {
-      background: var(--bg-primary);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--r-md);
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
       transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
       text-align: left;
       position: relative;
@@ -1768,9 +1827,10 @@
       color: var(--bg-primary);
       background: var(--text-primary);
       border: 1px solid var(--text-primary);
-      border-radius: 2px;
+      border-radius: var(--r-pill);
       text-decoration: none;
-      transition: background 0.3s var(--ease-out), border-color 0.3s;
+      transition: background 0.25s var(--ease-out), border-color 0.25s var(--ease-out),
+        transform 0.25s var(--ease-out);
       grid-column: 1;
       justify-self: start;
     }
@@ -1778,6 +1838,12 @@
     .driver-recruit-cta:hover {
       background: var(--gold-dark);
       border-color: var(--gold-dark);
+      transform: translateY(-2px);
+    }
+
+    .driver-recruit-cta:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     @media (max-width: 860px) {
@@ -1946,12 +2012,20 @@
     }
 
     .footer-logo {
-      height: 30px;
-      width: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
       margin-bottom: 1.25rem;
-      border-radius: 3px;
-      opacity: 0.95;
-      display: block;
+    }
+
+    .footer-logo img {
+      height: 44px;
+      width: auto;
+    }
+
+    .footer-logo .nav-brand-text {
+      font-size: 1.15rem;
+      color: oklch(92% 0.006 85);
     }
 
     .footer-tagline-en {
@@ -2058,7 +2132,7 @@
       font-size: 0.78rem;
       font-weight: 500;
       letter-spacing: 0.01em;
-      border-radius: 8px;
+      border-radius: var(--r-pill);
       transition: background 0.2s;
     }
 
@@ -2165,9 +2239,9 @@
     }
 
     .modal-box {
-      background: var(--bg-primary);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: var(--r-md);
       width: 100%;
       max-width: 42rem;
       max-height: 92vh;
@@ -2193,7 +2267,7 @@
       top: 0;
       background: var(--bg-primary);
       z-index: 1;
-      border-radius: 2px 2px 0 0;
+      border-radius: var(--r-md) var(--r-md) 0 0;
     }
 
     .modal-header-text .modal-label {
@@ -2219,7 +2293,7 @@
     .modal-close {
       width: 34px;
       height: 34px;
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       border: 1px solid var(--border);
       background: transparent;
       cursor: pointer;
@@ -2285,7 +2359,7 @@
     .form-group textarea {
       padding: 0.75rem 0.9rem;
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       font-size: 0.92rem;
       font-family: var(--font);
       color: var(--text-primary);
@@ -2306,7 +2380,7 @@
     .form-group input.error,
     .form-group select.error,
     .form-group textarea.error {
-      border-color: oklch(55% 0.18 28);
+      border-color: var(--danger);
     }
 
     .form-group textarea {
@@ -2324,7 +2398,7 @@
 
     .field-error {
       font-size: 0.72rem;
-      color: oklch(50% 0.16 28);
+      color: var(--danger);
       font-weight: 400;
       display: none;
       letter-spacing: 0.005em;
@@ -2338,13 +2412,14 @@
       width: 100%;
       padding: 0.95rem;
       margin-top: 1.75rem;
-      background: var(--text-primary);
-      color: var(--bg-primary);
-      border: 1px solid var(--text-primary);
-      border-radius: 2px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      font-family: var(--font-display);
+      background: var(--gold-dark);
+      color: #fff;
+      border: 1px solid var(--gold-dark);
+      border-radius: var(--r-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--font);
+      box-shadow: 0 6px 18px oklch(48% 0.105 42 / 0.28);
       letter-spacing: 0.015em;
       cursor: pointer;
       transition: background 0.3s var(--ease-out), border-color 0.3s;
@@ -2418,8 +2493,8 @@
 
     .state-icon-wrap.error-state {
       background: transparent;
-      border-color: oklch(55% 0.18 28);
-      color: oklch(50% 0.16 28);
+      border-color: var(--danger);
+      color: var(--danger);
     }
 
     .state-icon-wrap svg {
@@ -2461,7 +2536,7 @@
       font-family: var(--font-display);
       background: transparent;
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       padding: 0.55rem 1.1rem;
       font-size: 0.85rem;
       color: var(--gold-dark);
@@ -2471,7 +2546,7 @@
 
     .modal-state-close-btn {
       padding: 0.75rem 1.75rem;
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       border: 1px solid var(--text-primary);
       background: transparent;
       font-size: 0.85rem;
@@ -2491,7 +2566,7 @@
     .modal-error-msg {
       background: oklch(96% 0.018 28);
       border: 1px solid oklch(84% 0.05 28);
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       padding: 0.75rem 1rem;
       font-size: 0.82rem;
       color: oklch(45% 0.16 28);
@@ -2524,7 +2599,7 @@
 
     @media (max-width: 580px) {
       .modal-box {
-        border-radius: 2px;
+        border-radius: var(--r-sm);
         max-height: 95vh;
       }
 
@@ -2548,9 +2623,9 @@
       bottom: clamp(1rem, 3vw, 2rem);
       right: clamp(1rem, 3vw, 2rem);
       z-index: 999;
-      width: 42px;
-      height: 42px;
-      border-radius: 2px;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--r-circle);
       background: var(--bg-primary);
       border: 1px solid var(--text-primary);
       color: var(--text-primary);
@@ -2932,7 +3007,7 @@
       background: var(--text-primary);
       color: var(--bg-primary);
       padding: 0.6rem 1.1rem;
-      border-radius: 2px;
+      border-radius: var(--r-pill);
       border: 1px solid var(--text-primary);
       cursor: pointer;
       font-size: 0.76rem;
@@ -2952,7 +3027,7 @@
       background: transparent;
       color: var(--text-primary);
       padding: 0.6rem 1.1rem;
-      border-radius: 2px;
+      border-radius: var(--r-pill);
       border: 1px solid var(--text-primary);
       cursor: pointer;
       font-size: 0.76rem;
@@ -3003,7 +3078,7 @@
       letter-spacing: 0.01em;
       text-decoration: none;
       z-index: 9999;
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       transition: top 0.2s var(--ease-out);
     }
 
@@ -3041,7 +3116,7 @@
       background: var(--bg-primary);
       border: 1px solid var(--border);
       border-bottom: none;
-      border-radius: 2px 2px 0 0;
+      border-radius: var(--r-md) var(--r-md) 0 0;
       padding: 2rem 1.5rem 2.25rem;
       width: 100%;
       max-width: 36rem;
@@ -3058,7 +3133,7 @@
       }
 
       .cookie-modal {
-        border-radius: 2px;
+        border-radius: var(--r-md);
         border-bottom: 1px solid var(--border);
       }
     }
@@ -3081,7 +3156,7 @@
     .cookie-modal-close {
       background: transparent;
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       width: 32px;
       height: 32px;
       cursor: pointer;
@@ -3165,7 +3240,7 @@
       font-size: 0.6rem;
       font-weight: 500;
       padding: 0.15rem 0.5rem;
-      border-radius: 2px;
+      border-radius: var(--r-sm);
       border: 1px solid var(--gold);
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -3244,7 +3319,7 @@
       background: transparent;
       color: var(--text-primary);
       padding: 0.75rem 1rem;
-      border-radius: 2px;
+      border-radius: var(--r-pill);
       border: 1px solid var(--text-primary);
       cursor: pointer;
       font-size: 0.82rem;
@@ -3265,7 +3340,7 @@
       background: var(--text-primary);
       color: var(--bg-primary);
       padding: 0.75rem 1rem;
-      border-radius: 2px;
+      border-radius: var(--r-pill);
       border: 1px solid var(--text-primary);
       cursor: pointer;
       font-size: 0.82rem;
@@ -3303,7 +3378,7 @@
     .hero-line-qr {
       width: 40px;
       height: 40px;
-      border-radius: 4px;
+      border-radius: var(--r-sm);
       flex-shrink: 0;
       display: block;
     }
@@ -3404,7 +3479,7 @@
       width: 100%;
       padding: 0.6rem 0.75rem;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--r-sm);
       background: var(--bg-primary);
       color: var(--text-primary);
       font-family: var(--font);
@@ -3432,13 +3507,13 @@
 
     .qf-group input.qf-error,
     .qf-group select.qf-error {
-      border-color: oklch(52% 0.18 25);
+      border-color: var(--danger);
     }
 
     .qf-inline-error {
       display: none;
       font-size: 0.68rem;
-      color: oklch(52% 0.18 25);
+      color: var(--danger);
       margin-top: 0.25rem;
       letter-spacing: 0.005em;
     }
@@ -3467,13 +3542,14 @@
     .qf-submit {
       width: 100%;
       background: var(--gold-dark);
-      color: var(--bg-primary);
+      color: #fff;
       border: 1px solid var(--gold-dark);
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
-      font-family: var(--font-display);
-      font-size: 0.85rem;
+      border-radius: var(--r-pill);
+      padding: 0.85rem 1rem;
+      font-family: var(--font);
+      font-size: 0.9rem;
       font-weight: 600;
+      box-shadow: 0 6px 18px oklch(48% 0.105 42 / 0.28);
       letter-spacing: 0.01em;
       cursor: pointer;
       transition: background 0.25s, border-color 0.25s, transform 0.2s;
@@ -3488,6 +3564,12 @@
       background: oklch(from var(--gold-dark) calc(l - 0.06) c h);
       border-color: oklch(from var(--gold-dark) calc(l - 0.06) c h);
       transform: translateY(-1px);
+      box-shadow: 0 10px 26px oklch(48% 0.105 42 / 0.34);
+    }
+
+    .qf-submit:active:not(:disabled) {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .qf-submit:disabled {
@@ -3587,7 +3669,7 @@
       display: none;
       background: oklch(97% 0.015 25);
       border: 1px solid oklch(85% 0.06 25);
-      border-radius: 6px;
+      border-radius: var(--r-sm);
       padding: 0.6rem 0.75rem;
       font-size: 0.75rem;
       color: oklch(40% 0.14 25);
@@ -3952,9 +4034,9 @@
       flex: 1;
       min-width: 140px;
       padding: 0.75rem 1.25rem;
-      border-radius: 8px;
+      border-radius: var(--r-pill);
       background: var(--gold-dark);
-      color: var(--bg-primary);
+      color: #fff;
       font-size: 0.9rem;
       font-weight: 600;
       font-family: var(--font);
@@ -3985,7 +4067,7 @@
       align-items: center;
       gap: 0.375rem;
       padding: 0.75rem 1rem;
-      border-radius: 8px;
+      border-radius: var(--r-sm);
       border: 1px solid var(--border);
       color: var(--text-secondary);
       font-size: 0.875rem;
@@ -4011,10 +4093,103 @@
       color: var(--gold-dark);
       background: var(--gold-wash);
       border: 1px solid oklch(from var(--gold) l c h / 0.3);
-      border-radius: 6px;
+      border-radius: var(--r-sm);
       padding: 0.5rem 0.75rem;
       margin-bottom: 0.75rem;
       line-height: 1.4;
+    }
+
+    /* Booking-card head — title + reply hint on one line */
+    .qf-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .hero-booking-card .qf-head .hero-quick-card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+
+    .qf-head-sub {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    /* Vehicle-type chips — write into #qf_vehicle */
+    .vtype {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .vtype-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border: 1.5px solid var(--border);
+      background: var(--bg-primary);
+      border-radius: var(--r-md);
+      padding: 0.6rem 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      text-align: left;
+      font-family: var(--font);
+    }
+
+    .vtype-chip:hover {
+      border-color: var(--gold-light);
+      transform: translateY(-1px);
+    }
+
+    .vtype-chip:active {
+      transform: scale(0.985);
+      transition-duration: 0.1s;
+    }
+
+    .vtype-chip.active {
+      border-color: var(--gold-dark);
+      background: var(--gold-wash);
+    }
+
+    .vtype-chip .ic {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--r-sm);
+      background: var(--bg-card);
+      color: var(--gold-dark);
+      border: 1px solid var(--border);
+    }
+
+    .vtype-chip.active .ic {
+      background: var(--gold-dark);
+      color: #fff;
+      border-color: var(--gold-dark);
+    }
+
+    .vtype-chip .lbl b {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .vtype-chip .lbl small {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+    }
+
+    @media (max-width: 560px) {
+      .vtype {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* scroll lock */
@@ -4049,7 +4224,7 @@
   <header>
     <nav id="navbar" aria-label="เมนูหลัก">
       <a href="#hero" class="nav-brand" aria-label="SABUYGO - กลับหน้าแรก">
-        <img src="images/logo.webp" alt="SABUYGO" class="nav-logo" width="36" height="36">
+        <img src="images/sabuygo-logo.webp" alt="SABUYGO" class="nav-logo" width="38" height="38">
         <span class="nav-brand-text">SABUYGO</span>
       </a>
       <ul class="nav-links">
@@ -4143,34 +4318,74 @@
 
           <!-- Form view — preserves original #quickInquiryForm verbatim below -->
           <div id="qfFormWrap">
-            <p class="hero-quick-card-title" id="qfCardTitle" data-i18n="qf.title">
-              สอบถามด่วน · ตอบกลับใน 15 นาที
-            </p>
+            <div class="qf-head">
+              <p class="hero-quick-card-title" id="qfCardTitle" data-i18n="qf.title">จองรถ / ขอราคา</p>
+              <span class="qf-head-sub" data-i18n="qf.sub">ตอบกลับไว</span>
+            </div>
 
             <form id="quickInquiryForm" novalidate>
               <!-- Vehicle preference — filled by car modal "จองรถคันนี้" -->
               <input type="hidden" id="qf_vehicle" name="vehicleTypePreference" value="">
               <p id="qfVehicleHelper" class="qf-vehicle-helper" style="display:none"></p>
 
-              <!-- 1+2. ชื่อ + เบอร์โทร (2-col inline เพื่อประหยัดพื้นที่) -->
-              <div class="qf-row">
-                <div class="qf-group">
-                  <label for="qf_name"><span data-i18n="qf.name">ชื่อ-นามสกุล</span> <span class="qf-req"
-                      aria-hidden="true">*</span></label>
-                  <input type="text" id="qf_name" name="customerName" placeholder="ชื่อ-นามสกุล"
-                    data-i18n-placeholder="qf.name" autocomplete="name" required aria-required="true">
-                  <span class="qf-inline-error" id="qferr_name" data-i18n="qf.err.name">กรุณากรอกชื่อ</span>
-                </div>
-                <div class="qf-group">
-                  <label for="qf_phone"><span data-i18n="qf.phone">เบอร์โทรศัพท์</span> <span class="qf-req"
-                      aria-hidden="true">*</span></label>
-                  <input type="tel" id="qf_phone" name="customerPhone" placeholder="0XX-XXX-XXXX" inputmode="tel"
-                    autocomplete="tel" required aria-required="true">
-                  <span class="qf-inline-error" id="qferr_phone" data-i18n="qf.err.phone">เบอร์ 9-10 หลัก</span>
+              <!-- 1. ประเภทรถ — chips เขียนค่าเข้า #qf_vehicle -->
+              <div class="qf-group qf-group--vtype">
+                <label id="qfVtypeLabel"><span data-i18n="qf.vtype">ประเภทรถ</span></label>
+                <div class="vtype" role="radiogroup" aria-labelledby="qfVtypeLabel">
+                  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="sedan">
+                    <span class="ic" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 13l1.5-4.5A2 2 0 018.4 7h7.2a2 2 0 011.9 1.5L19 13" />
+                        <path d="M3 13h18v4a1 1 0 01-1 1h-1a1 1 0 01-1-1H6a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
+                        <circle cx="7" cy="16" r="1" />
+                        <circle cx="17" cy="16" r="1" />
+                      </svg>
+                    </span>
+                    <span class="lbl"><b data-i18n="qf.v.sedan">รถเก๋ง</b><small data-i18n="qf.v.sedan.s">4 ที่นั่ง ·
+                        ประหยัด</small></span>
+                  </button>
+                  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="suv">
+                    <span class="ic" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12l1-5a2 2 0 012-1.5h10A2 2 0 0118 7l2 5" />
+                        <path d="M2 12h20v5a1 1 0 01-1 1h-1.5a1 1 0 01-1-1H5.5a1 1 0 01-1 1H3a1 1 0 01-1-1z" />
+                        <circle cx="7" cy="16" r="1.2" />
+                        <circle cx="17" cy="16" r="1.2" />
+                      </svg>
+                    </span>
+                    <span class="lbl"><b data-i18n="qf.v.suv">รถ SUV</b><small data-i18n="qf.v.suv.s">7 ที่นั่ง ·
+                        สัมภาระเยอะ</small></span>
+                  </button>
+                  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="premium">
+                    <span class="ic" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="6" width="18" height="12" rx="2" />
+                        <path d="M3 11h18" />
+                        <path d="M8 6v12" />
+                      </svg>
+                    </span>
+                    <span class="lbl"><b data-i18n="qf.v.premium">พรีเมียมแวน</b><small data-i18n="qf.v.premium.s">Alphard
+                        · VIP</small></span>
+                  </button>
+                  <button type="button" class="vtype-chip active" role="radio" aria-checked="true" data-value="any">
+                    <span class="ic" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M9.5 9a2.5 2.5 0 115 .4c0 1.6-2.5 2-2.5 3.6" />
+                        <line x1="12" y1="17" x2="12" y2="17" />
+                      </svg>
+                    </span>
+                    <span class="lbl"><b data-i18n="qf.v.any">ยังไม่แน่ใจ</b><small
+                        data-i18n="qf.v.any.s">ให้เราแนะนำ</small></span>
+                  </button>
                 </div>
               </div>
 
-              <!-- 3. บริการ — visually hidden in hero (driven by .hero-tabs); shown only as fallback -->
+              <!-- 2. บริการ — visually hidden in hero (driven by .hero-tabs); shown only as fallback -->
               <div class="qf-group qf-group--service">
                 <label for="qf_service"><span data-i18n="qf.service">บริการ</span> <span class="qf-req"
                     aria-hidden="true">*</span></label>
@@ -4185,7 +4400,25 @@
                   data-i18n="qf.err.service">กรุณาเลือกประเภทบริการ</span>
               </div>
 
-              <!-- 4 + 5. วันที่ + เวลา -->
+              <!-- 3 + 4. จุดรับ + จุดส่ง (required, 2-col) -->
+              <div class="qf-row">
+                <div class="qf-group">
+                  <label for="qf_pickup"><span data-i18n="qf.pickup">จุดรับ</span> <span class="qf-req"
+                      aria-hidden="true">*</span></label>
+                  <input type="text" id="qf_pickup" name="pickupLocation" placeholder="เช่น สุวรรณภูมิ, โรงแรม..."
+                    data-i18n-placeholder="qf.pickup.placeholder" autocomplete="off" required aria-required="true">
+                  <span class="qf-inline-error" id="qferr_pickup" data-i18n="qf.err.pickup">กรุณากรอกจุดรับ</span>
+                </div>
+                <div class="qf-group">
+                  <label for="qf_dropoff"><span data-i18n="qf.dropoff">จุดส่ง</span> <span class="qf-req"
+                      aria-hidden="true">*</span></label>
+                  <input type="text" id="qf_dropoff" name="dropoffLocation" placeholder="เช่น พัทยา, หัวหิน..."
+                    data-i18n-placeholder="qf.dropoff.placeholder" autocomplete="off" required aria-required="true">
+                  <span class="qf-inline-error" id="qferr_dropoff" data-i18n="qf.err.dropoff">กรุณากรอกจุดส่ง</span>
+                </div>
+              </div>
+
+              <!-- 5 + 6. วันที่ + เวลา -->
               <div class="qf-row">
                 <div class="qf-group">
                   <label for="qf_date"><span data-i18n="qf.date">วันที่เดินทาง</span> <span class="qf-req"
@@ -4201,21 +4434,21 @@
                 </div>
               </div>
 
-              <!-- 6 + 7. จุดรับ + จุดส่ง (required, 2-col ใช้พื้นที่เท่า date/time) -->
+              <!-- 7 + 8. ชื่อ + เบอร์โทร — ท้ายฟอร์ม ใกล้ปุ่มส่ง -->
               <div class="qf-row">
                 <div class="qf-group">
-                  <label for="qf_pickup"><span data-i18n="qf.pickup">จุดรับ</span> <span class="qf-req"
+                  <label for="qf_name"><span data-i18n="qf.name">ชื่อ-นามสกุล</span> <span class="qf-req"
                       aria-hidden="true">*</span></label>
-                  <input type="text" id="qf_pickup" name="pickupLocation" placeholder="เช่น สุวรรณภูมิ, โรงแรม..."
-                    data-i18n-placeholder="qf.pickup.placeholder" autocomplete="off" required aria-required="true">
-                  <span class="qf-inline-error" id="qferr_pickup" data-i18n="qf.err.pickup">กรุณากรอกจุดรับ</span>
+                  <input type="text" id="qf_name" name="customerName" placeholder="ชื่อ-นามสกุล"
+                    data-i18n-placeholder="qf.name" autocomplete="name" required aria-required="true">
+                  <span class="qf-inline-error" id="qferr_name" data-i18n="qf.err.name">กรุณากรอกชื่อ</span>
                 </div>
                 <div class="qf-group">
-                  <label for="qf_dropoff"><span data-i18n="qf.dropoff">จุดส่ง</span> <span class="qf-req"
+                  <label for="qf_phone"><span data-i18n="qf.phone">เบอร์โทรศัพท์</span> <span class="qf-req"
                       aria-hidden="true">*</span></label>
-                  <input type="text" id="qf_dropoff" name="dropoffLocation" placeholder="เช่น พัทยา, หัวหิน..."
-                    data-i18n-placeholder="qf.dropoff.placeholder" autocomplete="off" required aria-required="true">
-                  <span class="qf-inline-error" id="qferr_dropoff" data-i18n="qf.err.dropoff">กรุณากรอกจุดส่ง</span>
+                  <input type="tel" id="qf_phone" name="customerPhone" placeholder="0XX-XXX-XXXX" inputmode="tel"
+                    autocomplete="tel" required aria-required="true">
+                  <span class="qf-inline-error" id="qferr_phone" data-i18n="qf.err.phone">เบอร์ 9-10 หลัก</span>
                 </div>
               </div>
 
@@ -4968,7 +5201,10 @@
 
         <!-- Col 1: Brand -->
         <div class="footer-col footer-brand">
-          <img src="images/logo.webp" alt="SABUYGO" class="footer-logo" width="36" height="36">
+          <div class="footer-logo">
+            <img src="images/sabuygo-logo.webp" alt="" aria-hidden="true" width="44" height="44">
+            <span class="nav-brand-text">SABUYGO</span>
+          </div>
           <p class="footer-tagline-en">Premium Chauffeur Service</p>
           <span class="footer-tagline-divider"></span>
           <p class="footer-tagline-th" data-i18n="ft.tagline.th">รถพร้อมคนขับระดับพรีเมียม</p>
@@ -5483,7 +5719,13 @@
         'cookie.save': 'บันทึกการตั้งค่า',
         'cookie.accept.all': 'ยอมรับทั้งหมด',
         // Hero quick inquiry form
-        'qf.title': 'สอบถามด่วน · ตอบกลับใน 15 นาที',
+        'qf.title': 'จองรถ / ขอราคา',
+        'qf.sub': 'ตอบกลับไว',
+        'qf.vtype': 'ประเภทรถ',
+        'qf.v.sedan': 'รถเก๋ง', 'qf.v.sedan.s': '4 ที่นั่ง · ประหยัด',
+        'qf.v.suv': 'รถ SUV', 'qf.v.suv.s': '7 ที่นั่ง · สัมภาระเยอะ',
+        'qf.v.premium': 'พรีเมียมแวน', 'qf.v.premium.s': 'Alphard · VIP',
+        'qf.v.any': 'ยังไม่แน่ใจ', 'qf.v.any.s': 'ให้เราแนะนำ',
         'qf.name': 'ชื่อ-นามสกุล',
         'qf.phone': 'เบอร์โทรศัพท์',
         'qf.service': 'บริการ',
@@ -5599,7 +5841,13 @@
         'cookie.save': 'Save Settings',
         'cookie.accept.all': 'Accept All',
         // Hero quick inquiry form
-        'qf.title': 'Quick Inquiry · We reply within 15 min',
+        'qf.title': 'Book / Get a quote',
+        'qf.sub': 'Fast reply',
+        'qf.vtype': 'Vehicle type',
+        'qf.v.sedan': 'Sedan', 'qf.v.sedan.s': '4 seats · value',
+        'qf.v.suv': 'SUV', 'qf.v.suv.s': '7 seats · more luggage',
+        'qf.v.premium': 'Premium van', 'qf.v.premium.s': 'Alphard · VIP',
+        'qf.v.any': 'Not sure', 'qf.v.any.s': 'Let us suggest',
         'qf.name': 'Full Name',
         'qf.phone': 'Phone Number',
         'qf.service': 'Service',
@@ -5718,6 +5966,28 @@
     // then swap in the fresh list from BOS as soon as it arrives.
     populateServiceSelect();
     loadServiceTypes();
+
+    // === Vehicle-type chips → drive #qf_vehicle hidden input ===
+    (function wireVtypeChips() {
+      const chips = document.querySelectorAll('.vtype-chip');
+      const vehField = document.getElementById('qf_vehicle');
+      if (!chips.length || !vehField) return;
+      // ส่งค่าไทยอ่านง่ายให้ทีมแอดมิน BOS; 'any' = ไม่ระบุ (ไม่ส่ง field)
+      const VTYPE_LABELS = { sedan: 'รถเก๋ง', suv: 'รถ SUV', premium: 'พรีเมียมแวน', any: '' };
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => {
+            c.classList.remove('active');
+            c.setAttribute('aria-checked', 'false');
+          });
+          chip.classList.add('active');
+          chip.setAttribute('aria-checked', 'true');
+          vehField.value = VTYPE_LABELS[chip.dataset.value] || '';
+          const helper = document.getElementById('qfVehicleHelper');
+          if (helper) helper.style.display = 'none';
+        });
+      });
+    })();
 
     // === Hero service-type tabs → drive #qf_service select ===
     (function wireHeroTabs() {
@@ -6559,6 +6829,12 @@
           helper.textContent = tpl.replace('{car}', car.name);
           helper.style.display = 'block';
         }
+
+        // เลือกคันจริงจาก modal แล้ว — เคลียร์ chips ประเภทรถ
+        document.querySelectorAll('.vtype-chip').forEach(function (c) {
+          c.classList.remove('active');
+          c.setAttribute('aria-checked', 'false');
+        });
 
         closeModal();
 
