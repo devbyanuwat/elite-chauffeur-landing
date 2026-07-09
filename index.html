@@ -954,8 +954,16 @@
       padding-right: 2.6rem;
     }
 
-    #b_date::-webkit-calendar-picker-indicator,
-    #b_time::-webkit-calendar-picker-indicator {
+    #b_time {
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    #b_time:has(option[value=""]:checked) {
+      color: var(--text-tertiary);
+    }
+
+    #b_date::-webkit-calendar-picker-indicator {
       position: absolute;
       right: 0;
       width: 2.6rem;
@@ -2168,7 +2176,9 @@
                 <div class="field">
                   <label class="field-label" for="b_time" data-i18n="book.time">เวลา</label>
                   <span class="field-picker">
-                    <input type="time" id="b_time" name="time">
+                    <select id="b_time" name="time">
+                      <option value="" data-i18n="book.time.ph">เลือกเวลา</option>
+                    </select>
                     <svg class="field-picker-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
                   </span>
                 </div>
@@ -2765,6 +2775,18 @@
           ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
           ('0' + now.getDate()).slice(-2);
       }
+      /* ---------- Time select — 24h slots, no native 12h fallback (iOS) ---------- */
+      var timeSel = document.getElementById('b_time');
+      if (timeSel) {
+        for (var h = 0; h < 24; h++) {
+          for (var m = 0; m < 60; m += 15) {
+            var v = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
+            var o = document.createElement('option');
+            o.value = v; o.textContent = v;
+            timeSel.appendChild(o);
+          }
+        }
+      }
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var pickup = document.getElementById('b_pickup');
@@ -2868,7 +2890,7 @@
           'book.title': 'Book / Get a quote', 'book.sub': 'Fast reply', 'book.vtype': 'Vehicle type *',
           'book.v.sedan': 'Sedan', 'book.v.sedan.s': '4 seats · value', 'book.v.suv': 'SUV', 'book.v.suv.s': '7 seats · more luggage',
           'book.v.premium': 'Premium van', 'book.v.premium.s': 'Alphard · VIP', 'book.v.any': 'Not sure', 'book.v.any.s': 'Let us suggest',
-          'book.pickup': 'Pickup *', 'book.dropoff': 'Destination *', 'book.date': 'Date', 'book.time': 'Time', 'book.pax': 'Passengers',
+          'book.pickup': 'Pickup *', 'book.dropoff': 'Destination *', 'book.date': 'Date', 'book.time': 'Time', 'book.time.ph': 'Select time', 'book.pax': 'Passengers',
           'book.name': 'Full name *', 'book.phone': 'Phone *',
           'book.submit': 'Get a quote', 'book.note': 'Free to request · our team replies within minutes', 'book.err': 'Please fill in this field',
           'book.svc.airport': 'Airport transfer', 'book.svc.rental': 'Car + driver', 'book.svc.b2b': 'B2B', 'book.svc.fullday': 'Full-day charter',
