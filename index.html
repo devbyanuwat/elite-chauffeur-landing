@@ -730,6 +730,11 @@
       min-width: 0;
     }
 
+    /* Clear space so submit CTA never sits under the fixed .line-float pill */
+    #bookingForm {
+      padding-bottom: 72px;
+    }
+
     .booking-head {
       display: flex;
       align-items: baseline;
@@ -924,6 +929,39 @@
 
     .field input.invalid:focus {
       box-shadow: 0 0 0 3px oklch(54% 0.19 27 / 0.14);
+    }
+
+    .field-picker {
+      position: relative;
+      display: block;
+    }
+
+    .field-picker-ic {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+
+    #b_date,
+    #b_time {
+      padding-right: 2.6rem;
+    }
+
+    #b_date::-webkit-calendar-picker-indicator,
+    #b_time::-webkit-calendar-picker-indicator {
+      position: absolute;
+      right: 0;
+      width: 2.6rem;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      opacity: 0;
+      cursor: pointer;
     }
 
     .field-err {
@@ -2120,11 +2158,17 @@
                 </div>
                 <div class="field">
                   <label class="field-label" for="b_date" data-i18n="book.date">วันที่</label>
-                  <input type="date" id="b_date" name="date">
+                  <span class="field-picker">
+                    <input type="date" id="b_date" name="date">
+                    <svg class="field-picker-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </span>
                 </div>
                 <div class="field">
                   <label class="field-label" for="b_time" data-i18n="book.time">เวลา</label>
-                  <input type="time" id="b_time" name="time">
+                  <span class="field-picker">
+                    <input type="time" id="b_time" name="time">
+                    <svg class="field-picker-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+                  </span>
                 </div>
                 <div class="field full">
                   <label class="field-label" for="b_pax" data-i18n="book.pax">จำนวนผู้โดยสาร</label>
