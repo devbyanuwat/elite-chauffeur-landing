@@ -1989,6 +1989,29 @@
         padding: 1rem;
       }
 
+      /* Service tabs become a 2x2 chip grid on mobile so all 4 options fit — no horizontal bleed off-screen */
+      .svc-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
+        overflow-x: visible;
+        border-bottom: none;
+      }
+
+      .svc-tab {
+        justify-content: center;
+        text-align: center;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-md);
+        padding: 0.6rem 0.4rem;
+        margin: 0;
+      }
+
+      .svc-tab.active {
+        border-color: var(--gold-dark);
+        background: var(--gold-wash);
+      }
+
       .vtype {
         grid-template-columns: 1fr;
       }
@@ -2008,6 +2031,47 @@
 
       .hero-trust {
         gap: 1.2rem;
+      }
+    }
+
+    /* Desktop: compact the booking form so it fits within the viewport (submit stays above the fold) */
+    @media (min-width: 561px) {
+      .hero {
+        padding-top: 84px;
+        padding-bottom: 56px;
+      }
+
+      .booking {
+        padding: 1.3rem 1.6rem;
+      }
+
+      .booking-head {
+        margin-bottom: 0.75rem;
+      }
+
+      .svc-tabs {
+        margin-bottom: 0.8rem;
+      }
+
+      .vtype {
+        margin-bottom: 0.7rem;
+        gap: 0.45rem;
+      }
+
+      .vtype-chip {
+        padding: 0.5rem 0.85rem;
+      }
+
+      .field-row {
+        margin-bottom: 0.75rem;
+      }
+
+      .field-label {
+        margin-bottom: 0.28rem;
+      }
+
+      #bookingForm {
+        padding-bottom: 16px;
       }
     }
 
