@@ -1,11 +1,15 @@
 ---
-// TEMPORARY minimal page — still not the final homepage.
-// The full section list (Stats, Services, Routes, Fleet, How, Why, FAQ,
-// Testimonials, CTA band) lands in Task 6. For now this file exists so
-// `npm run build` exercises Base.astro plus the Task 5 conversion core
-// (Hero + ServiceTabs + BookingForm) end-to-end.
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Stats from '../components/sections/Stats.astro';
+import Services from '../components/sections/Services.astro';
+import Routes from '../components/sections/Routes.astro';
+import Fleet from '../components/sections/Fleet.astro';
+import How from '../components/sections/How.astro';
+import Why from '../components/sections/Why.astro';
+import Reviews from '../components/sections/Reviews.astro';
+import Faq from '../components/sections/Faq.astro';
+import Cta from '../components/sections/Cta.astro';
 import {
   limousineServiceSchema,
   websiteSchema,
@@ -26,5 +30,14 @@ const canonical = 'https://sabuygo.com';
 >
   <main id="main">
     <Hero />
+    <Stats />
+    <Services />
+    <Routes />
+    <Fleet />
+    <How />
+    <Why />
+    <Reviews />
+    <Faq />
+    <Cta />
   </main>
 </Base>

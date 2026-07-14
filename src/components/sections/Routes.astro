@@ -1,0 +1,136 @@
+---
+---
+
+<section class="block" id="routes" style="padding-top:0">
+  <div class="wrap wrap-wide">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="rt.eyebrow">เส้นทางยอดนิยม</span>
+      <h2 data-i18n="rt.title">ปลายทางที่ลูกค้าเลือกบ่อย</h2>
+      <p data-i18n="rt.sub">เส้นทางในเมืองและต่างจังหวัด พร้อมคนขับที่รู้ทางเป็นอย่างดี</p>
+    </div>
+    <div class="routes-grid">
+      <a class="route-card reveal" href="airport-transfer/suvarnabhumi-bkk/">
+        <img src="/images/service1.webp" alt="บริการรับส่งสนามบินสุวรรณภูมิ พร้อมคนขับ" width="400" height="533" loading="lazy">
+        <div class="route-body">
+          <span class="kicker" data-i18n="rt.airport">สนามบิน</span>
+          <h3 data-i18n="rt.bkk">สุวรรณภูมิ (BKK)</h3>
+          <div class="route-meta"><span data-i18n="rt.bkk.m">รับส่ง 24 ชม.</span></div>
+        </div>
+      </a>
+      <a class="route-card reveal" href="routes/bangkok-to-pattaya/">
+        <img src="/images/service-business.webp" alt="เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปพัทยา" width="400" height="533" loading="lazy">
+        <div class="route-body">
+          <span class="kicker" data-i18n="rt.trip">เที่ยวต่างจังหวัด</span>
+          <h3 data-i18n="rt.pattaya">พัทยา</h3>
+          <div class="route-meta"><span>~147 กม.</span><span>~2 ชม.</span></div>
+        </div>
+      </a>
+      <a class="route-card reveal" href="routes/bangkok-to-hua-hin/">
+        <img src="/images/service2.webp" alt="เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปหัวหิน" width="400" height="533" loading="lazy">
+        <div class="route-body">
+          <span class="kicker" data-i18n="rt.trip">เที่ยวต่างจังหวัด</span>
+          <h3 data-i18n="rt.huahin">หัวหิน</h3>
+          <div class="route-meta"><span>~200 กม.</span><span>~2.5 ชม.</span></div>
+        </div>
+      </a>
+      <a class="route-card reveal" href="airport-transfer/don-mueang-dmk/">
+        <img src="/images/service3.webp" alt="บริการรับส่งสนามบินดอนเมือง พร้อมคนขับ" width="400" height="533" loading="lazy">
+        <div class="route-body">
+          <span class="kicker" data-i18n="rt.airport">สนามบิน</span>
+          <h3 data-i18n="rt.dmk">ดอนเมือง (DMK)</h3>
+          <div class="route-meta"><span data-i18n="rt.dmk.m">รับส่ง 24 ชม.</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .routes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.1rem;
+  }
+
+  .route-card {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    color: #fff;
+    isolation: isolate;
+    transition: transform 0.35s var(--ease-out);
+  }
+
+  .route-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .route-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    /* unify mixed photo tones into one warm direction */
+    filter: saturate(0.95) sepia(0.1);
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .route-card:hover img {
+    transform: scale(1.06);
+  }
+
+  .route-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, oklch(20% 0.02 235 / 0) 35%, oklch(18% 0.02 235 / 0.85) 100%);
+  }
+
+  .route-body {
+    padding: 1.2rem;
+  }
+
+  .route-body .kicker {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .route-body h3 {
+    color: #fff;
+    font-size: 1.3rem;
+    margin: 0.3rem 0 0.5rem;
+  }
+
+  .route-meta {
+    display: flex;
+    gap: 0.9rem;
+    font-size: 0.78rem;
+    opacity: 0.92;
+  }
+
+  .route-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  @media (max-width: 880px) {
+    .routes-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .routes-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -121,5 +121,43 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
         boot();
       }
     </script>
+
+    <!-- Reveal on scroll — ported from live index.html inline script (~2935-2946).
+         .reveal elements are rendered across many section components (Task 6),
+         so this single observer lives here (global, runs once per page) rather
+         than being duplicated per-component. querySelectorAll(...).forEach is
+         null-safe by construction — it simply runs zero times on pages with no
+         .reveal elements. -->
+    <script>
+      function boot() {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reduce && 'IntersectionObserver' in window) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (en) {
+                if (en.isIntersecting) {
+                  en.target.classList.add('in');
+                  io.unobserve(en.target);
+                }
+              });
+            },
+            { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+          );
+          document.querySelectorAll('.reveal').forEach(function (el) {
+            io.observe(el);
+          });
+        } else {
+          document.querySelectorAll('.reveal').forEach(function (el) {
+            el.classList.add('in');
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    </script>
   </body>
 </html>

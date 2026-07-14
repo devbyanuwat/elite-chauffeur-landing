@@ -1,0 +1,140 @@
+---
+---
+
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow" data-i18n="fq.eyebrow">คำถามที่พบบ่อย</span>
+      <h2 data-i18n="fq.title">เรื่องที่ลูกค้าถามบ่อย</h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span data-i18n="fq.1.q">จองล่วงหน้ากี่วัน?</span><span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a"><p data-i18n="fq.1.a">แนะนำจองล่วงหน้าอย่างน้อย 1 วันเพื่อความแน่นอน แต่กรณีเร่งด่วนสามารถทักผ่าน LINE เพื่อเช็ครถว่างได้ตลอด 24 ชั่วโมง</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span data-i18n="fq.2.q">ราคารวมอะไรบ้าง?</span><span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a"><p data-i18n="fq.2.a">ราคารวมค่ารถ คนขับ และน้ำมันตามแพ็กเกจ ระบุชัดเจนก่อนยืนยันการจอง ค่าทางด่วนและที่จอดพิเศษจะแจ้งให้ทราบล่วงหน้า ไม่มีบวกเพิ่มทีหลัง</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span data-i18n="fq.3.q">ชำระเงินอย่างไร?</span><span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a"><p data-i18n="fq.3.a">รองรับโอนผ่านธนาคารและพร้อมเพย์ ทีมงานจะส่งรายละเอียดการชำระเงินหลังยืนยันการจอง</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          <span data-i18n="fq.4.q">ให้บริการพื้นที่ไหนบ้าง?</span><span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a"><p data-i18n="fq.4.a">ให้บริการกรุงเทพฯ ปริมณฑล และเดินทางต่างจังหวัดทั่วไทย เส้นทางยอดนิยมเช่น พัทยา หัวหิน รวมถึงรับส่งสนามบินสุวรรณภูมิและดอนเมือง</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-list {
+    max-width: 800px;
+    margin-inline: auto;
+    border-top: 1px solid var(--border);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .faq-q {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 1.04rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+    padding: 1.4rem 0.25rem;
+    transition: color 0.2s;
+  }
+
+  .faq-q:hover {
+    color: var(--gold-dark);
+  }
+
+  .faq-q .plus {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    position: relative;
+    transition: transform 0.3s var(--ease-out);
+    color: var(--gold-dark);
+  }
+
+  .faq-q .plus::before,
+  .faq-q .plus::after {
+    content: "";
+    position: absolute;
+    background: currentColor;
+    border-radius: 2px;
+  }
+
+  .faq-q .plus::before {
+    left: 50%;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    transform: translateX(-50%);
+    transition: opacity 0.3s;
+  }
+
+  .faq-q .plus::after {
+    top: 50%;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+
+  .faq-item.open .plus::before {
+    opacity: 0;
+  }
+
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s var(--ease-out);
+  }
+
+  .faq-a p {
+    padding: 0 0.25rem 1.4rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 680px;
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    /* ---------- FAQ accordion ---------- */
+    document.querySelectorAll('.faq-q').forEach(function (q) {
+      q.addEventListener('click', function () {
+        var item = q.closest('.faq-item');
+        if (!item) return;
+        var ans = item.querySelector('.faq-a') as HTMLElement | null;
+        var open = item.classList.toggle('open');
+        q.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (ans) ans.style.maxHeight = open ? ans.scrollHeight + 'px' : '0';
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,122 @@
+---
+---
+
+<section class="block" id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="srv.eyebrow">บริการของเรา</span>
+      <h2 data-i18n="srv.title">ครบทุกการเดินทาง ในที่เดียว</h2>
+      <p data-i18n="srv.sub">ไม่ว่าจะรับส่งสนามบิน ประชุมธุรกิจ หรือพาครอบครัวเที่ยว เรามีรถและคนขับที่เหมาะกับทุกโอกาส</p>
+    </div>
+    <div class="services-grid">
+      <article class="service-card reveal">
+        <div class="service-media"><img src="/images/service-airport.webp" alt="บริการรับส่งสนามบิน" width="600" height="450" loading="lazy"></div>
+        <div class="service-body">
+          <h3 data-i18n="srv.1.t">รับส่งสนามบิน</h3>
+          <p data-i18n="srv.1.d">ติดตามเที่ยวบินแบบเรียลไทม์ คนขับรอรับตรงจุด ช่วยยกสัมภาระ ราคาคงที่ไม่บวกเพิ่ม</p>
+          <a class="service-link" href="#booking" data-i18n="srv.more">ดูรายละเอียด
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </article>
+      <article class="service-card reveal">
+        <div class="service-media"><img src="/images/service-business.webp" alt="บริการรถสำหรับเดินทางธุรกิจ" width="600" height="450" loading="lazy"></div>
+        <div class="service-body">
+          <h3 data-i18n="srv.2.t">เดินทางธุรกิจ</h3>
+          <p data-i18n="srv.2.d">คนขับสุภาพ ตรงเวลา รถสะอาดพร้อมรับลูกค้าคนสำคัญ เหมาะกับการประชุมและรับรองแขก VIP</p>
+          <a class="service-link" href="#booking" data-i18n="srv.more">ดูรายละเอียด
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </article>
+      <article class="service-card reveal">
+        <div class="service-media"><img src="/images/service-rental.webp" alt="บริการเช่ารถพร้อมคนขับเที่ยวต่างจังหวัด" width="600" height="450" loading="lazy"></div>
+        <div class="service-body">
+          <h3 data-i18n="srv.3.t">เช่ารถเที่ยว พร้อมคนขับ</h3>
+          <p data-i18n="srv.3.d">เหมาวันเที่ยวต่างจังหวัด คนขับชำนาญเส้นทาง พักผ่อนได้เต็มที่ ไม่ต้องเหนื่อยขับเอง</p>
+          <a class="service-link" href="#fleet" data-i18n="srv.more">ดูรายละเอียด
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .service-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  }
+
+  .service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .service-media {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  .service-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .service-card:hover .service-media img {
+    transform: scale(1.05);
+  }
+
+  .service-body {
+    padding: 1.5rem 1.5rem 1.7rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .service-body h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .service-body p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .service-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold-dark);
+  }
+
+  .service-link svg {
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  .service-card:hover .service-link svg {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 880px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
