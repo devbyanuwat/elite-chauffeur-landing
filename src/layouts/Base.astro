@@ -1,0 +1,101 @@
+---
+import '../styles/global.css';
+import JsonLd from '../components/JsonLd.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  lang?: 'th' | 'en';
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = '/images/og-cover.webp',
+  lang = 'th',
+  jsonLd = [],
+} = Astro.props;
+
+const resolvedOgImage = new URL(ogImage, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta
+      name="keywords"
+      content="sabuygo, สบายโก, elite chauffeur, รถเช่าพร้อมคนขับ, รถเช่า กรุงเทพ, เช่ารถพร้อมคนขับ, รถรับส่งสนามบิน, รถเช่ารายวัน, รับส่งสุวรรณภูมิ, รับส่งดอนเมือง, airport transfer bangkok, premium car rental bangkok, รถรับส่งผู้บริหาร, corporate car service, VIP transfer, เช่ารถ VIP, private car hire thailand, chauffeur service thailand, รถเช่า เที่ยว"
+    />
+    <meta name="author" content="SABUYGO" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content="SABUYGO | Premium Chauffeur Service Bangkok" />
+    <meta
+      property="og:description"
+      content="บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม."
+    />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="2000" />
+    <meta property="og:image:alt" content="Sabuygo — Premium Car Rental & Chauffeur Service Bangkok" />
+    <meta property="og:locale" content="th_TH" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SABUYGO | Premium Chauffeur Service Bangkok" />
+    <meta
+      name="twitter:description"
+      content="บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม."
+    />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="/images/logo.webp" />
+    <link rel="apple-touch-icon" href="/images/logo.webp" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+
+    {jsonLd.map((schema) => <JsonLd schema={schema} />)}
+
+    <!-- Cloudflare Turnstile — anti-bot widget (async, non-blocking) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <!-- Preload LCP elements: full-bleed hero photo + nav logo — ลด LCP time -->
+    <link rel="preload" as="image" href="/images/hero-bg.travelv1-baseline.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/sabuygo-logo.webp" />
+
+    <!-- Fonts: Anuphan (Thai) + Fraunces (display) + Hanken Grotesk (Latin) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap"
+      />
+    </noscript>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

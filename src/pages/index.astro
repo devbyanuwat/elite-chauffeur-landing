@@ -1,0 +1,25 @@
+---
+// TEMPORARY minimal page for Task 2 head-parity verification.
+// The real homepage markup lands in Task 6 — this file exists only so
+// `npm run build` can exercise Base.astro end-to-end.
+import Base from '../layouts/Base.astro';
+import {
+  limousineServiceSchema,
+  websiteSchema,
+  siteNavigationSchema,
+  breadcrumbSchema,
+} from '../lib/schema.ts';
+
+const title = 'SABUYGO | Premium Car Rental & Chauffeur Service Bangkok';
+const description =
+  'บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ รับส่งสนามบิน ธุรกิจ ท่องเที่ยว มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม. Premium chauffeur service in Bangkok.';
+const canonical = 'https://sabuygo.com';
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={[limousineServiceSchema, websiteSchema, siteNavigationSchema, breadcrumbSchema]}
+>
+  <p>ok</p>
+</Base>
