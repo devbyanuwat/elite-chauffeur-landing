@@ -12,14 +12,13 @@ on:
       - main
       - dev
     paths:
-      # Build ใหม่เมื่อ landing page files หรือ workflow เปลี่ยน
-      - "index.html"
-      - "privacy.html"
-      - "images/**"
-      - "airport-transfer/**"
-      - "routes/**"
-      - "sitemap.xml"
-      - "robots.txt"
+      # Build ใหม่เมื่อ Astro source หรือ build config เปลี่ยน
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "astro.config.mjs"
+      - "tsconfig.json"
       - "Dockerfile"
       - "nginx.conf"
       - ".github/workflows/deploy.yml"
