@@ -1,0 +1,271 @@
+---
+---
+
+<div class="svc-tabs" role="radiogroup" aria-label="ประเภทการใช้บริการ">
+  <button type="button" class="svc-tab active" role="radio" aria-checked="true" data-svc="airport">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+    <span data-i18n="book.svc.airport">รับส่งสนามบิน</span>
+  </button>
+  <button type="button" class="svc-tab" role="radio" aria-checked="false" data-svc="rental">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+    <span data-i18n="book.svc.rental">เช่ารถ + คนขับ</span>
+  </button>
+  <button type="button" class="svc-tab" role="radio" aria-checked="false" data-svc="b2b">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    <span data-i18n="book.svc.b2b">B2B</span>
+  </button>
+  <button type="button" class="svc-tab" role="radio" aria-checked="false" data-svc="fullday">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span data-i18n="book.svc.fullday">เหมาทั้งวัน</span>
+  </button>
+</div>
+<input type="hidden" name="serviceType" id="serviceType" value="airport">
+<span class="field-label" data-i18n="book.vtype">ประเภทรถ <span class="req">*</span></span>
+<div class="vtype" role="radiogroup" aria-label="เลือกประเภทรถ">
+  <button type="button" class="vtype-chip active" role="radio" aria-checked="true" data-value="sedan">
+    <span class="ic" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.5-4.5A2 2 0 018.4 7h7.2a2 2 0 011.9 1.5L19 13"/><path d="M3 13h18v4a1 1 0 01-1 1h-1a1 1 0 01-1-1H6a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><circle cx="7" cy="16" r="1"/><circle cx="17" cy="16" r="1"/></svg>
+    </span>
+    <span class="lbl"><b data-i18n="book.v.sedan">รถเก๋ง</b><small data-i18n="book.v.sedan.s">4 ที่นั่ง · ประหยัด</small></span>
+  </button>
+  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="suv">
+    <span class="ic" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l1-5a2 2 0 012-1.5h10A2 2 0 0118 7l2 5"/><path d="M2 12h20v5a1 1 0 01-1 1h-1.5a1 1 0 01-1-1H5.5a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><circle cx="7" cy="16" r="1.2"/><circle cx="17" cy="16" r="1.2"/></svg>
+    </span>
+    <span class="lbl"><b data-i18n="book.v.suv">รถ SUV</b><small data-i18n="book.v.suv.s">7 ที่นั่ง · สัมภาระเยอะ</small></span>
+  </button>
+  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="premium">
+    <span class="ic" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 11h18"/><path d="M8 6v12"/></svg>
+    </span>
+    <span class="lbl"><b data-i18n="book.v.premium">พรีเมียมแวน</b><small data-i18n="book.v.premium.s">Alphard · VIP</small></span>
+  </button>
+  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="any">
+    <span class="ic" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 115 .4c0 1.6-2.5 2-2.5 3.6"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+    </span>
+    <span class="lbl"><b data-i18n="book.v.any">ยังไม่แน่ใจ</b><small data-i18n="book.v.any.s">ให้เราแนะนำ</small></span>
+  </button>
+</div>
+<input type="hidden" name="vehicleType" id="vehicleType" value="sedan">
+
+<style>
+  .svc-tabs {
+    display: flex;
+    gap: 0.15rem;
+    margin-bottom: 1.3rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .svc-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .svc-tab {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    padding: 0.7rem 0.65rem;
+    font-family: var(--font);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .svc-tab svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .svc-tab:hover {
+    color: var(--text-secondary);
+  }
+
+  .svc-tab.active {
+    color: var(--gold-dark);
+    border-bottom-color: var(--gold-dark);
+    font-weight: 600;
+  }
+
+  /* .field-label base rule duplicated from BookingForm.astro — Astro scopes
+     component styles per-component, so the shared "ประเภทรถ" label here needs
+     its own copy of the rule (same pattern as .nav-wordmark in Task 4). */
+  .field-label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.45rem;
+    letter-spacing: 0.01em;
+  }
+
+  .field-label .req {
+    color: var(--gold-dark);
+  }
+
+  .vtype {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.55rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .vtype-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1.5px solid var(--border);
+    background: var(--bg-primary);
+    border-radius: var(--r-md);
+    padding: 0.7rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    text-align: left;
+    font-family: var(--font);
+  }
+
+  .vtype-chip:hover {
+    border-color: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .vtype-chip:active {
+    transform: scale(0.985);
+    transition-duration: 0.1s;
+  }
+
+  .vtype-chip.active {
+    border-color: var(--gold-dark);
+    background: var(--gold-wash);
+  }
+
+  .vtype-chip .ic {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-sm);
+    background: var(--bg-card);
+    color: var(--gold-dark);
+    border: 1px solid var(--border);
+  }
+
+  .vtype-chip.active .ic {
+    background: var(--gold-dark);
+    color: #fff;
+    border-color: var(--gold-dark);
+  }
+
+  .vtype-chip .lbl b {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .vtype-chip .lbl small {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 560px) {
+    /* Service tabs become a 2x2 chip grid on mobile so all 4 options fit — no horizontal bleed off-screen */
+    .svc-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      overflow-x: visible;
+      border-bottom: none;
+    }
+
+    .svc-tab {
+      justify-content: center;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 0.6rem 0.4rem;
+      margin: 0;
+    }
+
+    .svc-tab.active {
+      border-color: var(--gold-dark);
+      background: var(--gold-wash);
+    }
+
+    .vtype {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Desktop: compact the booking form so it fits within the viewport (submit stays above the fold) */
+  @media (min-width: 561px) {
+    .svc-tabs {
+      margin-bottom: 0.8rem;
+    }
+
+    .vtype {
+      margin-bottom: 0.7rem;
+      gap: 0.45rem;
+    }
+
+    .vtype-chip {
+      padding: 0.5rem 0.85rem;
+    }
+
+    .field-label {
+      margin-bottom: 0.28rem;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    /* ---------- Vehicle type chips ---------- */
+    var chips = document.querySelectorAll('.vtype-chip');
+    var vtypeInput = document.getElementById('vehicleType') as HTMLInputElement | null;
+    function selectVtype(value: string) {
+      chips.forEach(function (c) {
+        var on = (c as HTMLElement).dataset.value === value;
+        c.classList.toggle('active', on);
+        c.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      if (vtypeInput) vtypeInput.value = value;
+    }
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () { selectVtype((chip as HTMLElement).dataset.value || ''); });
+    });
+
+    /* ---------- Service type tabs ---------- */
+    var svcTabs = document.querySelectorAll('.svc-tab');
+    var svcInput = document.getElementById('serviceType') as HTMLInputElement | null;
+    var svcHints: Record<string, string> = { airport: 'สนามบิน / ที่พัก', rental: 'จุดเริ่มต้นการเดินทาง', b2b: 'จุดรับพนักงาน / แขกบริษัท', fullday: 'จุดเริ่มต้น' };
+    function selectSvc(v: string) {
+      svcTabs.forEach(function (t) {
+        var on = (t as HTMLElement).dataset.svc === v;
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      if (svcInput) svcInput.value = v;
+      var pk = document.getElementById('b_pickup') as HTMLInputElement | null;
+      if (pk && svcHints[v]) pk.placeholder = svcHints[v];
+    }
+    svcTabs.forEach(function (t) {
+      t.addEventListener('click', function () { selectSvc((t as HTMLElement).dataset.svc || ''); });
+    });
+  })();
+</script>

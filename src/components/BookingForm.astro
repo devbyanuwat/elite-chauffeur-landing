@@ -1,0 +1,397 @@
+---
+import ServiceTabs from './ServiceTabs.astro';
+---
+
+<form id="bookingForm" novalidate>
+  <ServiceTabs />
+
+  <div class="field-row">
+    <div class="field full">
+      <label class="field-label" for="b_pickup" data-i18n="book.pickup">จุดรับ <span class="req">*</span></label>
+      <input type="text" id="b_pickup" name="pickup" placeholder="เช่น สนามบินสุวรรณภูมิ" required aria-describedby="b_pickup_err">
+      <p class="field-err" id="b_pickup_err" data-i18n="book.err">กรุณากรอกข้อมูลช่องนี้</p>
+    </div>
+    <div class="field full">
+      <label class="field-label" for="b_dropoff" data-i18n="book.dropoff">ปลายทาง <span class="req">*</span></label>
+      <input type="text" id="b_dropoff" name="dropoff" placeholder="เช่น โรงแรมในพัทยา" required aria-describedby="b_dropoff_err">
+      <p class="field-err" id="b_dropoff_err" data-i18n="book.err">กรุณากรอกข้อมูลช่องนี้</p>
+    </div>
+    <div class="field">
+      <label class="field-label" for="b_date" data-i18n="book.date">วันที่</label>
+      <span class="field-picker">
+        <input type="date" id="b_date" name="date">
+        <svg class="field-picker-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </span>
+    </div>
+    <div class="field">
+      <label class="field-label" for="b_time" data-i18n="book.time">เวลา</label>
+      <span class="field-picker">
+        <select id="b_time" name="time">
+          <option value="" data-i18n="book.time.ph">เลือกเวลา</option>
+        </select>
+        <svg class="field-picker-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+      </span>
+    </div>
+    <div class="field full">
+      <label class="field-label" for="b_pax" data-i18n="book.pax">จำนวนผู้โดยสาร</label>
+      <input type="number" id="b_pax" name="passengers" min="1" max="50" value="2">
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label class="field-label" for="b_name" data-i18n="book.name">ชื่อ-นามสกุล <span
+          class="req">*</span></label>
+      <input type="text" id="b_name" name="customerName" placeholder="ชื่อ-นามสกุล" autocomplete="name"
+        required aria-describedby="b_name_err">
+      <p class="field-err" id="b_name_err" data-i18n="book.err">กรุณากรอกข้อมูลช่องนี้</p>
+    </div>
+    <div class="field">
+      <label class="field-label" for="b_phone" data-i18n="book.phone">เบอร์โทรศัพท์ <span
+          class="req">*</span></label>
+      <input type="tel" id="b_phone" name="customerPhone" placeholder="0XX-XXX-XXXX" inputmode="tel"
+        autocomplete="tel" required aria-describedby="b_phone_err">
+      <p class="field-err" id="b_phone_err" data-i18n="book.err">กรุณากรอกข้อมูลช่องนี้</p>
+    </div>
+  </div>
+
+  <!-- Cloudflare Turnstile — required by BOS API -->
+  <div class="booking-turnstile">
+    <div class="cf-turnstile" id="bookingTurnstile" data-sitekey="0x4AAAAAAC8rSRNcEAP9HepX"
+      data-theme="light" data-size="flexible"></div>
+  </div>
+
+  <div class="booking-error" id="bookingError" role="alert"></div>
+
+  <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="book.submit">ขอใบเสนอราคา</button>
+  <p class="booking-note" data-i18n="book.note">ไม่มีค่าใช้จ่ายในการขอราคา · ทีมงานตอบกลับภายในไม่กี่นาที</p>
+  <div class="booking-success" id="bookingSuccess" role="status" aria-live="polite"></div>
+</form>
+
+<style>
+  /* Clear space so submit CTA never sits under the fixed .line-float pill */
+  #bookingForm {
+    padding-bottom: 72px;
+  }
+
+  /* .field-label base rule duplicated from ServiceTabs.astro — Astro scopes
+     component styles per-component, so each component rendering an element
+     with this class needs its own copy of the rule (same pattern as
+     .nav-wordmark in Task 4). */
+  .field-label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.45rem;
+    letter-spacing: 0.01em;
+  }
+
+  .field-label .req {
+    color: var(--gold-dark);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .field.full {
+    grid-column: 1 / -1;
+  }
+
+  .field input,
+  .field select {
+    font-family: var(--font);
+    font-size: 0.92rem;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 0.75rem 0.85rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .field input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--gold-dark);
+    box-shadow: 0 0 0 3px oklch(64% 0.115 48 / 0.16);
+  }
+
+  .field input.invalid {
+    border-color: var(--danger);
+  }
+
+  .field input.invalid:focus {
+    box-shadow: 0 0 0 3px oklch(54% 0.19 27 / 0.14);
+  }
+
+  .field-picker {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .field-picker-ic {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--text-tertiary);
+    pointer-events: none;
+  }
+
+  #b_date,
+  #b_time {
+    padding-right: 2.6rem;
+  }
+
+  #b_time {
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  #b_time:has(option[value=""]:checked) {
+    color: var(--text-tertiary);
+  }
+
+  #b_date::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0;
+    width: 2.6rem;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .field-err {
+    display: none;
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--danger);
+  }
+
+  .field.show-err .field-err {
+    display: block;
+  }
+
+  .booking-note {
+    margin-top: 0.9rem;
+    font-size: 0.76rem;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  .booking-turnstile {
+    margin: 0.9rem 0;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .cf-turnstile {
+    max-width: 100%;
+  }
+
+  .booking-error {
+    display: none;
+    background: oklch(97% 0.015 25);
+    border: 1px solid oklch(85% 0.06 25);
+    border-radius: var(--r-sm);
+    color: var(--danger);
+    font-size: 0.85rem;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .booking-error.show {
+    display: block;
+  }
+
+  .booking-success {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--r-md);
+    background: oklch(56% 0.08 210 / 0.1);
+    border: 1px solid oklch(56% 0.08 210 / 0.3);
+    color: var(--green-dark);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .booking-success.show {
+    display: block;
+  }
+
+  .booking-success a {
+    color: var(--green-dark);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 560px) {
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Desktop: compact the booking form so it fits within the viewport (submit stays above the fold) */
+  @media (min-width: 561px) {
+    .field-row {
+      margin-bottom: 0.75rem;
+    }
+
+    .field-label {
+      margin-bottom: 0.28rem;
+    }
+
+    #bookingForm {
+      padding-bottom: 16px;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    /* ---------- Booking submit — live BOS inquiry API ---------- */
+    /* Non-null assertions: these elements are rendered by this same component
+       tree (BookingForm.astro + ServiceTabs.astro), so they are always present
+       at script-run time — matches live's unchecked DOM access, satisfies
+       strict TS. serviceType/vehicleType are rendered by ServiceTabs.astro;
+       read here via their shared DOM ids (not a shared JS variable) because
+       Astro scoped <script> tags are separate modules per component — this is
+       the "shared DOM ids" integration point called out in the task brief. */
+    var form = document.getElementById('bookingForm') as HTMLFormElement;
+    var success = document.getElementById('bookingSuccess')!;
+    var svcInput = document.getElementById('serviceType') as HTMLInputElement;
+    var vtypeInput = document.getElementById('vehicleType') as HTMLInputElement;
+    var BOS_API = 'https://bos.sabuygo.com/api/public/inquiry';
+    // UI keys -> canonical service codes (src/lib/service-types.ts ฝั่ง BOS)
+    var SVC_API: Record<string, string> = { airport: 'one_way', rental: 'hourly_charter', b2b: 'wait_return', fullday: 'daily_charter' };
+    // ส่งค่าไทยอ่านง่ายให้ทีมแอดมิน; 'any' = ไม่ระบุ (ไม่ส่ง field)
+    var VT_API: Record<string, string> = { sedan: 'รถเก๋ง', suv: 'รถ SUV', premium: 'พรีเมียมแวน', any: '' };
+    function setFieldError(input: HTMLInputElement, bad: boolean) {
+      input.classList.toggle('invalid', bad);
+      if (bad) { input.setAttribute('aria-invalid', 'true'); }
+      else { input.removeAttribute('aria-invalid'); }
+      var field = input.closest('.field');
+      if (field) field.classList.toggle('show-err', bad);
+    }
+    ['b_pickup', 'b_dropoff', 'b_name', 'b_phone'].forEach(function (id) {
+      var input = document.getElementById(id) as HTMLInputElement;
+      input.addEventListener('input', function () {
+        if (input.value.trim()) setFieldError(input, false);
+      });
+    });
+    var dateField = document.getElementById('b_date') as HTMLInputElement | null;
+    if (dateField) {
+      var now = new Date();
+      dateField.min = now.getFullYear() + '-' +
+        ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
+        ('0' + now.getDate()).slice(-2);
+    }
+    /* ---------- Time select — 24h slots, no native 12h fallback (iOS) ---------- */
+    var timeSel = document.getElementById('b_time') as HTMLSelectElement | null;
+    if (timeSel) {
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 15) {
+          var v = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
+          var o = document.createElement('option');
+          o.value = v; o.textContent = v;
+          timeSel.appendChild(o);
+        }
+      }
+    }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var pickup = document.getElementById('b_pickup') as HTMLInputElement;
+      var dropoff = document.getElementById('b_dropoff') as HTMLInputElement;
+      var nameInput = document.getElementById('b_name') as HTMLInputElement;
+      var phoneInput = document.getElementById('b_phone') as HTMLInputElement;
+      var firstInvalid: HTMLInputElement | null = null;
+      [pickup, dropoff, nameInput, phoneInput].forEach(function (input) {
+        var bad = !input.value.trim();
+        setFieldError(input, bad);
+        if (bad && !firstInvalid) firstInvalid = input;
+      });
+      if (firstInvalid) { (firstInvalid as HTMLInputElement).focus(); return; }
+
+      var en = document.documentElement.lang === 'en';
+      var tsInput = form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null;
+      var timeVal = document.getElementById('b_time') as HTMLSelectElement | null;
+      var paxVal = document.getElementById('b_pax') as HTMLInputElement | null;
+      var payload = {
+        customerName: nameInput.value.trim(),
+        customerPhone: phoneInput.value.replace(/[-\s]/g, ''),
+        serviceType: SVC_API[svcInput ? svcInput.value : 'airport'] || 'one_way',
+        pickupLocation: pickup.value.trim(),
+        dropoffLocation: dropoff.value.trim(),
+        pickupDate: (dateField && dateField.value) ? dateField.value : null,
+        pickupTime: timeVal ? timeVal.value : null,
+        passengerCount: parseInt(paxVal ? paxVal.value : '', 10) || 1,
+        vehicleTypePreference: VT_API[vtypeInput.value] || undefined,
+        source: 'landing_hero',
+        turnstileToken: tsInput ? tsInput.value : null
+      };
+
+      var submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      var errBox = document.getElementById('bookingError');
+      var btnLabel = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.textContent = en ? 'Sending...' : 'กำลังส่ง...';
+      if (errBox) errBox.classList.remove('show');
+
+      fetch(BOS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+      }).then(function (r) {
+        if (!r.ok) throw new Error((r.data && r.data.error) || '');
+        var num = (r.data && r.data.inquiryNumber) ? ' (' + r.data.inquiryNumber + ')' : '';
+        success.innerHTML = en
+          ? 'Thanks! We received your request' + num +
+          '. Our team will reply shortly. Faster via <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>.'
+          : 'รับคำขอแล้ว' + num +
+          ' ทีมงานจะติดต่อกลับโดยเร็ว หรือทักด่วนทาง <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>';
+        success.classList.add('show');
+        success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }).catch(function (err) {
+        if (errBox) {
+          errBox.textContent = (err && err.message) ||
+            (en ? 'Could not send — please try again or add LINE @031cvnva' : 'ส่งไม่สำเร็จ ลองใหม่หรือทัก LINE @031cvnva');
+          errBox.classList.add('show');
+        }
+      }).then(function () {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = btnLabel;
+        if (typeof turnstile !== 'undefined' && turnstile.reset) {
+          try { turnstile.reset('#bookingTurnstile'); } catch (ignore) { }
+        }
+      });
+    });
+  })();
+</script>

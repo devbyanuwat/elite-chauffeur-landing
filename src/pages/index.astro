@@ -1,8 +1,11 @@
 ---
-// TEMPORARY minimal page for Task 2 head-parity verification.
-// The real homepage markup lands in Task 6 — this file exists only so
-// `npm run build` can exercise Base.astro end-to-end.
+// TEMPORARY minimal page — still not the final homepage.
+// The full section list (Stats, Services, Routes, Fleet, How, Why, FAQ,
+// Testimonials, CTA band) lands in Task 6. For now this file exists so
+// `npm run build` exercises Base.astro plus the Task 5 conversion core
+// (Hero + ServiceTabs + BookingForm) end-to-end.
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
 import {
   limousineServiceSchema,
   websiteSchema,
@@ -21,5 +24,7 @@ const canonical = 'https://sabuygo.com';
   canonical={canonical}
   jsonLd={[limousineServiceSchema, websiteSchema, siteNavigationSchema, breadcrumbSchema]}
 >
-  <p>ok</p>
+  <main id="main">
+    <Hero />
+  </main>
 </Base>
