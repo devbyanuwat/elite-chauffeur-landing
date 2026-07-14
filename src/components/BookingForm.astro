@@ -349,7 +349,7 @@ import ServiceTabs from './ServiceTabs.astro';
         pickupLocation: pickup.value.trim(),
         dropoffLocation: dropoff.value.trim(),
         pickupDate: (dateField && dateField.value) ? dateField.value : null,
-        pickupTime: timeVal ? timeVal.value : null,
+        pickupTime: timeVal && timeVal.value ? timeVal.value : null,
         passengerCount: parseInt(paxVal ? paxVal.value : '', 10) || 1,
         vehicleTypePreference: VT_API[vtypeInput.value] || undefined,
         source: 'landing_hero',
