@@ -1,6 +1,9 @@
 ---
 import '../styles/global.css';
 import JsonLd from '../components/JsonLd.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import LineFab from '../components/LineFab.astro';
 
 interface Props {
   title: string;
@@ -96,7 +99,10 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
     </noscript>
   </head>
   <body>
+    <Nav />
     <slot />
+    <Footer />
+    <LineFab />
 
     <!-- TH/EN in-place i18n toggle - ported from live index.html "Compact i18n" script.
          Defensive: [data-i18n] elements (Task 6) and .lang-toggle buttons (Task 4 Nav)
