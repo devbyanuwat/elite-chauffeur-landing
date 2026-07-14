@@ -97,5 +97,23 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
   </head>
   <body>
     <slot />
+
+    <!-- TH/EN in-place i18n toggle - ported from live index.html "Compact i18n" script.
+         Defensive: [data-i18n] elements (Task 6) and .lang-toggle buttons (Task 4 Nav)
+         may not exist yet on every page; initI18n() no-ops safely when absent. -->
+    <script>
+      import en from '../i18n/en.json';
+      import { initI18n } from '../lib/i18n';
+
+      function boot() {
+        initI18n(en as Record<string, string>);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    </script>
   </body>
 </html>
