@@ -35,21 +35,27 @@ included:
   - icon: shield
     title: "ประกัน + พ.ร.บ."
     desc: "ประกัน + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง"
+    i18nKey: "inc.ins"
   - icon: globe
     title: "ค่าทางด่วน รวม"
     desc: "มอเตอร์เวย์ 7 (ขาไป + กลับ) รวมในราคาแล้ว ไม่ต้องจ่ายแยก"
+    i18nKey: "inc.toll"
   - icon: clock
     title: "เวลายืดหยุ่น"
     desc: "ปรับเวลารับ-ส่งได้ก่อน 6 ชม. โดยไม่มีค่าธรรมเนียม"
+    i18nKey: "inc.flex"
   - icon: chat
     title: "ติดต่อคนขับได้"
     desc: "LINE คนขับโดยตรงตลอดเส้นทาง — ปลอดภัย ไม่หาย ไม่ต้องเปลี่ยนเบอร์"
+    i18nKey: "inc.contact"
   - icon: water
     title: "น้ำดื่มเย็น"
     desc: "น้ำดื่มเย็นและผ้าเย็นพร้อมเสิร์ฟ มาตรฐานพรีเมียม"
+    i18nKey: "inc.water"
   - icon: check
     title: "คนขับผ่านการคัดสรร"
     desc: "คนขับชำนาญเส้นทางพัทยา ขับนิ่ม รักษาเวลา ตรวจประวัติแล้ว"
+    i18nKey: "inc.driver"
 
 faq:
   - question: "กรุงเทพ-พัทยา ใช้เวลาเดินทางเท่าไหร่?"
@@ -129,3 +135,67 @@ extraRatesTable:
       suv: 2000
       van: null
   footnote: "หมายเหตุ: ราคาในตารางเป็น One-way (เที่ยวเดียว) ขั้นต่ำตามราคากลางกลุ่ม (มีผล 5 พ.ค. 2569) · บาง zone อาจมีค่าเพิ่มเติมตามจุดรับ-ส่งจริง · Round-trip / Day-trip กรุณาสอบถามผ่านฟอร์ม · ราคา final ยืนยันหลังเจ้าหน้าที่ตรวจเส้นทาง"
+
+# Final-review B1 fix — page-scoped EN dict (see content.config.ts `bodyI18n`
+# doc comment). Values copied verbatim from the live page's inline i18n
+# script's `en:` object. price.footnote's live value used `<strong>Note:</strong>`;
+# stripped to plain "Note:" here to match this field's existing plain-text
+# (non set:html) rendering in [slug].astro — not part of B1/B2, pre-existing.
+# cta.h2 intentionally omitted (see [slug].astro comment). rates.* (the
+# "Other Routes" extra table) intentionally omitted — on live those
+# data-i18n keys are NOT wired into the page's own T.en dict either (verified
+# by diff), so that section stays Thai-only even on live's own EN toggle;
+# we match that exactly rather than invent a translation.
+bodyI18n:
+  crumb.home: "Home"
+  crumb.current: "Bangkok → Pattaya"
+  hero.h1: "Premium Chauffeur<br>Bangkok → Pattaya"
+  hero.sub: "147 km via Motorway 7 · 1h 45min travel · One-way / Round-trip / Day-trip options · Full insurance coverage on every vehicle"
+  stat.dist.num: "147"
+  stat.dist.lbl: "km"
+  stat.time.num: "1h45"
+  stat.time.lbl: "travel time"
+  stat.start.lbl: "from (sedan one-way)"
+  price.h2: "Fixed Rates by Trip Type"
+  price.desc: "Estimated rates Bangkok ↔ Pattaya. Includes tolls, fuel, parking, taxes, and bottled water. No hidden fees."
+  price.col.vehicle: "Vehicle"
+  price.col.oneway: "One-way"
+  price.col.oneway.d: "drop-off only"
+  price.col.round: "Round-trip"
+  price.col.round.d: "go · 6h wait · return"
+  price.col.day: "Day-trip 10h"
+  price.col.day.d: "multiple stops"
+  price.footnote: "Note: Round-trip includes 6h wait at Pattaya (overtime 250-400 THB/hr) · Day-trip is 10h pickup-to-drop · Final quote confirmed after inquiry · Same rate applies in reverse direction (Pattaya → Bangkok)."
+  inc.h2: "Every booking includes"
+  inc.desc: "Service standard for every Bangkok-Pattaya transfer"
+  inc.ins.t: "Full Insurance Coverage"
+  inc.ins.d: "Full insurance coverage + compulsory motor insurance covering passengers and property throughout the route"
+  inc.toll.t: "Tolls Included"
+  inc.toll.d: "Motorway 7 (both ways) included in the rate — no separate toll payment"
+  inc.flex.t: "Flexible Timing"
+  inc.flex.d: "Pickup/return time can be adjusted up to 6 hours before with no fee"
+  inc.contact.t: "Direct Driver Contact"
+  inc.contact.d: "LINE chat directly with your driver throughout the trip — safe, no lost contact, no number swap"
+  inc.water.t: "Cold Water"
+  inc.water.d: "Bottled water and cold towels served — premium standard"
+  inc.driver.t: "Vetted Drivers"
+  inc.driver.d: "Drivers experienced on the Pattaya route — smooth driving, on time, background-checked"
+  rel.label: "Heading further to Hua Hin?"
+  rel.desc: "See our other route — Bangkok ↔ Hua Hin (200 km · 3 hours)"
+  rel.cta: "See Hua Hin route →"
+  faq.h2: "Frequently Asked Questions"
+  faq.desc: "Questions about route, pricing, or trip type? Find answers below"
+  faq.q1: "How long is Bangkok to Pattaya?"
+  faq.a1: "147 km, about 1 hour 45 minutes (no traffic) via Motorway 7 — convenient and safe"
+  faq.q2: "What is the difference between One-way / Round-trip / Day-trip?"
+  faq.a2: "One-way = drop-off only · Round-trip = same-day go-wait-return up to 6 hours · Day-trip (10h) = full-day charter, multiple stops, ideal for families or tour groups"
+  faq.q3: "Are tolls included?"
+  faq.a3: "Yes, the quoted price includes all tolls (Motorway 7 both ways), fuel, driver, parking, taxes, and bottled water. No hidden fees."
+  faq.q4: "Where does the driver wait during Round-trip?"
+  faq.a4: "Driver stays at a convenient nearby location (hotel / mall / beach), reachable via LINE at all times. Wait beyond 6 hours: 250-400 THB/hour additional, with advance notice."
+  faq.q5: "Can I stop for food / photos along the way?"
+  faq.a5: "Yes — let the driver know in advance. Standard stops (Cafe Amazon / petrol station) are free. Off-route stops may incur additional charges based on distance."
+  faq.q6: "Can I cancel or reschedule?"
+  faq.a6: "Free cancellation 12+ hours before. Less notice incurs 30% fee. Flexible for weather/illness/force majeure."
+  cta.desc: "Fill the form above or LINE us — our team responds within 15 minutes"
+  cta.book: "Fill Booking Form"

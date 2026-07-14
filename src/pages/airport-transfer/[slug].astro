@@ -103,6 +103,12 @@ const ICONS: Record<string, string> = {
   luggage: '<path d="M4 12c0-4 4-8 8-8s8 4 8 8-4 8-8 8"/><path d="M9 12h6"/>',
   water: '<path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-0.5-9-5-9-10V6l9-4z"/>',
 };
+
+// Final-review B1 fix — data-i18n keys for HeroTrust and VEHICLES, in the
+// exact order those arrays render (matches the live page's key order).
+const TRUST_KEYS = ['trust.flight', 'trust.sign', 'trust.waiting', 'trust.english'] as const;
+const VEH_KEYS = ['veh.altis', 'veh.xpander', 'veh.fortuner', 'veh.alphard'] as const;
+const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortuner', 'fleet.cap.alphard'] as const;
 ---
 
 <Base
@@ -115,24 +121,27 @@ const ICONS: Record<string, string> = {
   twitterDescription={d.twitterDescription}
   keywords={d.keywords}
   jsonLd={[serviceSchema, breadcrumbSchema, faqSchema]}
+  navBrandHref="/"
+  navCtaHref="#bookingForm"
+  pageI18n={d.bodyI18n}
 >
   <main id="main">
     <section class="hero block">
       <div class="wrap hero-inner">
         <div class="hero-text">
           <div class="breadcrumb">
-            <a href="/">หน้าแรก</a>
+            <a href="/" data-i18n="crumb.home">หน้าแรก</a>
             <span> / </span>
-            <span>{d.breadcrumbLabel}</span>
+            <span data-i18n="crumb.current">{d.breadcrumbLabel}</span>
           </div>
-          <h1 set:html={d.heroHeadingHtml} />
-          <p class="sub">{d.heroSub}</p>
+          <h1 data-i18n="hero.h1" set:html={d.heroHeadingHtml} />
+          <p class="sub" data-i18n="hero.sub">{d.heroSub}</p>
           <div class="hero-trust">
             {
-              d.heroTrust.map((t) => (
+              d.heroTrust.map((t, i) => (
                 <div class="hero-trust-item">
                   <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>
-                  <span>{t}</span>
+                  <span data-i18n={TRUST_KEYS[i]}>{t}</span>
                 </div>
               ))
             }
@@ -149,10 +158,10 @@ const ICONS: Record<string, string> = {
         <section class="related-strip">
           <div class="wrap related-inner">
             <div>
-              <h3>{d.related.heading}</h3>
-              <p>{d.related.desc}</p>
+              <h3 data-i18n="rel.label">{d.related.heading}</h3>
+              <p data-i18n="rel.desc">{d.related.desc}</p>
             </div>
-            <a href={d.related.href}>{d.related.cta}</a>
+            <a href={d.related.href} data-i18n="rel.cta">{d.related.cta}</a>
           </div>
         </section>
       )
@@ -162,15 +171,15 @@ const ICONS: Record<string, string> = {
       <div class="wrap section-inner">
         <div class="section-head reveal">
           <span class="eyebrow">Fixed Rates</span>
-          <h2>ราคาคงที่ ชัดเจนตั้งแต่ต้น</h2>
-          <p>{d.priceDesc}</p>
+          <h2 data-i18n="price.h2">ราคาคงที่ ชัดเจนตั้งแต่ต้น</h2>
+          <p data-i18n="price.desc">{d.priceDesc}</p>
         </div>
 
         <table class="price-table reveal">
           <thead>
             <tr>
-              <th>ประเภทรถ</th>
-              {d.zoneLabels.map((z) => <th>{z}</th>)}
+              <th data-i18n="price.col.vehicle">ประเภทรถ</th>
+              {d.zoneLabels.map((z, i) => <th data-i18n={d.zoneKeys[i]}>{z}</th>)}
             </tr>
           </thead>
           <tbody>
@@ -179,7 +188,7 @@ const ICONS: Record<string, string> = {
                 <tr>
                   <td data-label="ประเภทรถ">
                     <span class="veh-name">{v.name}</span>
-                    <span class="veh-type">{v.type}</span>
+                    <span class="veh-type" data-i18n={VEH_KEYS[i]}>{v.type}</span>
                   </td>
                   {d.rateRows[i].map((price, zi) => (
                     <td data-label={d.zoneLabels[zi]}>
@@ -192,7 +201,7 @@ const ICONS: Record<string, string> = {
             }
           </tbody>
         </table>
-        <p class="price-note">{d.priceFootnote}</p>
+        <p class="price-note" data-i18n="price.footnote">{d.priceFootnote}</p>
       </div>
     </section>
 
@@ -200,8 +209,8 @@ const ICONS: Record<string, string> = {
       <div class="wrap section-inner">
         <div class="section-head reveal">
           <span class="eyebrow">Service Scope</span>
-          <h2>ทุกการจองรวม</h2>
-          <p>{d.includedDesc}</p>
+          <h2 data-i18n="inc.h2">ทุกการจองรวม</h2>
+          <p data-i18n="inc.desc">{d.includedDesc}</p>
         </div>
 
         <div class="included-grid reveal">
@@ -209,8 +218,8 @@ const ICONS: Record<string, string> = {
             d.included.map((item) => (
               <div class="included-item">
                 <svg viewBox="0 0 24 24" set:html={ICONS[item.icon]} />
-                <h4>{item.title}</h4>
-                <p>{item.desc}</p>
+                <h4 data-i18n={`${item.i18nKey}.t`}>{item.title}</h4>
+                <p data-i18n={`${item.i18nKey}.d`}>{item.desc}</p>
               </div>
             ))
           }
@@ -222,18 +231,18 @@ const ICONS: Record<string, string> = {
       <div class="wrap section-inner">
         <div class="section-head reveal">
           <span class="eyebrow">Vehicle Options</span>
-          <h2>เลือกรถตามความต้องการ</h2>
-          <p>4 ประเภทรถ ครอบคลุมตั้งแต่ couple ไปจนถึง family / VIP group</p>
+          <h2 data-i18n="fleet.h2">เลือกรถตามความต้องการ</h2>
+          <p data-i18n="fleet.desc">4 ประเภทรถ ครอบคลุมตั้งแต่ couple ไปจนถึง family / VIP group</p>
         </div>
 
         <div class="fleet-strip reveal">
           {
-            FLEET.map((f) => (
+            FLEET.map((f, i) => (
               <div class="fleet-mini">
                 <img src={f.img} alt={f.name} width="600" height="400" loading="lazy" />
                 <h4>{f.name}</h4>
                 <div class="type">{f.type}</div>
-                <div class="cap">{f.cap}</div>
+                <div class="cap" data-i18n={FLEET_CAP_KEYS[i]}>{f.cap}</div>
               </div>
             ))
           }
@@ -245,20 +254,20 @@ const ICONS: Record<string, string> = {
       <div class="wrap section-inner faq-inner">
         <div class="section-head center reveal">
           <span class="eyebrow">FAQ</span>
-          <h2>คำถามที่พบบ่อย</h2>
-          <p>สงสัยเรื่องการจอง ราคา หรือบริการ? ดูคำตอบด้านล่าง — ถ้ายังไม่พบคำตอบ LINE หาเราได้</p>
+          <h2 data-i18n="faq.h2">คำถามที่พบบ่อย</h2>
+          <p data-i18n="faq.desc">สงสัยเรื่องการจอง ราคา หรือบริการ? ดูคำตอบด้านล่าง — ถ้ายังไม่พบคำตอบ LINE หาเราได้</p>
         </div>
 
         <div class="faq-list reveal">
           {
-            d.faq.map((f) => (
+            d.faq.map((f, i) => (
               <details class="faq-item">
-                <summary>{f.question}</summary>
+                <summary data-i18n={`faq.q${i + 1}`}>{f.question}</summary>
                 {/* visibleAnswer overrides answer for the 2 pages/items where the
                     live visible copy differs from the live FAQPage JSON-LD text
                     by a politeness particle — JSON-LD (faqSchema above) always
                     uses f.answer verbatim, unaffected by this override. */}
-                <div class="faq-answer">{f.visibleAnswer ?? f.answer}</div>
+                <div class="faq-answer" data-i18n={`faq.a${i + 1}`}>{f.visibleAnswer ?? f.answer}</div>
               </details>
             ))
           }
@@ -267,10 +276,10 @@ const ICONS: Record<string, string> = {
     </section>
 
     <section class="cta-footer">
-      <h2>พร้อมจอง?<br />เริ่มต้นการเดินทางที่นิ่งและมั่นใจ</h2>
-      <p>กรอกฟอร์มด้านบนหรือ LINE หาเรา ทีมงานตอบกลับภายใน 15 นาที</p>
+      <h2 data-i18n="cta.h2">พร้อมจอง?<br />เริ่มต้นการเดินทางที่นิ่งและมั่นใจ</h2>
+      <p data-i18n="cta.desc">กรอกฟอร์มด้านบนหรือ LINE หาเรา ทีมงานตอบกลับภายใน 15 นาที</p>
       <div class="actions">
-        <a href="#bookingForm" class="btn btn-primary btn-lg">กรอกฟอร์มจอง</a>
+        <a href="#bookingForm" class="btn btn-primary btn-lg" data-i18n="cta.book">กรอกฟอร์มจอง</a>
         <a href="https://line.me/R/ti/p/@031cvnva" class="btn btn-line btn-lg" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>
       </div>
     </section>

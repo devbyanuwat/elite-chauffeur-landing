@@ -30,6 +30,10 @@ zoneLabels:
   - "สุขุมวิท / สีลม / สาทร"
   - "ริมน้ำ / เยาวราช / พระนคร"
   - "รังสิต / บางนา / รอบนอก"
+zoneKeys:
+  - "price.col.central"
+  - "price.col.riverside"
+  - "price.col.outer"
 rateRows:
   - [1200, 1400, 1600]
   - [1500, 1700, 1900]
@@ -42,21 +46,27 @@ included:
   - icon: clock
     title: "Flight tracking เรียลไทม์"
     desc: "ระบบติดตามเที่ยวบินแบบอัตโนมัติ คนขับปรับเวลารับตาม landing จริง ไม่ต้องโทรแจ้ง"
+    i18nKey: "inc.track"
   - icon: card
     title: "ป้ายชื่อที่ Arrival"
     desc: "รอรับที่ Arrival Hall ชั้น 2 (Gate B หรือ D) พร้อมป้ายชื่อ แจ้งตำแหน่งคนขับก่อนคุณออก Gate"
+    i18nKey: "inc.sign"
   - icon: clockWait
     title: "รอฟรี 60 นาที"
     desc: "รวมเวลารอรับหลัง landing 60 นาที ครอบคลุมตรวจคนเข้าเมือง + รับกระเป๋า"
+    i18nKey: "inc.wait"
   - icon: shield
     title: "ประกัน + พ.ร.บ."
     desc: "รถทุกคันในเครือข่ายมีประกัน + พ.ร.บ. ครอบคลุมผู้โดยสารและทรัพย์สิน"
+    i18nKey: "inc.ins"
   - icon: luggage
     title: "ช่วยกระเป๋า"
     desc: "คนขับช่วยขนกระเป๋าทั้งขึ้น-ลงรถ ฟรี ไม่คิดค่าบริการเพิ่ม"
+    i18nKey: "inc.luggage"
   - icon: water
     title: "น้ำดื่มและผ้าเย็น"
     desc: "น้ำดื่มเย็นและผ้าเย็นฟรีทุกเที่ยว มาตรฐานพรีเมียมไม่คิดเพิ่ม"
+    i18nKey: "inc.water"
 
 faq:
   - question: "ถ้าเที่ยวบินล่าช้า (delay) จะเป็นอย่างไร?"
@@ -72,3 +82,66 @@ faq:
     answer: "แจ้งในฟอร์มจองว่าต้องการ English-speaking driver เราจะจัดคนขับที่สื่อสารภาษาอังกฤษได้ (ระดับ conversational) ไม่มีค่าใช้จ่ายเพิ่มเติม"
   - question: "ยกเลิกหรือเปลี่ยนแปลงได้ไหม?"
     answer: "ยกเลิก/เปลี่ยนแปลงฟรีถ้าแจ้งก่อนเวลารับ 6 ชั่วโมง หากแจ้งน้อยกว่านั้นคิดค่าธรรมเนียม 50% เรายืดหยุ่นในกรณีเที่ยวบินยกเลิก/เปลี่ยนตารางบิน แจ้งเราได้ผ่าน LINE"
+
+# Final-review B1 fix — page-scoped EN dict (see content.config.ts `bodyI18n`
+# doc comment). Values copied verbatim from the live page's inline i18n
+# script's `en:` object. price.footnote's live value used `<strong>Note:</strong>`;
+# stripped to plain "Note:" here to match this field's existing plain-text
+# (non set:html) rendering in [slug].astro — not part of B1/B2, pre-existing.
+bodyI18n:
+  crumb.home: "Home"
+  crumb.current: "Airport Transfer — Suvarnabhumi"
+  hero.h1: "Airport Transfer — Suvarnabhumi (BKK)<br>Premium Chauffeur Service"
+  hero.sub: "Real-time flight tracking · Name-board meet & greet at Arrival Hall · Fixed fare, no surge · Full insurance coverage on every vehicle"
+  trust.flight: "24/7 Flight Tracking"
+  trust.sign: "Name-Board Meet"
+  trust.waiting: "60 min Free Wait"
+  trust.english: "English Driver on Request"
+  price.h2: "Fixed Rates, Clear from the Start"
+  price.desc: "Estimated rates from Suvarnabhumi (BKK) to main Bangkok zones. Includes tolls, fuel, 60 min free waiting, and bottled water. No hidden fees."
+  price.col.vehicle: "Vehicle"
+  price.col.central: "Sukhumvit / Silom / Sathorn"
+  price.col.riverside: "Riverside / Chinatown / Old Town"
+  price.col.outer: "Rangsit / Bangna / Outer Zones"
+  veh.altis: "Sedan · 3 passengers · 2 suitcases"
+  veh.xpander: "Crossover MPV · 6 passengers · 4 suitcases"
+  veh.fortuner: "Premium SUV · 6 passengers · 5 suitcases"
+  veh.alphard: "Luxury Van · 6 passengers · 6 suitcases"
+  price.footnote: "Note: Rates are estimates for 1-way pickup (BKK → destination). Final quote confirmed after inquiry form · For intercity destinations (Pattaya / Hua Hin / Ayutthaya), request a separate quote."
+  inc.h2: "Every booking includes"
+  inc.desc: "The service standard you receive on every Suvarnabhumi airport transfer"
+  inc.track.t: "Real-time Flight Tracking"
+  inc.track.d: "Automatic flight monitoring. Driver adjusts pickup time based on actual landing — no phone call needed."
+  inc.sign.t: "Name Board at Arrival"
+  inc.sign.d: "We wait at Arrival Hall Level 2 (Gate B or D) with your name board. You receive driver location before exiting the Gate."
+  inc.wait.t: "60 min Free Waiting"
+  inc.wait.d: "Includes 60 min free post-landing waiting — covers immigration + luggage claim."
+  inc.ins.t: "Full Insurance Coverage"
+  inc.ins.d: "Every network vehicle carries full insurance + compulsory motor insurance for passengers and property."
+  inc.luggage.t: "Luggage Assistance"
+  inc.luggage.d: "Driver assists with loading and unloading — free, no additional charge."
+  inc.water.t: "Water & Cold Towels"
+  inc.water.d: "Complimentary bottled water and cold towels on every trip. Premium standard, no extra cost."
+  fleet.h2: "Choose the Right Vehicle"
+  fleet.desc: "4 vehicle types covering couples to family / VIP groups"
+  fleet.cap.altis: "3 passengers · 2 large suitcases"
+  fleet.cap.xpander: "6 passengers · 4 large suitcases"
+  fleet.cap.fortuner: "6 passengers · 5 large suitcases"
+  fleet.cap.alphard: "6 passengers · 6 large suitcases · VIP"
+  faq.h2: "Frequently Asked Questions"
+  faq.desc: "Questions about booking, pricing, or service? Find answers below — still no answer, LINE us."
+  faq.q1: "What happens if my flight is delayed?"
+  faq.a1: "We track your flight in real time. The driver automatically adjusts pickup based on flight status. No extra charge if delay is within 60 min after landing."
+  faq.q2: "Where does the driver wait? Is there a name board?"
+  faq.a2: "Driver waits at Arrival Hall Level 2 (Gate B or D) with your name board. You receive a notification of driver location via LINE or SMS before exiting the Gate."
+  faq.q3: "How is pricing calculated? Any hidden fees?"
+  faq.a3: "Flat rate based on vehicle type and destination zone. The quoted price includes tolls, fuel, 60 min waiting, and bottled water. No hidden fees."
+  faq.q4: "Can I request a child seat or booster?"
+  faq.a4: "Yes. Request via the booking form or LINE at least 12 hours in advance. Additional 300 THB per seat. Options: baby seat (0-1 yrs), child seat (1-4 yrs), booster seat (4-10 yrs)."
+  faq.q5: "Does the driver speak English?"
+  faq.a5: "Indicate in the booking form that you need an English-speaking driver. We assign a driver with conversational English at no extra charge."
+  faq.q6: "Can I cancel or reschedule?"
+  faq.a6: "Free cancellation/changes 6+ hours before pickup. Less notice incurs a 50% fee. We are flexible on flight cancellations or rebookings — contact us via LINE."
+  cta.h2: "Ready to book?<br>Start your journey calm and confident"
+  cta.desc: "Fill the form above or LINE us — our team responds within 15 minutes"
+  cta.book: "Fill Booking Form"

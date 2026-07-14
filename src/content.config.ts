@@ -40,6 +40,22 @@ const faqItem = z.object({
   visibleAnswer: z.string().optional(),
 });
 
+// Final-review B1 fix: page-scoped EN translation dictionary. Keys match the
+// [data-i18n] attributes the [slug].astro templates render on this page's
+// body copy (hero, price table, included items, fleet captions, FAQ, CTA,
+// breadcrumb). Values are the live page's EN strings, copied verbatim from
+// its inline "Compact i18n" <script> — never invented. Base.astro merges
+// this on top of the sitewide src/i18n/en.json at toggle time (page-scoped,
+// so identical key names across different pages/entries never collide —
+// each page only ever loads its own entry's dict). Keys intentionally
+// excluded: qf.* (the live per-page quick-form fields were dropped in the
+// shared BookingForm simplification, tracked separately as SABUY-50),
+// nav.back/nav.book/ft.home/ft.privacy (live's page-scoped nav/footer,
+// superseded here by the shared Nav/Footer — see B2), and eyebrow labels
+// where TH === EN on live (price.label, inc.label, fleet.label, faq.label,
+// rates.label, cta.line) since there is nothing to toggle.
+const bodyI18n = z.record(z.string());
+
 const relatedLink = z.object({
   heading: z.string(),
   desc: z.string(),
@@ -53,6 +69,9 @@ const airportIncludedItem = z.object({
   icon: z.enum(['clock', 'card', 'clockWait', 'shield', 'luggage', 'water']),
   title: z.string(),
   desc: z.string(),
+  // Base key for this item's bodyI18n translation pair (`${i18nKey}.t` /
+  // `${i18nKey}.d`), e.g. "inc.track" -> inc.track.t / inc.track.d.
+  i18nKey: z.string(),
 });
 
 const airports = defineCollection({
@@ -75,6 +94,10 @@ const airports = defineCollection({
     // Price matrix
     priceDesc: z.string(),
     zoneLabels: z.array(z.string()).length(3),
+    // data-i18n keys for zoneLabels, same order (live uses different key
+    // names per airport, e.g. "price.col.riverside" on Suvarnabhumi vs
+    // "price.col.north" on Don Mueang, for the middle zone).
+    zoneKeys: z.array(z.string()).length(3),
     rateRows: z.array(z.tuple([z.number(), z.number(), z.number()])).length(4),
     priceFootnote: z.string(),
     // Included
@@ -84,6 +107,8 @@ const airports = defineCollection({
     faq: z.array(faqItem),
     // Optional cross-link strip (only Don Mueang has one, linking to Suvarnabhumi)
     related: relatedLink.optional(),
+    // Final-review B1 fix — see `bodyI18n` doc comment above.
+    bodyI18n,
   }),
 });
 
@@ -93,6 +118,9 @@ const routesIncludedItem = z.object({
   icon: z.enum(['shield', 'lines', 'globe', 'clock', 'chat', 'water', 'check']),
   title: z.string(),
   desc: z.string(),
+  // Base key for this item's bodyI18n translation pair (`${i18nKey}.t` /
+  // `${i18nKey}.d`), e.g. "inc.fuel" -> inc.fuel.t / inc.fuel.d.
+  i18nKey: z.string(),
 });
 
 const extraRatesRow = z.object({
@@ -132,7 +160,12 @@ const routes = defineCollection({
     faq: z.array(faqItem),
     // Cross-link strip to the other route (both route pages have one)
     related: relatedLink,
-    // Only bangkok-to-pattaya has this extra "other popular routes" rate card
+    // Only bangkok-to-pattaya has this extra "other popular routes" rate card.
+    // Note: on live, this table's data-i18n attributes are NOT wired into the
+    // page's T.en dict at all (verified by diffing markup keys against the
+    // dict) — clicking EN never translates this block on live either. We
+    // match that behavior exactly rather than invent a translation: no
+    // data-i18n is added to this section in routes/[slug].astro.
     extraRatesTable: z
       .object({
         heading: z.string(),
@@ -141,6 +174,8 @@ const routes = defineCollection({
         footnote: z.string(),
       })
       .optional(),
+    // Final-review B1 fix — see `bodyI18n` doc comment above.
+    bodyI18n,
   }),
 });
 

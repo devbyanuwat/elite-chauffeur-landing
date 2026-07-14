@@ -108,30 +108,40 @@ function fmt(n: number | null): string {
   twitterDescription={d.twitterDescription}
   keywords={d.keywords}
   jsonLd={[serviceSchema, breadcrumbSchema, faqSchema]}
+  navBrandHref="/"
+  navCtaHref="#bookingForm"
+  pageI18n={d.bodyI18n}
 >
   <main id="main">
     <section class="hero block">
       <div class="wrap hero-inner">
         <div class="hero-text">
           <div class="breadcrumb">
-            <a href="/">หน้าแรก</a>
+            <a href="/" data-i18n="crumb.home">หน้าแรก</a>
             <span> / </span>
-            <span>{d.breadcrumbName}</span>
+            <span data-i18n="crumb.current">{d.breadcrumbName}</span>
           </div>
-          <h1 set:html={d.heroHeadingHtml} />
-          <p class="sub">{d.heroSub}</p>
+          <h1 data-i18n="hero.h1" set:html={d.heroHeadingHtml} />
+          <p class="sub" data-i18n="hero.sub">{d.heroSub}</p>
           <div class="route-stats">
             <div class="route-stat">
-              <span class="num">{d.distanceKm}</span>
-              <span class="lbl">กม.</span>
+              <span class="num" data-i18n="stat.dist.num">{d.distanceKm}</span>
+              <span class="lbl" data-i18n="stat.dist.lbl">กม.</span>
             </div>
             <div class="route-stat">
-              <span class="num">{d.travelTime}</span>
-              <span class="lbl">ชม. เดินทาง</span>
+              <span class="num" data-i18n="stat.time.num">{d.travelTime}</span>
+              <span class="lbl" data-i18n="stat.time.lbl">ชม. เดินทาง</span>
             </div>
             <div class="route-stat">
+              {/* .num intentionally NOT toggled: d.startPrice is a currency
+                  figure invariant across languages, and — unrelated to this
+                  fix — this baseline value already differs from the live
+                  page's own displayed figure on bangkok-to-pattaya (a
+                  pre-existing content gap out of B1/B2 scope). Toggling it
+                  to live's number would silently change the displayed price
+                  on EN, which we won't invent. */}
               <span class="num">{d.startPrice}</span>
-              <span class="lbl">เริ่มต้น (sedan one-way)</span>
+              <span class="lbl" data-i18n="stat.start.lbl">เริ่มต้น (sedan one-way)</span>
             </div>
           </div>
         </div>
@@ -145,17 +155,23 @@ function fmt(n: number | null): string {
       <div class="wrap section-inner">
         <div class="section-head reveal">
           <span class="eyebrow">Fixed Rates</span>
-          <h2>ราคาคงที่ ตามประเภทการเดินทาง</h2>
-          <p>{d.priceDesc}</p>
+          <h2 data-i18n="price.h2">ราคาคงที่ ตามประเภทการเดินทาง</h2>
+          <p data-i18n="price.desc">{d.priceDesc}</p>
         </div>
 
         <table class="price-table reveal">
           <thead>
             <tr>
-              <th>ประเภทรถ</th>
-              <th>One-way<span class="desc">ส่งครั้งเดียว</span></th>
-              <th>Round-trip<span class="desc">ไป-รอ 6 ชม.-กลับ</span></th>
-              <th>Day-trip {d.dayTripHours} ชม.<span class="desc">เที่ยวได้หลายจุด</span></th>
+              <th data-i18n="price.col.vehicle">ประเภทรถ</th>
+              {/* "One-way"/"Round-trip"/"Day-trip Xh" wrapped in their own
+                  span (sibling to .desc, not its parent) so the i18n toggle
+                  can replace each independently — a parent <th> with its own
+                  data-i18n would otherwise blow away the nested .desc span's
+                  DOM node on the very first toggle (innerHTML replaces all
+                  descendants), silently deleting its own translation. */}
+              <th><span data-i18n="price.col.oneway">One-way</span><span class="desc" data-i18n="price.col.oneway.d">ส่งครั้งเดียว</span></th>
+              <th><span data-i18n="price.col.round">Round-trip</span><span class="desc" data-i18n="price.col.round.d">ไป-รอ 6 ชม.-กลับ</span></th>
+              <th><span data-i18n="price.col.day">Day-trip {d.dayTripHours} ชม.</span><span class="desc" data-i18n="price.col.day.d">เที่ยวได้หลายจุด</span></th>
             </tr>
           </thead>
           <tbody>
@@ -183,7 +199,7 @@ function fmt(n: number | null): string {
             }
           </tbody>
         </table>
-        <p class="price-note">{d.priceFootnote}</p>
+        <p class="price-note" data-i18n="price.footnote">{d.priceFootnote}</p>
       </div>
     </section>
 
@@ -191,8 +207,8 @@ function fmt(n: number | null): string {
       <div class="wrap section-inner">
         <div class="section-head reveal">
           <span class="eyebrow">Service Scope</span>
-          <h2>ทุกการจองรวม</h2>
-          <p>{d.includedDesc}</p>
+          <h2 data-i18n="inc.h2">ทุกการจองรวม</h2>
+          <p data-i18n="inc.desc">{d.includedDesc}</p>
         </div>
 
         <div class="included-grid reveal">
@@ -200,8 +216,8 @@ function fmt(n: number | null): string {
             d.included.map((item) => (
               <div class="included-item">
                 <svg viewBox="0 0 24 24" set:html={ICONS[item.icon]} />
-                <h4>{item.title}</h4>
-                <p>{item.desc}</p>
+                <h4 data-i18n={`${item.i18nKey}.t`}>{item.title}</h4>
+                <p data-i18n={`${item.i18nKey}.d`}>{item.desc}</p>
               </div>
             ))
           }
@@ -286,10 +302,10 @@ function fmt(n: number | null): string {
     <section class="related-strip">
       <div class="wrap related-inner">
         <div>
-          <h3>{d.related.heading}</h3>
-          <p>{d.related.desc}</p>
+          <h3 data-i18n="rel.label">{d.related.heading}</h3>
+          <p data-i18n="rel.desc">{d.related.desc}</p>
         </div>
-        <a href={d.related.href}>{d.related.cta}</a>
+        <a href={d.related.href} data-i18n="rel.cta">{d.related.cta}</a>
       </div>
     </section>
 
@@ -297,16 +313,16 @@ function fmt(n: number | null): string {
       <div class="wrap section-inner faq-inner">
         <div class="section-head center reveal">
           <span class="eyebrow">FAQ</span>
-          <h2>คำถามที่พบบ่อย</h2>
-          <p>สงสัยเรื่องเส้นทาง ราคา หรือ trip type? ดูคำตอบด้านล่าง</p>
+          <h2 data-i18n="faq.h2">คำถามที่พบบ่อย</h2>
+          <p data-i18n="faq.desc">สงสัยเรื่องเส้นทาง ราคา หรือ trip type? ดูคำตอบด้านล่าง</p>
         </div>
 
         <div class="faq-list reveal">
           {
-            d.faq.map((f) => (
+            d.faq.map((f, i) => (
               <details class="faq-item">
-                <summary>{f.question}</summary>
-                <div class="faq-answer">{f.answer}</div>
+                <summary data-i18n={`faq.q${i + 1}`}>{f.question}</summary>
+                <div class="faq-answer" data-i18n={`faq.a${i + 1}`}>{f.answer}</div>
               </details>
             ))
           }
@@ -315,10 +331,17 @@ function fmt(n: number | null): string {
     </section>
 
     <section class="cta-footer">
+      {/* h2 intentionally NOT toggled: this heading is shared literal markup
+          across both route pages ("พร้อมออกเดินทาง?"), which already differs
+          from either live page's page-specific TH text ("พร้อมไปหัวหิน?" /
+          "พร้อมไปพัทยา?") — a pre-existing simplification out of B1/B2 scope.
+          Pulling live's page-specific EN string here would pair a generic
+          Thai default with a page-specific English swap, a mismatch we're
+          not going to invent. */}
       <h2>พร้อมออกเดินทาง?<br />เลือก trip type ที่ใช่</h2>
-      <p>กรอกฟอร์มด้านบนหรือ LINE หาเรา — ทีมงานตอบกลับใน 15 นาที</p>
+      <p data-i18n="cta.desc">กรอกฟอร์มด้านบนหรือ LINE หาเรา — ทีมงานตอบกลับใน 15 นาที</p>
       <div class="actions">
-        <a href="#bookingForm" class="btn btn-primary btn-lg">กรอกฟอร์มจอง</a>
+        <a href="#bookingForm" class="btn btn-primary btn-lg" data-i18n="cta.book">กรอกฟอร์มจอง</a>
         <a href="https://line.me/R/ti/p/@031cvnva" class="btn btn-line btn-lg" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>
       </div>
     </section>

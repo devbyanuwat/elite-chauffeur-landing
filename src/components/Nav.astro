@@ -1,20 +1,38 @@
 ---
+/**
+ * Final-review B2 fix — this Nav is shared verbatim across every page
+ * (homepage + 4 SEO subpages + privacy), rendered once by Base.astro. The
+ * brand icon and primary CTA need different targets depending on page type:
+ * on the homepage they're in-page anchors (`#`, `#booking`); on a subpage
+ * the brand must return home (`/`) and the CTA must reach that page's own
+ * booking form (`#bookingForm` — subpages have no `#booking` id). Defaults
+ * here reproduce the pre-fix homepage markup exactly, so index.astro needs
+ * no changes. The 6 section links below are made root-absolute
+ * (`/#services` etc.) unconditionally — safe on every page: same-document
+ * hash navigation when already on `/`, navigate-home-then-scroll otherwise.
+ */
+interface Props {
+  brandHref?: string;
+  ctaHref?: string;
+}
+
+const { brandHref = '#', ctaHref = '#booking' } = Astro.props;
 ---
 
 <nav id="navbar">
   <div class="nav-inner">
-    <a href="#" class="nav-brand" aria-label="SABUYGO หน้าแรก">
+    <a href={brandHref} class="nav-brand" aria-label="SABUYGO หน้าแรก">
       <img src="/images/sabuygo-logo.webp" alt="" aria-hidden="true" class="nav-logo" width="38" height="38" />
       <span class="nav-wordmark">SABUYGO</span>
     </a>
 
     <ul class="nav-links">
-      <li><a href="#services" data-i18n="nav.services">บริการ</a></li>
-      <li><a href="#routes" data-i18n="nav.routes">เส้นทาง</a></li>
-      <li><a href="#fleet" data-i18n="nav.fleet">กองรถ</a></li>
-      <li><a href="#reviews" data-i18n="nav.reviews">รีวิว</a></li>
-      <li><a href="#how" data-i18n="nav.how">วิธีจอง</a></li>
-      <li><a href="#faq" data-i18n="nav.faq">คำถามบ่อย</a></li>
+      <li><a href="/#services" data-i18n="nav.services">บริการ</a></li>
+      <li><a href="/#routes" data-i18n="nav.routes">เส้นทาง</a></li>
+      <li><a href="/#fleet" data-i18n="nav.fleet">กองรถ</a></li>
+      <li><a href="/#reviews" data-i18n="nav.reviews">รีวิว</a></li>
+      <li><a href="/#how" data-i18n="nav.how">วิธีจอง</a></li>
+      <li><a href="/#faq" data-i18n="nav.faq">คำถามบ่อย</a></li>
       <li><a href="/blog/" data-i18n="nav.blog">บทความ</a></li>
     </ul>
 
@@ -23,7 +41,7 @@
         <button type="button" data-lang="th" aria-pressed="true">TH</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
-      <a href="#booking" class="btn btn-primary nav-cta" data-i18n="nav.cta">จองรถ</a>
+      <a href={ctaHref} class="btn btn-primary nav-cta" data-i18n="nav.cta">จองรถ</a>
       <button class="nav-toggle" aria-label="เปิดเมนู" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>

@@ -35,21 +35,27 @@ included:
   - icon: shield
     title: "ประกัน + พ.ร.บ."
     desc: "ประกัน + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง"
+    i18nKey: "inc.ins"
   - icon: lines
     title: "ค่าน้ำมัน รวม"
     desc: "ราคารวมน้ำมันตลอดเส้นทาง · เส้น Highway 4 ฟรีค่าทางด่วน ไม่ต้องบวกเพิ่ม"
+    i18nKey: "inc.fuel"
   - icon: clock
     title: "เวลายืดหยุ่น"
     desc: "ปรับเวลารับ-ส่งได้ก่อน 12 ชม. โดยไม่มีค่าธรรมเนียม"
+    i18nKey: "inc.flex"
   - icon: chat
     title: "ติดต่อคนขับได้"
     desc: "LINE คนขับโดยตรงตลอดเส้นทาง — ปลอดภัย ไม่หาย ไม่ต้องเปลี่ยนเบอร์"
+    i18nKey: "inc.contact"
   - icon: water
     title: "น้ำดื่มเย็น"
     desc: "น้ำดื่มเย็นและผ้าเย็นพร้อมเสิร์ฟ มาตรฐานพรีเมียม"
+    i18nKey: "inc.water"
   - icon: check
     title: "คนขับชำนาญเส้นทาง"
     desc: "คนขับชำนาญเส้นทางหัวหิน-เพชรบุรี-ชะอำ ขับนิ่ม รักษาเวลา ตรวจประวัติแล้ว"
+    i18nKey: "inc.driver"
 
 faq:
   - question: "กรุงเทพ-หัวหิน ใช้เวลาเดินทางเท่าไหร่?"
@@ -70,3 +76,65 @@ related:
   desc: "ดู service เส้นทางอื่น — Bangkok ↔ Pattaya (147 กม. · 1.45 ชม.)"
   href: "/routes/bangkok-to-pattaya/"
   cta: "ดู Pattaya route →"
+
+# Final-review B1 fix — page-scoped EN dict (see content.config.ts `bodyI18n`
+# doc comment). Values copied verbatim from the live page's inline i18n
+# script's `en:` object. price.footnote's live value used `<strong>Note:</strong>`;
+# stripped to plain "Note:" here to match this field's existing plain-text
+# (non set:html) rendering in [slug].astro — not part of B1/B2, pre-existing.
+# cta.h2 intentionally omitted — see [slug].astro comment on the cta-footer
+# h2 for why (generic shared TH text already diverges from live's
+# page-specific wording; not inventing a mismatched EN pairing).
+bodyI18n:
+  crumb.home: "Home"
+  crumb.current: "Bangkok → Hua Hin"
+  hero.h1: "Premium Chauffeur<br>Bangkok → Hua Hin"
+  hero.sub: "200 km via Highway 4 (Rama 2) · 3 hours travel · One-way / Round-trip / Day-trip options · Full insurance coverage on every vehicle"
+  stat.dist.num: "200"
+  stat.dist.lbl: "km"
+  stat.time.num: "3h"
+  stat.time.lbl: "travel time"
+  stat.start.lbl: "from (sedan one-way)"
+  price.h2: "Fixed Rates by Trip Type"
+  price.desc: "Estimated rates Bangkok ↔ Hua Hin. Includes fuel, parking, taxes, and bottled water (Highway 4 has no toll, so no toll charges)."
+  price.col.vehicle: "Vehicle"
+  price.col.oneway: "One-way"
+  price.col.oneway.d: "drop-off only"
+  price.col.round: "Round-trip"
+  price.col.round.d: "go · 6h wait · return"
+  price.col.day: "Day-trip 12h"
+  price.col.day.d: "multiple stops"
+  price.footnote: "Note: Round-trip includes 6h wait at Hua Hin (overtime 250-400 THB/hr) · Day-trip is 12h (Hua Hin further than Pattaya) · Final quote confirmed after inquiry · Cha-am same rate · Same rate applies in reverse direction."
+  inc.h2: "Every booking includes"
+  inc.desc: "Service standard for every Bangkok-Hua Hin transfer"
+  inc.ins.t: "Full Insurance Coverage"
+  inc.ins.d: "Full insurance coverage + compulsory motor insurance covering passengers and property throughout the route"
+  inc.fuel.t: "Fuel Included"
+  inc.fuel.d: "Fuel included for the entire route · Highway 4 is toll-free, no extra charges"
+  inc.flex.t: "Flexible Timing"
+  inc.flex.d: "Pickup/return time can be adjusted up to 12 hours before with no fee"
+  inc.contact.t: "Direct Driver Contact"
+  inc.contact.d: "LINE chat directly with your driver throughout the trip — safe, no lost contact, no number swap"
+  inc.water.t: "Cold Water"
+  inc.water.d: "Bottled water and cold towels served — premium standard"
+  inc.driver.t: "Route-experienced Drivers"
+  inc.driver.d: "Drivers familiar with Hua Hin-Petchaburi-Cha-am routes — smooth driving, on time, background-checked"
+  rel.label: "Or heading to Pattaya?"
+  rel.desc: "See our other route — Bangkok ↔ Pattaya (147 km · 1h 45min)"
+  rel.cta: "See Pattaya route →"
+  faq.h2: "Frequently Asked Questions"
+  faq.desc: "Questions about route, pricing, or trip type? Find answers below"
+  faq.q1: "How long is Bangkok to Hua Hin?"
+  faq.a1: "200 km, about 3 hours (no traffic) via Highway 4 (Rama 2), passing Petchaburi and Cha-am before reaching Hua Hin"
+  faq.q2: "Can I stop along the way?"
+  faq.a2: "Yes — there are nice stops like Cafe Amazon Petchaburi, Cha-am floating market, Yi-Sarn bridge. Let driver know in advance. Off-route stops may incur additional charges."
+  faq.q3: "What is the difference between One-way / Round-trip / Day-trip?"
+  faq.a3: "One-way = drop-off only · Round-trip = same-day go-wait-return up to 6 hours (good for business/dinner) · Day-trip 12h = full-day charter, ideal for families/tour groups. Hua Hin is further than Pattaya, so 12h instead of 10h."
+  faq.q4: "Are tolls included?"
+  faq.a4: "Highway 4 has no tolls. The quoted price includes fuel, driver, parking, taxes, and bottled water. No hidden fees."
+  faq.q5: "Can I use this service to Cha-am too?"
+  faq.a5: "Yes, Cha-am is on the same route (about 25 km from Hua Hin). Same rate or slightly cheaper. Indicate actual destination in the form for accurate quote."
+  faq.q6: "Can I cancel or reschedule?"
+  faq.a6: "Free cancellation 12+ hours before. Less notice incurs 30% fee. Flexible for weather/illness/force majeure."
+  cta.desc: "Fill the form above or LINE us — our team responds within 15 minutes"
+  cta.book: "Fill Booking Form"

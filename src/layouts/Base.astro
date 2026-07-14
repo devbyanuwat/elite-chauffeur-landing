@@ -22,6 +22,20 @@ interface Props {
   twitterTitle?: string | null;
   twitterDescription?: string | null;
   keywords?: string;
+  // Final-review B2 fix — Nav.astro is shared verbatim across every page.
+  // On the homepage the brand icon and CTA must keep their exact current
+  // hrefs (in-page anchors, byte-identical to before this fix); on the 4 SEO
+  // subpages they must instead return home / target that page's own
+  // booking form. Defaults below reproduce the CURRENT homepage Nav markup
+  // exactly, so index.astro (and privacy.astro) need no changes at all —
+  // only airport-transfer/routes [slug].astro override them.
+  navBrandHref?: string;
+  navCtaHref?: string;
+  // Final-review B1 fix — page-scoped EN dict (see content.config.ts
+  // `bodyI18n` doc comment). Merged on top of the sitewide en.json by the
+  // i18n boot script below; empty on pages with no subpage body copy
+  // (homepage, privacy), so behavior there is unchanged.
+  pageI18n?: Record<string, string>;
 }
 
 const {
@@ -36,6 +50,9 @@ const {
   twitterTitle = ogTitle,
   twitterDescription = ogDescription,
   keywords = 'sabuygo, สบายโก, elite chauffeur, รถเช่าพร้อมคนขับ, รถเช่า กรุงเทพ, เช่ารถพร้อมคนขับ, รถรับส่งสนามบิน, รถเช่ารายวัน, รับส่งสุวรรณภูมิ, รับส่งดอนเมือง, airport transfer bangkok, premium car rental bangkok, รถรับส่งผู้บริหาร, corporate car service, VIP transfer, เช่ารถ VIP, private car hire thailand, chauffeur service thailand, รถเช่า เที่ยว',
+  navBrandHref = '#',
+  navCtaHref = '#booking',
+  pageI18n = {},
 } = Astro.props;
 
 const resolvedOgImage = new URL(ogImage, Astro.site).toString();
@@ -112,10 +129,17 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
     </noscript>
   </head>
   <body>
-    <Nav />
+    <Nav brandHref={navBrandHref} ctaHref={navCtaHref} />
     <slot />
     <Footer />
     <LineFab />
+
+    <!-- Final-review B1 fix: page-scoped EN dict, passed as data (not a JS
+         import) so the [slug].astro templates don't need their own <script>
+         block. Same pattern as JsonLd.astro (type != module/none, so Astro
+         leaves it un-bundled) — safe because content is author-controlled
+         YAML, not user input. Empty object on pages with no subpage copy. -->
+    <script type="application/json" id="page-i18n-data" set:html={JSON.stringify(pageI18n)} />
 
     <!-- TH/EN in-place i18n toggle - ported from live index.html "Compact i18n" script.
          Defensive: [data-i18n] elements (Task 6) and .lang-toggle buttons (Task 4 Nav)
@@ -125,7 +149,17 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
       import { initI18n } from '../lib/i18n';
 
       function boot() {
-        initI18n(en as Record<string, string>);
+        var dict: Record<string, string> = en as Record<string, string>;
+        var pageDataEl = document.getElementById('page-i18n-data');
+        if (pageDataEl && pageDataEl.textContent) {
+          try {
+            var pageDict = JSON.parse(pageDataEl.textContent) as Record<string, string>;
+            dict = Object.assign({}, dict, pageDict);
+          } catch (err) {
+            /* malformed page i18n data — fall back to the sitewide dict only */
+          }
+        }
+        initI18n(dict);
       }
 
       if (document.readyState === 'loading') {
