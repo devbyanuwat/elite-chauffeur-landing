@@ -1,6 +1,11 @@
 title: "รถรับส่งสนามบินดอนเมือง พร้อมคนขับ | Airport Transfer Don Mueang DMK — SABUYGO"
 description: "รถรับส่งสนามบินดอนเมือง (DMK) พร้อมคนขับระดับพรีเมียม ติดตามเที่ยวบินเรียลไทม์ รอรับพร้อมป้ายชื่อ ราคาคงที่ ประกัน + พ.ร.บ.. Premium airport transfer from Don Mueang Airport (DMK) Bangkok with professional chauffeur, flight tracking, fixed fare."
 canonical: "https://sabuygo.com/airport-transfer/don-mueang-dmk/"
+ogTitle: "รถรับส่งสนามบินดอนเมือง พร้อมคนขับ | SABUYGO"
+ogDescription: "บริการรถรับส่งสนามบินดอนเมืองระดับพรีเมียม ติดตามเที่ยวบินเรียลไทม์ ราคาคงที่ ประกัน + พ.ร.บ."
+twitterTitle: "Airport Transfer Don Mueang DMK — SABUYGO"
+twitterDescription: "Premium airport transfer from Don Mueang with flight tracking, name-board meet & greet, fixed fare."
+keywords: "รถรับส่งสนามบินดอนเมือง, รับส่งดอนเมือง, airport transfer don mueang, DMK airport transfer, รถรับสนามบินดอนเมือง, เช่ารถสนามบินดอนเมือง, private airport transfer DMK, limousine don mueang"
 
 serviceName: "รถรับส่งสนามบินดอนเมือง พร้อมคนขับ (Airport Transfer Don Mueang DMK)"
 serviceDescription: "บริการรถรับส่งสนามบินดอนเมืองพร้อมคนขับระดับพรีเมียม ติดตามเที่ยวบินเรียลไทม์ รอรับพร้อมป้ายชื่อ ราคาคงที่ มีประกันทุกคัน"
@@ -66,6 +71,7 @@ faq:
     answer: "แจ้งในฟอร์มจองว่าต้องการ English-speaking driver เราจะจัดคนขับที่สื่อสารภาษาอังกฤษได้ ไม่มีค่าใช้จ่ายเพิ่มเติม"
   - question: "ดอนเมือง vs สุวรรณภูมิ ต้องเลือกจุดรับต่างกันไหม?"
     answer: "ใช่ค่ะ ดอนเมือง (DMK) อยู่ทางเหนือของกรุงเทพฯ ใกล้รังสิต ส่วนสุวรรณภูมิ (BKK) อยู่ทางตะวันออก ใกล้บางนา ระยะทางและราคาต่างกัน โปรดเลือกสนามบินให้ถูกเที่ยวบิน"
+    visibleAnswer: "ใช่ ดอนเมือง (DMK) อยู่ทางเหนือของกรุงเทพฯ ใกล้รังสิต ส่วนสุวรรณภูมิ (BKK) อยู่ทางตะวันออก ใกล้บางนา ระยะทางและราคาต่างกัน โปรดเลือกสนามบินให้ถูกเที่ยวบิน"
 
 related:
   heading: "บินเข้าสุวรรณภูมิ?"

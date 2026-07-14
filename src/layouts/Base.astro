@@ -12,6 +12,16 @@ interface Props {
   ogImage?: string;
   lang?: 'th' | 'en';
   jsonLd?: Record<string, unknown>[];
+  // Per-page OG/Twitter/keywords overrides (Task 7 fix — see content.config.ts
+  // seoMeta comment). ogTitle/ogDescription default to title/description;
+  // twitterTitle/twitterDescription default to ogTitle/ogDescription. Pass
+  // `null` for twitterTitle/twitterDescription to omit the Twitter Card block
+  // entirely (live route pages have none).
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string | null;
+  twitterDescription?: string | null;
+  keywords?: string;
 }
 
 const {
@@ -21,6 +31,11 @@ const {
   ogImage = '/images/logo.webp',
   lang = 'th',
   jsonLd = [],
+  ogTitle = title,
+  ogDescription = description,
+  twitterTitle = ogTitle,
+  twitterDescription = ogDescription,
+  keywords = 'sabuygo, สบายโก, elite chauffeur, รถเช่าพร้อมคนขับ, รถเช่า กรุงเทพ, เช่ารถพร้อมคนขับ, รถรับส่งสนามบิน, รถเช่ารายวัน, รับส่งสุวรรณภูมิ, รับส่งดอนเมือง, airport transfer bangkok, premium car rental bangkok, รถรับส่งผู้บริหาร, corporate car service, VIP transfer, เช่ารถ VIP, private car hire thailand, chauffeur service thailand, รถเช่า เที่ยว',
 } = Astro.props;
 
 const resolvedOgImage = new URL(ogImage, Astro.site).toString();
@@ -33,10 +48,7 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta
-      name="keywords"
-      content="sabuygo, สบายโก, elite chauffeur, รถเช่าพร้อมคนขับ, รถเช่า กรุงเทพ, เช่ารถพร้อมคนขับ, รถรับส่งสนามบิน, รถเช่ารายวัน, รับส่งสุวรรณภูมิ, รับส่งดอนเมือง, airport transfer bangkok, premium car rental bangkok, รถรับส่งผู้บริหาร, corporate car service, VIP transfer, เช่ารถ VIP, private car hire thailand, chauffeur service thailand, รถเช่า เที่ยว"
-    />
+    <meta name="keywords" content={keywords} />
     <meta name="author" content="SABUYGO" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonical} />
@@ -44,11 +56,8 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta property="og:title" content="SABUYGO | Premium Chauffeur Service Bangkok" />
-    <meta
-      property="og:description"
-      content="บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม."
-    />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:image" content={resolvedOgImage} />
     <meta property="og:image:width" content="2000" />
     <meta property="og:image:height" content="2000" />
@@ -56,14 +65,18 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
     <meta property="og:locale" content="th_TH" />
     <meta property="og:locale:alternate" content="en_US" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="SABUYGO | Premium Chauffeur Service Bangkok" />
-    <meta
-      name="twitter:description"
-      content="บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม."
-    />
-    <meta name="twitter:image" content={resolvedOgImage} />
+    {
+      twitterTitle && twitterDescription && (
+        <>
+          {/* Twitter Card — omitted entirely when twitterTitle/twitterDescription
+              are explicitly null (live route pages emit no Twitter meta at all) */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={twitterTitle} />
+          <meta name="twitter:description" content={twitterDescription} />
+          <meta name="twitter:image" content={resolvedOgImage} />
+        </>
+      )
+    }
 
     <!-- Favicon -->
     <link rel="icon" type="image/webp" href="/images/logo.webp" />

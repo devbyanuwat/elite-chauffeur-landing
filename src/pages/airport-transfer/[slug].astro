@@ -109,6 +109,11 @@ const ICONS: Record<string, string> = {
   title={d.title}
   description={d.description}
   canonical={d.canonical}
+  ogTitle={d.ogTitle}
+  ogDescription={d.ogDescription}
+  twitterTitle={d.twitterTitle}
+  twitterDescription={d.twitterDescription}
+  keywords={d.keywords}
   jsonLd={[serviceSchema, breadcrumbSchema, faqSchema]}
 >
   <main id="main">
@@ -249,7 +254,11 @@ const ICONS: Record<string, string> = {
             d.faq.map((f) => (
               <details class="faq-item">
                 <summary>{f.question}</summary>
-                <div class="faq-answer">{f.answer}</div>
+                {/* visibleAnswer overrides answer for the 2 pages/items where the
+                    live visible copy differs from the live FAQPage JSON-LD text
+                    by a politeness particle — JSON-LD (faqSchema above) always
+                    uses f.answer verbatim, unaffected by this override. */}
+                <div class="faq-answer">{f.visibleAnswer ?? f.answer}</div>
               </details>
             ))
           }

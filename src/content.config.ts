@@ -16,11 +16,28 @@ const seoMeta = z.object({
   description: z.string(),
   canonical: z.string(),
   ogImage: z.string().optional(),
+  // Per-page OG/Twitter/keywords overrides — each live page emits its own
+  // distinct values here (verified against the live static <head>s), not the
+  // sitewide/homepage defaults baked into Base.astro's Props. ogTitle/
+  // ogDescription default to title/description in Base.astro when omitted;
+  // twitterTitle/twitterDescription default to ogTitle/ogDescription when
+  // omitted, and — because the live route pages emit no Twitter Card meta at
+  // all — pass `null` explicitly (not just omit) to suppress the whole
+  // Twitter Card block for a page.
+  ogTitle: z.string().optional(),
+  ogDescription: z.string().optional(),
+  twitterTitle: z.string().nullable().optional(),
+  twitterDescription: z.string().nullable().optional(),
+  keywords: z.string().optional(),
 });
 
 const faqItem = z.object({
   question: z.string(),
   answer: z.string(),
+  // Optional override for the visible accordion text only, when it differs
+  // from the live FAQPage JSON-LD `answer` text by copy-drift (e.g. a
+  // politeness particle). JSON-LD always renders `answer` verbatim.
+  visibleAnswer: z.string().optional(),
 });
 
 const relatedLink = z.object({
