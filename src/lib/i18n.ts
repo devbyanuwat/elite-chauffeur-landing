@@ -9,16 +9,11 @@
 //   .lang-toggle button  - the toggle control(s); each button carries data-lang="th"|"en"
 //   aria-pressed          - reflects the active language on each toggle button
 //
-// Addition vs. the live source: the live index.html toggle does NOT persist the
-// chosen language (confirmed via grep - no `localStorage` anywhere in index.html).
-// This module adds localStorage persistence (key "lang") because the brief's
-// Step 2 explicitly specifies it as part of this port's produced interface, and
-// the verify step gates on it. It is additive only - it does not rename any key
-// or selector, and does not change the TH/EN string content.
+// Parity with the live source: the live index.html toggle does NOT persist the
+// chosen language (confirmed via grep - no `localStorage` anywhere in index.html),
+// so a reload / page change always resets to Thai. No persistence is added here.
 
 export type Dict = Record<string, string>;
-
-const STORAGE_KEY = 'lang';
 
 export function initI18n(EN: Dict): void {
   var TH: Dict = {};
@@ -44,11 +39,6 @@ export function initI18n(EN: Dict): void {
       var faqA = a as HTMLElement;
       faqA.style.maxHeight = faqA.scrollHeight + 'px';
     });
-    try {
-      localStorage.setItem(STORAGE_KEY, lang);
-    } catch (e) {
-      // localStorage unavailable (private mode / disabled) - in-memory toggle still works
-    }
   }
 
   // Defensive: Task 4 adds the .lang-toggle buttons to the Nav component. Until
@@ -60,15 +50,4 @@ export function initI18n(EN: Dict): void {
       if (lang) setLang(lang);
     });
   });
-
-  // Re-apply persisted lang on load, if any was saved by a previous visit.
-  var saved: string | null = null;
-  try {
-    saved = localStorage.getItem(STORAGE_KEY);
-  } catch (e) {
-    saved = null;
-  }
-  if (saved === 'en' || saved === 'th') {
-    setLang(saved);
-  }
 }
