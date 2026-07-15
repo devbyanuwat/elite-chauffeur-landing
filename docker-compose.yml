@@ -55,10 +55,9 @@ services:
     container_name: elite-chauffeur-landing
     restart: unless-stopped
     expose:
-      - "80"
-    volumes:
-      # บทความ — BOS generator เขียนลง shared volume, nginx เสิร์ฟ /blog (read-only)
-      - blog_content:/usr/share/nginx/html/blog:ro
+      - "4321"
+    environment:
+      BOS_PUBLIC_API: ${BOS_PUBLIC_API}
     networks:
       - proxy
     labels:
@@ -74,9 +73,9 @@ services:
     container_name: elite-chauffeur-landing-dev
     restart: unless-stopped
     expose:
-      - "80"
-    volumes:
-      - blog_content:/usr/share/nginx/html/blog:ro
+      - "4321"
+    environment:
+      BOS_PUBLIC_API: ${BOS_PUBLIC_API}
     networks:
       - proxy
     labels:

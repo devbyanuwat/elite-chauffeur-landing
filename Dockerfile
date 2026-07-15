@@ -1,34 +1,29 @@
 # ======================================================
-# Elite Chauffeur Landing Page — Dockerfile (Astro 5)
-# Multi-stage: Node build -> nginx serve
-# Build + push by GitHub Actions
+# Elite Chauffeur Landing — Dockerfile (Astro 5, @astrojs/node standalone)
+# Multi-stage: build -> node runtime. Edge nginx-proxy-manager fronts TLS/gzip.
 # ======================================================
 
 # --- build ---
 FROM node:20-alpine AS build
 WORKDIR /app
-
-# Copy manifests first for better Docker layer cache
 COPY package.json package-lock.json* ./
 RUN npm ci || npm install
-
-# Copy the rest of the source and build the static site -> /app/dist
 COPY . .
 RUN npm run build
 
-# --- serve ---
-FROM nginx:1.27-alpine
+# --- runtime ---
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=4321
+# Only the build output + production deps are needed to run the server.
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
 
-# Remove default nginx page
-RUN rm -rf /usr/share/nginx/html/*
-
-# Custom nginx config — gzip, cache headers, directory-style routing, /blog passthrough
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Astro static output (output: 'static', trailingSlash: 'always', build.format: 'directory')
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
+EXPOSE 4321
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4321/ || exit 1
+
+CMD ["node", "./dist/server/entry.mjs"]
