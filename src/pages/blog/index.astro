@@ -1,0 +1,37 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import BlogCard from '../../components/blog/BlogCard.astro';
+import { getArticles } from '../../lib/blog-api';
+
+const articles = await getArticles();
+const canonical = 'https://sabuygo.com/blog/';
+---
+<Base
+  title="บทความ | SABUYGO"
+  description="บทความและคู่มือการเดินทางจาก SABUYGO — บริการรถเช่าพร้อมคนขับระดับพรีเมียม"
+  canonical={canonical}
+>
+  <main id="main">
+    <section class="section block">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">บทความ</span>
+          <h1>บทความและคู่มือการเดินทาง</h1>
+        </div>
+        {articles.length === 0 ? (
+          <p class="blog-empty">ยังไม่มีบทความในขณะนี้</p>
+        ) : (
+          <div class="blog-grid">
+            {articles.map((a) => <BlogCard article={a} />)}
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: clamp(1.25rem, 3vw, 2rem); }
+  .blog-empty { color: var(--text-secondary); text-align: center; padding: 3rem 0; }
+</style>
