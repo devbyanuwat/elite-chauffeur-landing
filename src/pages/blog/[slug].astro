@@ -1,0 +1,72 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import { getArticle } from '../../lib/blog-api';
+
+const { slug } = Astro.params;
+const article = slug ? await getArticle(slug) : null;
+
+if (!article) {
+  Astro.response.status = 404;
+}
+
+const canonical = article ? `https://sabuygo.com/blog/${article.slug}/` : 'https://sabuygo.com/blog/';
+const published = article?.publishedAt ?? article?.createdAt ?? null;
+const jsonLd = article
+  ? [{
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: article.title,
+      description: article.seoDescription ?? article.excerpt ?? article.title,
+      image: article.coverImageUrl ?? undefined,
+      datePublished: published ?? undefined,
+      author: article.authorName ? { '@type': 'Person', name: article.authorName } : undefined,
+      mainEntityOfPage: canonical,
+    }]
+  : [];
+---
+{article ? (
+  <Base
+    title={`${article.seoTitle ?? article.title} | SABUYGO`}
+    description={article.seoDescription ?? article.excerpt ?? article.title}
+    canonical={canonical}
+    ogImage={article.coverImageUrl ?? undefined}
+    jsonLd={jsonLd}
+  >
+    <main id="main">
+      <article class="section block">
+        <div class="wrap article-wrap">
+          <div class="breadcrumb"><a href="/">หน้าแรก</a><span> / </span><a href="/blog/">บทความ</a></div>
+          <h1>{article.title}</h1>
+          {published && <p class="article-meta">{new Date(published).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}{article.authorName ? ` · ${article.authorName}` : ''}</p>}
+          {article.coverImageUrl && <img class="article-cover" src={article.coverImageUrl} alt={article.title} loading="eager" />}
+          <div class="article-body" set:html={article.body} />
+        </div>
+      </article>
+    </main>
+  </Base>
+) : (
+  <Base title="ไม่พบบทความ | SABUYGO" description="ไม่พบบทความที่ต้องการ" canonical={canonical}>
+    <main id="main">
+      <section class="section block">
+        <div class="wrap" style="text-align:center; padding: 4rem 0;">
+          <h1>ไม่พบบทความ</h1>
+          <p><a href="/blog/">กลับไปหน้าบทความ</a></p>
+        </div>
+      </section>
+    </main>
+  </Base>
+)}
+
+<style>
+  .article-wrap { max-width: 760px; margin: 0 auto; }
+  .article-meta { color: var(--text-tertiary); font-size: 0.9rem; margin: 0.5rem 0 1.5rem; }
+  .article-cover { width: 100%; height: auto; border-radius: var(--r-lg); margin-bottom: 2rem; }
+  .article-body { font-size: 1.06rem; line-height: 1.9; color: var(--text-primary); }
+  .article-body :global(h2) { margin: 2.2em 0 .6em; font-size: 1.6rem; }
+  .article-body :global(h3) { margin: 1.8em 0 .5em; font-size: 1.3rem; }
+  .article-body :global(p), .article-body :global(ul), .article-body :global(ol), .article-body :global(blockquote), .article-body :global(pre) { margin: 0 0 1.3em; }
+  .article-body :global(ul), .article-body :global(ol) { padding-left: 1.5em; }
+  .article-body :global(img) { max-width: 100%; height: auto; border-radius: var(--r-md); }
+  .article-body :global(a) { color: var(--gold-dark); text-decoration: underline; }
+</style>
