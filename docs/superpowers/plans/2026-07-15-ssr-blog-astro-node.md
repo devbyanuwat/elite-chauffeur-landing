@@ -6,7 +6,7 @@
 
 **Architecture:** Add `@astrojs/node` (standalone) to the Astro landing; keep `output: 'static'` and opt only the blog routes into on-demand rendering (`prerender = false`). A cached BOS API client feeds a listing page and an article page. The landing image becomes a Node server (internal nginx removed; edge nginx-proxy-manager stays). Spec: `docs/superpowers/specs/2026-07-15-ssr-blog-astro-node-design.md`.
 
-**Tech Stack:** Astro 5, `@astrojs/node` 11 (standalone), TypeScript, Docker, self-hosted via nginx-proxy-manager edge + Watchtower. No unit-test framework — verify with `tsx` scripts, `astro build`, running the Node entry + `curl`, Playwright, and a seeded local BOS.
+**Tech Stack:** Astro 5, `@astrojs/node` 9 (standalone, Astro 5 line), TypeScript, Docker, self-hosted via nginx-proxy-manager edge + Watchtower. No unit-test framework — verify with `tsx` scripts, `astro build`, running the Node entry + `curl`, Playwright, and a seeded local BOS.
 
 ## Global Constraints
 
@@ -32,8 +32,8 @@
 
 - [ ] **Step 1: Add the adapter dependency**
 
-Run: `npm install @astrojs/node@^11`
-Expected: `@astrojs/node` in `package.json` dependencies; `package-lock.json` updated.
+Run: `npm install @astrojs/node@^9`
+Expected: `@astrojs/node` in `package.json` dependencies; `package-lock.json` updated. (Astro 5 requires the v9 adapter line — v11 targets Astro 7 and will `ERESOLVE` against `astro@5`.)
 
 - [ ] **Step 2: Configure the adapter**
 
