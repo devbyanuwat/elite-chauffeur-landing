@@ -1,0 +1,54 @@
+---
+---
+
+<section class="stats">
+  <div class="wrap wrap-wide">
+    <div class="stats-inner">
+      <div class="stat reveal"><b>24/7</b><span data-i18n="stat.1">บริการทุกวัน ไม่มีวันหยุด</span></div>
+      <div class="stat reveal"><b>500+</b><span data-i18n="stat.2">เที่ยวเดินทางปลอดภัย</span></div>
+      <div class="stat reveal"><b>4.9 / 5</b><span data-i18n="stat.3">คะแนนจากลูกค้า</span></div>
+      <div class="stat reveal"><b>100%</b><span data-i18n="stat.4">รถมีประกัน + พ.ร.บ.</span></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats {
+    border-block: 1px solid var(--border);
+    background: var(--bg-secondary);
+  }
+
+  .stats-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding-block: clamp(2rem, 4vw, 2.8rem);
+  }
+
+  .stat {
+    text-align: center;
+    padding-inline: 0.5rem;
+  }
+
+  .stat b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat span {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 880px) {
+    .stats-inner {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.8rem 1rem;
+    }
+  }
+</style>

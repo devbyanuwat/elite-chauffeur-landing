@@ -43,11 +43,14 @@ services:
       - proxy
 
   # ─────────────────────────────────────────────
-  # Landing Page — nginx:alpine serve static HTML
+  # Landing Page — Astro static build, served by nginx:alpine
   # Domain: sabuygo.com
-  # Image จะถูก build และ push โดย GitHub Actions
+  # Image จะถูก build และ push โดย GitHub Actions (build: ที่นี่คือสำหรับ
+  # local build/verify ด้วย `docker compose build` — prod ใช้ image: ที่ pull
+  # จาก registry ผ่าน Watchtower ตามปกติ)
   # ─────────────────────────────────────────────
   landing:
+    build: .
     image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG:-latest}
     container_name: elite-chauffeur-landing
     restart: unless-stopped

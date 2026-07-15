@@ -1,32 +1,34 @@
 # ======================================================
-# Elite Chauffeur Landing Page — Dockerfile
-# Base: nginx:alpine (lightweight)
-# Build + push โดย GitHub Actions
+# Elite Chauffeur Landing Page — Dockerfile (Astro 5)
+# Multi-stage: Node build -> nginx serve
+# Build + push by GitHub Actions
 # ======================================================
 
+# --- build ---
+FROM node:20-alpine AS build
+WORKDIR /app
+
+# Copy manifests first for better Docker layer cache
+COPY package.json package-lock.json* ./
+RUN npm ci || npm install
+
+# Copy the rest of the source and build the static site -> /app/dist
+COPY . .
+RUN npm run build
+
+# --- serve ---
 FROM nginx:1.27-alpine
 
-# ลบ default nginx page
+# Remove default nginx page
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy static files เข้า nginx web root
-COPY index.html /usr/share/nginx/html/index.html
-COPY privacy.html /usr/share/nginx/html/privacy.html
-COPY images/ /usr/share/nginx/html/images/
-COPY robots.txt /usr/share/nginx/html/robots.txt
-COPY sitemap.xml /usr/share/nginx/html/sitemap.xml
-COPY sitemap_index.xml /usr/share/nginx/html/sitemap_index.xml
-
-# SEO landing pages (subpath routing — nginx serves via try_files $uri/)
-COPY airport-transfer/ /usr/share/nginx/html/airport-transfer/
-COPY routes/ /usr/share/nginx/html/routes/
-
-# Custom nginx config — กำหนด gzip, cache headers
+# Custom nginx config — gzip, cache headers, directory-style routing, /blog passthrough
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
+# Astro static output (output: 'static', trailingSlash: 'always', build.format: 'directory')
+COPY --from=build /app/dist /usr/share/nginx/html
+
 EXPOSE 80
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1

@@ -1,0 +1,71 @@
+---
+---
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow" data-i18n="hw.eyebrow">ขั้นตอนง่าย ๆ</span>
+      <h2 data-i18n="hw.title">จองรถได้ใน 3 ขั้นตอน</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <h3 data-i18n="hw.1.t">บอกความต้องการ</h3>
+        <p data-i18n="hw.1.d">เลือกประเภทรถ ระบุจุดรับ–ปลายทาง วันเวลา แล้วส่งคำขอราคา หรือทักผ่าน LINE ได้เลย</p>
+      </div>
+      <div class="step reveal">
+        <h3 data-i18n="hw.2.t">รับราคาชัดเจน</h3>
+        <p data-i18n="hw.2.d">ทีมงานยืนยันราคาแบบคงที่ ไม่มีบวกเพิ่มทีหลัง พร้อมรายละเอียดรถและคนขับ</p>
+      </div>
+      <div class="step reveal">
+        <h3 data-i18n="hw.3.t">ออกเดินทางสบายใจ</h3>
+        <p data-i18n="hw.3.d">คนขับมารับตรงเวลา ติดตามการเดินทางได้ พักผ่อนได้เต็มที่ตลอดทาง</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    counter-reset: step;
+  }
+
+  .step {
+    position: relative;
+    padding: 2rem 1.5rem 1.7rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+  }
+
+  .step::before {
+    counter-increment: step;
+    content: "0" counter(step);
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--gold);
+    opacity: 0.65;
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.9rem;
+  }
+
+  .step h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 880px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+---
+
+<section class="block why" id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-i18n="wy.eyebrow">ทำไมต้อง SABUYGO</span>
+      <h2 data-i18n="wy.title">ความสบายใจ คือสิ่งที่เราส่งมอบ</h2>
+      <p data-i18n="wy.sub">ทุกการเดินทางผ่านมาตรฐานเดียวกัน เพื่อให้คุณวางใจได้ทุกครั้ง</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-item reveal">
+        <div class="why-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 data-i18n="wy.1.t">ประกันเต็มทุกคัน</h3>
+        <p data-i18n="wy.1.d">รถทุกคันในเครือต้องมีประกันชั้นหนึ่งและ พ.ร.บ. คุ้มครองผู้โดยสารและทรัพย์สิน เป็นเงื่อนไขบังคับก่อนเข้าร่วม</p>
+      </div>
+      <div class="why-item reveal">
+        <div class="why-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3 data-i18n="wy.2.t">คนขับมืออาชีพ</h3>
+        <p data-i18n="wy.2.d">คัดกรองประวัติ สุภาพ ตรงเวลา ชำนาญเส้นทาง ดูแลคุณเหมือนคนสำคัญในทุกการเดินทาง</p>
+      </div>
+      <div class="why-item reveal">
+        <div class="why-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <h3 data-i18n="wy.3.t">ราคาโปร่งใส</h3>
+        <p data-i18n="wy.3.d">รู้ราคาชัดเจนตั้งแต่ก่อนจอง ไม่มีค่าใช้จ่ายแอบแฝง ไม่บวกเพิ่มช่วงเวลาเร่งด่วน</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    background: var(--bg-dark);
+    color: oklch(92% 0.01 230);
+  }
+
+  .why .eyebrow {
+    color: var(--gold-light);
+  }
+
+  .why .eyebrow::before {
+    background: var(--gold-light);
+  }
+
+  .why h2 {
+    color: #fff;
+  }
+
+  .why .section-head p {
+    color: oklch(78% 0.012 230);
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem 2rem;
+  }
+
+  .why-item {
+    padding: 1.5rem;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--r-lg);
+    background: var(--bg-dark-soft);
+  }
+
+  .why-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: var(--r-md);
+    display: grid;
+    place-items: center;
+    background: oklch(64% 0.115 48 / 0.18);
+    color: var(--gold-light);
+    margin-bottom: 1.1rem;
+  }
+
+  .why-item h3 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .why-item p {
+    color: oklch(76% 0.012 230);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 880px) {
+    .why-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

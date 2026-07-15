@@ -1,0 +1,151 @@
+---
+---
+
+<footer id="contact">
+  <div class="wrap wrap-wide">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="/images/sabuygo-logo.webp" alt="SABUYGO" width="44" height="44" />
+          <span class="nav-wordmark">SABUYGO</span>
+        </div>
+        <p data-i18n="ft.tag">บริการรถพร้อมคนขับมืออาชีพ รับส่งสนามบิน เดินทางธุรกิจ และเช่ารถเที่ยวทั่วไทย ด้วยมาตรฐานความปลอดภัยและราคาที่โปร่งใส</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="ft.services">บริการ</h4>
+        <ul>
+          <li><a href="/#services" data-i18n="srv.1.t">รับส่งสนามบิน</a></li>
+          <li><a href="/#services" data-i18n="srv.2.t">เดินทางธุรกิจ</a></li>
+          <li><a href="/#fleet" data-i18n="srv.3.t">เช่ารถเที่ยว พร้อมคนขับ</a></li>
+          <li><a href="/#routes" data-i18n="nav.routes">เส้นทาง</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="ft.company">ข้อมูล</h4>
+        <ul>
+          <li><a href="/#faq" data-i18n="nav.faq">คำถามบ่อย</a></li>
+          <li><a href="/#how" data-i18n="nav.how">วิธีจอง</a></li>
+          <li><a href="/#why" data-i18n="ft.why">ทำไมต้องเรา</a></li>
+          <li><a href="/blog/" data-i18n="nav.blog">บทความ</a></li>
+          <li><a href="/privacy/" data-i18n="ft.privacy">นโยบายความเป็นส่วนตัว</a></li>
+        </ul>
+      </div>
+      <div class="footer-col footer-contact">
+        <h4 data-i18n="ft.contact">ติดต่อเรา</h4>
+        <ul>
+          <li><strong><a href="tel:0623879159">062-387-9159</a></strong></li>
+          <li><a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">LINE @031cvnva</a></li>
+          <li><span data-i18n="ft.hours">เปิดบริการทุกวัน 24 ชม.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 SABUYGO</span>
+      <span data-i18n="ft.rights">สงวนลิขสิทธิ์</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding-block: clamp(3rem, 6vw, 4.5rem) 2rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+
+  .footer-logo img {
+    height: 44px;
+  }
+
+  /* .nav-wordmark base rule duplicated from Nav.astro — Astro scopes component
+     styles per-component, so a class shared across two components (nav-brand
+     wordmark + footer-logo wordmark) needs the base rule in both places. */
+  .nav-wordmark {
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+  }
+
+  .footer-logo .nav-wordmark {
+    font-size: 1.15rem;
+  }
+
+  .footer-brand p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    max-width: 280px;
+  }
+
+  .footer-col h4 {
+    font-family: var(--font);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 1rem;
+  }
+
+  .footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .footer-col a {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover {
+    color: var(--gold-dark);
+  }
+
+  .footer-contact strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.8rem;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

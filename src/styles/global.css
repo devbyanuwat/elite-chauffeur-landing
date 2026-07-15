@@ -1,0 +1,337 @@
+/* ============================================================
+   SABUYGO — Landing page
+   Hybrid: warm terracotta/teal/navy brand  ×  friendly travel mood
+   New SABUYGO logo (yellow + navy) folded in as a guest accent.
+   Promoted from landing-v2 mockup (terracotta/teal + sun accent).
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Primary accent — warm terracotta clay (carried from brand) */
+  --gold: oklch(64% 0.115 48);
+  --gold-light: oklch(78% 0.085 55);
+  --gold-dark: oklch(48% 0.105 42);
+  --gold-wash: oklch(94% 0.022 60);
+  /* Secondary accent — sea teal */
+  --green: oklch(56% 0.080 210);
+  --green-dark: oklch(42% 0.075 215);
+  /* Guest accent — SABUYGO logo yellow (used sparingly) */
+  --sun: oklch(87% 0.155 92);
+  --sun-soft: oklch(96% 0.06 95);
+  /* Ink — warm cocoa, never pure #000 */
+  --text-primary: oklch(24% 0.018 60);
+  --text-secondary: oklch(46% 0.015 60);
+  --text-tertiary: oklch(54% 0.014 60);
+  /* Paper — soft sand, never pure #fff */
+  --bg-primary: oklch(98% 0.008 75);
+  --bg-secondary: oklch(95% 0.014 70);
+  --bg-card: oklch(99.5% 0.004 80);
+  --bg-dark: oklch(20% 0.022 235);
+  --bg-dark-soft: oklch(28% 0.020 230);
+  --border: oklch(88% 0.014 70);
+  --border-dark: oklch(34% 0.018 230);
+  /* Feedback */
+  --danger: oklch(54% 0.19 27);
+
+  --font: 'Hanken Grotesk', 'Anuphan', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Fraunces', 'Hanken Grotesk', 'Anuphan', Georgia, serif;
+
+  --section-spacing: clamp(72px, 11vw, 144px);
+  --content-width: 1140px;
+  --content-wide: 1400px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --tracking-wide: 0.18em;
+
+  /* Friendlier radius scale (rounded SABUYGO logo cue) */
+  --r-sm: 8px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  --shadow-sm: 0 1px 2px oklch(24% 0.02 60 / 0.04), 0 2px 8px oklch(24% 0.02 60 / 0.05);
+  --shadow-md: 0 4px 12px oklch(24% 0.02 60 / 0.06), 0 12px 32px oklch(24% 0.02 60 / 0.08);
+  --shadow-lg: 0 8px 24px oklch(24% 0.02 60 / 0.08), 0 24px 60px oklch(24% 0.02 60 / 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-padding-top: 88px;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- Skip link ---- */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 2000;
+  background: var(--bg-dark);
+  color: #fff;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--r-sm);
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-dark);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--content-width);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+.wrap-wide {
+  max-width: var(--content-wide);
+}
+
+/* ---- Shared type ---- */
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 1.5px;
+  background: var(--gold);
+}
+
+.section-head {
+  max-width: 640px;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.section-head.center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-head.center .eyebrow::before {
+  display: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: clamp(1.85rem, 4.2vw, 3rem);
+  margin: 0.7rem 0 0.9rem;
+}
+
+.section-head p {
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.95rem 1.6rem;
+  border-radius: var(--r-pill);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease-out), background 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--gold-dark);
+  color: #fff;
+  box-shadow: 0 6px 18px oklch(48% 0.105 42 / 0.28);
+}
+
+.btn-primary:hover {
+  background: oklch(44% 0.108 42);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px oklch(48% 0.105 42 / 0.34);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.btn-ghost:hover {
+  border-color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.btn-line {
+  background: #06C755;
+  color: #fff;
+}
+
+.btn-line:hover {
+  background: #05b04b;
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-lg {
+  padding: 1.1rem 2rem;
+  font-size: 1rem;
+}
+
+/* ---- Section spacing (shared by every <section class="block">) ---- */
+section.block {
+  padding-block: var(--section-spacing);
+}
+
+/* ---- Marquee mechanics (shared scrolling-strip animation) ---- */
+.marquee {
+  position: relative;
+  overflow: hidden;
+}
+
+.marquee + .marquee {
+  margin-top: 1.25rem;
+}
+
+.marquee::before,
+.marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(40px, 8vw, 110px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg-secondary), transparent);
+}
+
+.marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg-secondary), transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: tm-rtl 52s linear infinite;
+}
+
+.marquee-track.ltr {
+  animation-name: tm-ltr;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes tm-rtl {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes tm-ltr {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+  }
+
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* ---- Reveal animation ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

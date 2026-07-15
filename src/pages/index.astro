@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Stats from '../components/sections/Stats.astro';
+import Services from '../components/sections/Services.astro';
+import Routes from '../components/sections/Routes.astro';
+import Fleet from '../components/sections/Fleet.astro';
+import How from '../components/sections/How.astro';
+import Why from '../components/sections/Why.astro';
+import Reviews from '../components/sections/Reviews.astro';
+import Faq from '../components/sections/Faq.astro';
+import Cta from '../components/sections/Cta.astro';
+import {
+  limousineServiceSchema,
+  websiteSchema,
+  siteNavigationSchema,
+  breadcrumbSchema,
+} from '../lib/schema.ts';
+
+const title = 'SABUYGO | Premium Car Rental & Chauffeur Service Bangkok';
+const description =
+  'บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ รับส่งสนามบิน ธุรกิจ ท่องเที่ยว มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม. Premium chauffeur service in Bangkok.';
+const canonical = 'https://sabuygo.com';
+// og:title/og:description are shorter than the <title>/description above on
+// live — not a default fallback, so pass them explicitly (Task 7 fix).
+// twitter:title/twitter:description mirror these on live, so they're left to
+// Base.astro's default (twitterTitle = ogTitle, twitterDescription = ogDescription).
+const ogTitle = 'SABUYGO | Premium Chauffeur Service Bangkok';
+const ogDescription =
+  'บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม.';
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogTitle={ogTitle}
+  ogDescription={ogDescription}
+  jsonLd={[limousineServiceSchema, websiteSchema, siteNavigationSchema, breadcrumbSchema]}
+>
+  <main id="main">
+    <Hero />
+    <Stats />
+    <Services />
+    <Routes />
+    <Fleet />
+    <How />
+    <Why />
+    <Reviews />
+    <Faq />
+    <Cta />
+  </main>
+</Base>
