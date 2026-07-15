@@ -32,8 +32,8 @@
 
 - [ ] **Step 1: Add the adapter dependency**
 
-Run: `npm install @astrojs/node@^9`
-Expected: `@astrojs/node` in `package.json` dependencies; `package-lock.json` updated. (Astro 5 requires the v9 adapter line — v11 targets Astro 7 and will `ERESOLVE` against `astro@5`.)
+Run: `npm install @astrojs/node@^9` then `npm install -D @types/node`
+Expected: `@astrojs/node` in dependencies + `@types/node` in devDependencies; `package-lock.json` updated. (Astro 5 requires the v9 adapter line — v11 targets Astro 7 and will `ERESOLVE` against `astro@5`. `@types/node` is required so `astro check` types the `process.env` / `node:*` usage in the SSR client + the tsx test — without it the build fails at `astro check`.)
 
 - [ ] **Step 2: Configure the adapter**
 
