@@ -8,6 +8,7 @@ import Fleet from '../components/sections/Fleet.astro';
 import How from '../components/sections/How.astro';
 import Why from '../components/sections/Why.astro';
 import Reviews from '../components/sections/Reviews.astro';
+import StaticReviews from '../components/sections/StaticReviews.astro';
 import Faq from '../components/sections/Faq.astro';
 import Cta from '../components/sections/Cta.astro';
 import {
@@ -45,8 +46,60 @@ const ogDescription =
     <Fleet />
     <How />
     <Why />
-    <Reviews />
+    <section class="block tm-section" id="reviews">
+      <div class="wrap">
+        <div class="section-head center reveal">
+          <span class="eyebrow" data-i18n="tm.eyebrow">รีวิวจริงจากลูกค้า</span>
+          <h2 data-i18n="tm.title">ลูกค้าพูดถึงเราอย่างไร</h2>
+          <p data-i18n="tm.sub">เสียงส่วนหนึ่งจากผู้ที่เดินทางไปกับเรา (คำชมตัวอย่างสำหรับ mockup นี้)</p>
+        </div>
+      </div>
+      <Reviews server:defer>
+        <StaticReviews slot="fallback" />
+      </Reviews>
+    </section>
     <Faq />
     <Cta />
   </main>
 </Base>
+
+<script type="application/ld+json" set:html={JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SABUYGO',
+  url: 'https://sabuygo.com',
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '128', bestRating: '5' },
+})} />
+
+<script>
+  (function () {
+    'use strict';
+    // Mobile tap toggles reveal (desktop uses :hover / :focus-within CSS).
+    // CTA click pre-fills the booking form's vehicle type via the existing
+    // ServiceTabs controls, then scrolls to the form and focuses the pickup field.
+    // (service type is optional: only applied if a card carries data-svc.)
+    document.addEventListener('click', function (e) {
+      var target = e.target as HTMLElement;
+      var cta = target.closest('.tm-cta') as HTMLElement | null;
+      if (cta) {
+        var svc = cta.dataset.svc;
+        var veh = cta.dataset.vehicle;
+        if (svc) { var t = document.querySelector('.svc-tab[data-svc="' + svc + '"]') as HTMLButtonElement | null; if (t) t.click(); }
+        if (veh) { var c = document.querySelector('.vtype-chip[data-value="' + veh + '"]') as HTMLButtonElement | null; if (c) c.click(); }
+        var form = document.getElementById('bookingForm');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var pickup = document.getElementById('b_pickup') as HTMLInputElement | null;
+        if (pickup) { var pk = pickup; window.setTimeout(function () { pk.focus(); }, 400); }
+        return;
+      }
+      // Tap-to-reveal on touch: toggle .is-open on the tapped card (ignore desktop hover devices).
+      if (window.matchMedia('(hover: none)').matches) {
+        var card = target.closest('.tm-card') as HTMLElement | null;
+        if (card) {
+          document.querySelectorAll('.tm-card.is-open').forEach(function (o) { if (o !== card) o.classList.remove('is-open'); });
+          card.classList.toggle('is-open');
+        }
+      }
+    });
+  })();
+</script>

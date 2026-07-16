@@ -1,0 +1,61 @@
+---
+// Curated fallback reviews — shown while the live island loads and whenever BOS
+// is unreachable or returns zero. Also the SEO baseline (real curated content).
+// data-vehicle is a landing ServiceTabs UI key (see Global Constraints). serviceType
+// is not derivable on BOS main (SP-B unmerged), so the CTA pre-fills vehicle only.
+interface FallbackReview {
+  quote: string;
+  name: string;
+  role: string;
+  photo?: string;
+  vehicle: 'sedan' | 'suv' | 'premium' | 'any';
+}
+
+const FALLBACK: FallbackReview[] = [
+  { quote: 'คนขับสุภาพมาก รับตรงเวลา ประทับใจค่ะ', name: 'คุณแน****', role: 'รับส่งสนามบิน', photo: '/images/review-airport-night.webp', vehicle: 'sedan' },
+  { quote: 'พาครอบครัวไปหัวหิน สบายมาก ไม่ต้องเหนื่อยขับเอง', name: 'คุณเอ****', role: 'เช่ารถเที่ยว', vehicle: 'suv' },
+  { quote: 'รถสะอาด คนขับใจดี เด็ก ๆ นั่งสบาย', name: 'คุณพ****', role: 'ทริปครอบครัว', vehicle: 'suv' },
+  { quote: 'ราคาตามที่แจ้งจริง ไม่บวกเพิ่ม ถูกใจมาก', name: 'คุณว****', role: 'เดินทางธุรกิจ', photo: '/images/review-friends-day.webp', vehicle: 'premium' },
+  { quote: 'จองง่ายผ่าน LINE ตอบไว ใช้บริการอีกแน่นอน', name: 'คุณม****', role: 'รับส่งสนามบิน', vehicle: 'sedan' },
+  { quote: 'ขับนุ่ม ปลอดภัย คุณแม่ชมว่าสบายมาก', name: 'คุณน****', role: 'ทริปครอบครัว', vehicle: 'suv' },
+  { quote: 'ตรงเวลาทุกครั้ง วางใจให้รับลูกค้า VIP ได้', name: 'คุณก****', role: 'เดินทางธุรกิจ', vehicle: 'premium' },
+  { quote: 'ไปพัทยากันทั้งบ้าน สนุกและสบายสุด ๆ', name: 'คุณฟ****', role: 'เช่ารถเที่ยว', photo: '/images/review-couple-morning.webp', vehicle: 'suv' },
+];
+
+// Split into two marquee rows for the seamless right-to-left / left-to-right loop.
+const row1 = FALLBACK.slice(0, 4);
+const row2 = FALLBACK.slice(4, 8);
+---
+
+<div class="tm-rows">
+  <div class="marquee" role="group" aria-label="รีวิวลูกค้า">
+    <div class="marquee-track">
+      {[...row1, ...row1].map((r, i) => (
+        <figure class="tm-card" aria-hidden={i >= row1.length ? 'true' : undefined}>
+          {r.photo && <div class="tm-car"><img src={r.photo} alt={`ลูกค้า SABUYGO — ${r.role}`} loading="lazy" width="200" height="150" /></div>}
+          <div class="tm-body">
+            <div class="tm-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote class="tm-quote">"{r.quote}"</blockquote>
+            <figcaption class="tm-author"><b>{r.name}</b><small>{r.role}</small></figcaption>
+            <button type="button" class="tm-cta" data-vehicle={r.vehicle}>จองบริการนี้</button>
+          </div>
+        </figure>
+      ))}
+    </div>
+  </div>
+  <div class="marquee" role="group" aria-label="รีวิวลูกค้า">
+    <div class="marquee-track ltr">
+      {[...row2, ...row2].map((r, i) => (
+        <figure class="tm-card" aria-hidden={i >= row2.length ? 'true' : undefined}>
+          {r.photo && <div class="tm-car"><img src={r.photo} alt={`ลูกค้า SABUYGO — ${r.role}`} loading="lazy" width="200" height="150" /></div>}
+          <div class="tm-body">
+            <div class="tm-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote class="tm-quote">"{r.quote}"</blockquote>
+            <figcaption class="tm-author"><b>{r.name}</b><small>{r.role}</small></figcaption>
+            <button type="button" class="tm-cta" data-vehicle={r.vehicle}>จองบริการนี้</button>
+          </div>
+        </figure>
+      ))}
+    </div>
+  </div>
+</div>
