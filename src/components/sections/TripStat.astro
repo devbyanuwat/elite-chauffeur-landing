@@ -1,0 +1,7 @@
+---
+import { getTripCount } from '../../lib/stats-api';
+
+const count = await getTripCount();
+const display = count != null ? count.toLocaleString('en-US') : '500+';
+---
+{display}

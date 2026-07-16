@@ -1,11 +1,12 @@
 ---
+import TripStat from './TripStat.astro';
 ---
 
 <section class="stats">
   <div class="wrap wrap-wide">
     <div class="stats-inner">
       <div class="stat reveal"><b>24/7</b><span data-i18n="stat.1">บริการทุกวัน ไม่มีวันหยุด</span></div>
-      <div class="stat reveal"><b>500+</b><span data-i18n="stat.2">เที่ยวเดินทางปลอดภัย</span></div>
+      <div class="stat reveal"><b><TripStat server:defer><Fragment slot="fallback">500+</Fragment></TripStat></b><span data-i18n="stat.2">เที่ยวเดินทางปลอดภัย</span></div>
       <div class="stat reveal"><b>4.9 / 5</b><span data-i18n="stat.3">คะแนนจากลูกค้า</span></div>
       <div class="stat reveal"><b>100%</b><span data-i18n="stat.4">รถมีประกัน + พ.ร.บ.</span></div>
     </div>
