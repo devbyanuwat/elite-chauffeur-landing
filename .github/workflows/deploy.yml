@@ -53,17 +53,19 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # 4. Generate image metadata (tags + labels)
+      # NOTE: Infra redesign Phase 2 — target state is deploy by sha via sabuygo-infra pipeline
+      # Current: sha-tag (canonical), :latest (main only), :dev (dev only) + Watchtower auto-pull
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # Tag ด้วย commit SHA (สำหรับ traceability)
+            # Tag ด้วย commit SHA — canonical deploy reference
             type=sha,prefix=sha-,format=short
-            # Tag เป็น latest เมื่อ push ไป main
+            # Tag เป็น latest เมื่อ push ไป main (kept for short-term Watchtower support)
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            # Tag เป็น dev เมื่อ push ไป dev
+            # Tag เป็น dev เมื่อ push ไป dev (kept for short-term Watchtower support)
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
 
       # 5. Build และ Push image
