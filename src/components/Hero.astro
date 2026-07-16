@@ -88,9 +88,14 @@ import BookingForm from './BookingForm.astro';
 
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: clamp(2rem, 4vw, 4rem);
+    /* Content-sized columns centered as a block: on wide screens the copy fills
+       its column (no dead space) and the form stays a comfortable width instead
+       of stretching edge-to-edge, so the pair reads as centered. minmax(0, ...)
+       lets both columns shrink to fit narrower desktops without overflow. */
+    grid-template-columns: minmax(0, 480px) minmax(0, 500px);
+    gap: clamp(1.75rem, 3vw, 3rem);
     align-items: center;
+    justify-content: center;
   }
 
   .hero-copy {
@@ -258,19 +263,38 @@ import BookingForm from './BookingForm.astro';
     }
   }
 
-  /* Desktop: compact the booking form so it fits within the viewport (submit stays above the fold) */
+  /* Desktop: lift the hero up + tighten vertical rhythm so the whole hero
+     (copy + booking form incl. submit) fits within the viewport height. */
   @media (min-width: 561px) {
     .hero {
-      padding-top: 84px;
-      padding-bottom: 56px;
+      /* >= fixed nav height (72px) so the taller booking column never tucks
+         under the nav and loses its top edge. */
+      padding-top: 80px;
+      padding-bottom: 36px;
+    }
+
+    .hero-badge {
+      margin-bottom: 0.9rem;
+    }
+
+    .hero h1 {
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-lead {
+      margin-bottom: 1.1rem;
+    }
+
+    .hero-actions {
+      margin-bottom: 1.2rem;
     }
 
     .booking {
-      padding: 1.3rem 1.6rem;
+      padding: 1.1rem 1.45rem;
     }
 
     .booking-head {
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.6rem;
     }
   }
 </style>

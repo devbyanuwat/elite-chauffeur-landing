@@ -258,15 +258,24 @@ import ServiceTabs from './ServiceTabs.astro';
   /* Desktop: compact the booking form so it fits within the viewport (submit stays above the fold) */
   @media (min-width: 561px) {
     .field-row {
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.55rem;
     }
 
     .field-label {
-      margin-bottom: 0.28rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .field input,
+    .field select {
+      padding: 0.6rem 0.8rem;
+    }
+
+    .booking-turnstile {
+      margin: 0.55rem 0;
     }
 
     #bookingForm {
-      padding-bottom: 16px;
+      padding-bottom: 8px;
     }
   }
 </style>
