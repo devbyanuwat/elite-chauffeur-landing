@@ -1,5 +1,6 @@
 ---
 import { getReviews } from '../../lib/reviews-api';
+import StaticReviews from './StaticReviews.astro';
 
 const VEH_UI: Record<string, string> = {
   sedan: 'sedan', suv: 'suv', van: 'premium', mpv: 'premium',
@@ -18,7 +19,7 @@ const row1 = reviews.slice(0, half);
 const row2 = reviews.slice(half);
 ---
 
-{reviews.length > 0 && (
+{reviews.length > 0 ? (
   <div class="tm-rows">
     <div class="marquee" role="group" aria-label="รีวิวลูกค้า">
       <div class="marquee-track">
@@ -53,4 +54,6 @@ const row2 = reviews.slice(half);
       </div>
     )}
   </div>
+) : (
+  <StaticReviews />
 )}
