@@ -64,9 +64,9 @@ Two audiences on the same visit: **Thai executives and corporate assistants** bo
 - **References**: Aman Resorts, Alila, Rosewood, Apple product pages — silent confidence, sparse typography, generous white space.
 - **Anti-references**: generic SaaS / Vercel templates, Thai real-estate flyers, awwwards agency portfolios, corporate-stiff consulting.
 - **Theme**: light (off-white + charcoal + muted gold).
+- **ข้อยกเว้น hero (2026-07-28)**: hero ถือภาพถ่ายท่องเที่ยวสีสดหนึ่งภาพ ระบบสีคือ UI สีนิ่งกรอบภาพสดหนึ่งภาพ ไม่ใช่ทั้งหน้าต้อง muted
 - **Typography**: humanist Thai face (explore Anuphan, Bai Jamjuree, or other Cadson Demak faces — **not** Noto Sans Thai, Kanit, Prompt, or Sarabun) paired with a refined Latin sans **outside the impeccable reflex list** (no Inter, DM Sans, Plus Jakarta, Space Grotesk, IBM Plex, Outfit, or Instrument Sans).
 - **Motion**: quiet — staggered fade on entrance, small hover lift, respect `prefers-reduced-motion`. No parallax, no scroll-jacking.
-- **ข้อยกเว้น hero (2026-07-28)**: hero ถือภาพถ่ายท่องเที่ยวสีสดหนึ่งภาพ ระบบสีคือ UI สีนิ่งกรอบภาพสดหนึ่งภาพ ไม่ใช่ทั้งหน้าต้อง muted
 - **Motion (2026-07-28)**: landing ใช้ scroll storytelling จริง (pin 3 จุด + depth field ที่ hero) ตัดทิ้งทั้งหมดต่ำกว่า 1024px และเมื่อ `prefers-reduced-motion: reduce`
 
 ### Design Principles
