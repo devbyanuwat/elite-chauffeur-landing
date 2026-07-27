@@ -159,15 +159,38 @@ describe('initMotion', () => {
   });
 
   it('pin ทำงานเฉพาะ query ของ full tier', () => {
+    // matchMediaAdd (default mock) ยิงทุก callback เสมอไม่ว่า query จะเป็นอะไร — ถ้าเช็คแค่
+    // "มี pin-ready ไหม" เทสต์นี้จะผ่านได้แม้ applyPins หลุดไปอยู่ context อื่น เพราะทุก
+    // context ยิงเหมือนกันหมด ต้องบังคับให้ยิงเฉพาะ context เดียวต่อรอบ initMotion() เพื่อ
+    // พิสูจน์ว่า pin-ready มาจาก context full tier (คำสั่ง mm.add ตัวแรก) จริง ๆ
+    const onlyIfFullTier = (query: string, callback: () => void) => {
+      if (query.includes(`min-width: ${FULL_TIER_MIN_WIDTH}px`)) callback();
+    };
+    const onlyIfNotFullTier = (query: string, callback: () => void) => {
+      if (!query.includes(`min-width: ${FULL_TIER_MIN_WIDTH}px`)) callback();
+    };
+
     document.body.innerHTML = `
       <section data-pin="fleet"><div data-stage="0"></div><div data-stage="1"></div></section>
     `;
+    // initMotion เรียก mm.add สองครั้ง (full tier ก่อน แล้วค่อย NOT_REDUCED_MOTION เดี่ยว ๆ)
+    // — ใช้ mockImplementationOnce สองครั้งแทน mockImplementation ถาวร เพื่อไม่ต้อง restore เอง
+    matchMediaAdd
+      .mockImplementationOnce(onlyIfFullTier)
+      .mockImplementationOnce(onlyIfFullTier);
     initMotion();
-
-    const pinQueries = matchMediaAdd.mock.calls
-      .filter((call) => (call[0] as string).includes(`min-width: ${FULL_TIER_MIN_WIDTH}px`));
-    expect(pinQueries).toHaveLength(1);
     expect(document.querySelector('section')!.classList.contains('pin-ready')).toBe(true);
+
+    // สลับด้าน: ยิงเฉพาะ context ที่ไม่ใช่ full tier — ถ้า applyPins หลุดไปอยู่ context นี้
+    // (บั๊กที่เวอร์ชันก่อนจับไม่ได้) pin-ready จะโผล่มาทั้งที่ไม่ควร
+    document.body.innerHTML = `
+      <section data-pin="fleet"><div data-stage="0"></div><div data-stage="1"></div></section>
+    `;
+    matchMediaAdd
+      .mockImplementationOnce(onlyIfNotFullTier)
+      .mockImplementationOnce(onlyIfNotFullTier);
+    initMotion();
+    expect(document.querySelector('section')!.classList.contains('pin-ready')).toBe(false);
   });
 
   // legacy .reveal bridge tests moved to tests/motion/legacy-reveal.test.ts —
