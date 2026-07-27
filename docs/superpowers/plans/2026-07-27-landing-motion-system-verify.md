@@ -46,9 +46,12 @@ present in it) — this confirms the documented chunk-index ordering (motion chu
 `index_0`, i18n chunk = `index_1`), which loads before i18n in the emitted `<script>`
 tags. This is the accepted, already-documented ordering; not re-litigated here.
 
-**Result: 46543 bytes gzip.** Budget is ≤ 61440 bytes (60 KB). **PASS** (17.6% under
-budget). This matches the number the task author had already spot-checked (46543) —
-no mismatch to flag here.
+**Result: 46543 bytes gzip.** Budget is ≤ 61440 bytes (60 KB). **PASS** — headroom is
+`(61440 − 46543) / 61440 = 14897 / 61440 = 0.242464... ≈ 24.2% under budget` (equivalently,
+`46543 / 61440 = 0.757536... ≈ 75.8%` of the budget is used — corrected from an earlier,
+wrong "17.6% under budget" claim that was never recomputed against these raw inputs). This
+matches the number the task author had already spot-checked (46543) — no mismatch to flag
+on the raw byte count, only on the derived percentage above.
 
 ## Step 2 — Preview server
 
@@ -167,7 +170,7 @@ loading before the i18n chunk (documented ordering from Step 1).
 
 | Check | Result |
 |---|---|
-| Step 1: GSAP+ScrollTrigger+motion chunk gzip ≤ 60 KB | PASS — 46543 bytes (17.6% under budget) |
+| Step 1: GSAP+ScrollTrigger+motion chunk gzip ≤ 60 KB | PASS — 46543 bytes, `(61440−46543)/61440 ≈ 24.2%` under budget |
 | Step 3: reduced-motion hidden = 0 | PASS |
 | Step 3: no-js hidden = 0 | **FAIL — 32** (all from legacy `.reveal`, pre-existing, not from Tasks 1–5's new system) |
 | Step 3: no-js text length > 1000 | PASS — 5265 |
