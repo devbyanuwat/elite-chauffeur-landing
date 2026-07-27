@@ -13,8 +13,14 @@ export interface Job {
   outPath: string;
 }
 
-/** ราคาต่อชิ้นจาก fal (2026-07-27): Seedream V4 $0.03/รูป, marigold-depth ~$0.01/รูป */
-const COST_USD: Record<Job['kind'], number> = { color: 0.03, depth: 0.01 };
+/**
+ * ราคาต่อชิ้น วัดจริงเมื่อ 2026-07-27 (ไม่ใช่ตัวเลขจากหน้าราคา):
+ * color = $0.03 ตรงกับหน้าราคา fal ของ Seedream V4 (คงที่ต่อภาพ)
+ * depth = $0.01776 — marigold-depth คิดเงินตามวินาที compute จริง ไม่มีราคาคงที่ต่อภาพในหน้าราคา
+ * ยอดนี้มาจากส่วนต่างยอดคงเหลือจริงของงาน hero 1 คู่ (color+depth) ลบด้วยราคาคงที่ของ color
+ * ตัวเลขนี้อาจขยับได้ในอนาคตถ้าเวลา compute ของ depth เปลี่ยน แต่ใกล้เคียงพอสำหรับ dry-run estimate
+ */
+const COST_USD: Record<Job['kind'], number> = { color: 0.03, depth: 0.01776 };
 
 export function planJobs(
   scenes: Scene[],

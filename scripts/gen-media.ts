@@ -42,6 +42,8 @@ interface ManifestEntry {
   generatedAt: string;
   fileSizeBytes: number;
   aiGenerated: true;
+  /** ใส่เฉพาะ kind: 'depth' — บอกว่าไฟล์นี้ normalize แล้วเป็น near=bright (ตรงข้ามกับ marigold ดิบที่ far=bright) ห้าม invert ซ้ำ */
+  depthConvention?: 'near-bright';
 }
 
 function parseArgs(argv: string[]): Flags {
@@ -117,12 +119,19 @@ function saveManifest(entries: ManifestEntry[]): void {
   writeFileSync(MANIFEST_PATH, `${JSON.stringify(entries, null, 2)}\n`);
 }
 
-async function downloadToWebp(url: string, outFile: string): Promise<number> {
+/**
+ * marigold-depth คืนภาพ depth ดิบแบบ far=bright (ยิ่งไกลยิ่งสว่าง) แต่ shader ของ WebGL hero
+ * ต้องการ near=bright — จึง invert ที่นี่เสมอสำหรับ kind: 'depth' ก่อนเขียนเป็น webp
+ * ไม่ทำที่ปลายทางอื่น เพื่อไม่ให้มีใคร invert ซ้ำสอง
+ */
+async function downloadToWebp(url: string, outFile: string, invert: boolean): Promise<number> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`ดาวน์โหลดไฟล์ผลลัพธ์ไม่สำเร็จ (HTTP ${res.status})`);
   const buffer = Buffer.from(await res.arrayBuffer());
   mkdirSync(dirname(outFile), { recursive: true });
-  await sharp(buffer).webp({ quality: 90 }).toFile(outFile);
+  let pipeline = sharp(buffer);
+  if (invert) pipeline = pipeline.negate({ alpha: false });
+  await pipeline.webp({ quality: 90 }).toFile(outFile);
   return statSync(outFile).size;
 }
 
@@ -187,7 +196,7 @@ async function main(): Promise<void> {
     if (job.kind === 'color') colorUrlBySceneId.set(scene.id, resultUrl);
 
     const outFile = join(IMAGES_ROOT, job.outPath);
-    const fileSizeBytes = await downloadToWebp(resultUrl, outFile);
+    const fileSizeBytes = await downloadToWebp(resultUrl, outFile, job.kind === 'depth');
 
     manifest.push({
       sceneId: scene.id,
@@ -199,6 +208,7 @@ async function main(): Promise<void> {
       generatedAt: new Date().toISOString(),
       fileSizeBytes,
       aiGenerated: true,
+      ...(job.kind === 'depth' ? { depthConvention: 'near-bright' as const } : {}),
     });
     saveManifest(manifest);
 

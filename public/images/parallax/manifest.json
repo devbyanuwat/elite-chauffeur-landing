@@ -20,5 +20,28 @@
     "generatedAt": "2026-07-27T07:30:39.763Z",
     "fileSizeBytes": 23092,
     "aiGenerated": true
+  },
+  {
+    "sceneId": "hero",
+    "kind": "color",
+    "outPath": "parallax/hero/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "A modern black three-row luxury MPV van with a plain unadorned front, no hood ornament, no badges and no logos, parked at the kerb on a wet Bangkok street on an overcast early morning, seen three-quarters from the front right, a chauffeur in a plain dark suit standing beside the closed rear door on the right side of the frame, plain concrete overpass and low grey buildings receding into haze behind, flat even daylight with no visible sun, wide empty road and pale sky filling the left forty percent of the frame. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:39:47.424Z",
+    "fileSizeBytes": 172432,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "hero",
+    "kind": "depth",
+    "outPath": "parallax/hero/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "A modern black three-row luxury MPV van with a plain unadorned front, no hood ornament, no badges and no logos, parked at the kerb on a wet Bangkok street on an overcast early morning, seen three-quarters from the front right, a chauffeur in a plain dark suit standing beside the closed rear door on the right side of the frame, plain concrete overpass and low grey buildings receding into haze behind, flat even daylight with no visible sun, wide empty road and pale sky filling the left forty percent of the frame. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:40:12.690Z",
+    "fileSizeBytes": 26318,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
   }
 ]

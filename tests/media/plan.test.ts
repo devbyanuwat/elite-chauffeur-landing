@@ -34,8 +34,8 @@ describe('planJobs', () => {
     expect(jobs.map((j) => j.kind)).toEqual(['color']);
   });
 
-  it('คิดเงินตามชนิดงาน color 0.03 depth 0.01', () => {
+  it('คิดเงินตามชนิดงาน (วัดจริง 2026-07-27) color 0.03 depth 0.01776', () => {
     const { estimatedUsd } = planJobs([scene('hero'), scene('trust', false)], new Set(), false);
-    expect(estimatedUsd).toBeCloseTo(0.07, 5);
+    expect(estimatedUsd).toBeCloseTo(0.07776, 5);
   });
 });
