@@ -226,5 +226,17 @@
     "generatedAt": "2026-07-27T08:16:20.453Z",
     "fileSizeBytes": 109778,
     "aiGenerated": true
+  },
+  {
+    "sceneId": "hero-travelv1",
+    "kind": "depth",
+    "outPath": "parallax/hero-travelv1/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Depth estimation only — color source is the real, client-approved hero photograph public/images/hero-bg.travelv1-baseline.webp (NOT AI-generated, not part of SCENES, never regenerated or altered). Run as a one-off via scripts/gen-boss-hero-depth.ts.",
+    "costUsd": 0.01776,
+    "generatedAt": "2026-07-27T09:19:02.714Z",
+    "fileSizeBytes": 25238,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
   }
 ]
