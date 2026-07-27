@@ -175,9 +175,10 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
       }
     </script>
 
-    <!-- Motion system กลาง: component สั่งงานผ่าน data-* เท่านั้น
+    <!-- Motion system กลาง: component สั่งงานผ่าน data-* หรือ .reveal เดิม (legacy bridge ที่บาง component ยังใช้อยู่)
          รายละเอียดสัญญาอยู่ใน docs/superpowers/specs/2026-07-27-landing-layered-parallax-design.md
-         สคริปต์นี้อยู่หลังบล็อก i18n เพื่อให้ข้อความถูกตั้งค่าเสร็จก่อนวัดตำแหน่ง -->
+         ลำดับรันของ script bundle นี้กับบล็อก i18n ขึ้นกับการแบ่ง chunk ของ Astro ไม่ใช่ตำแหน่งในไฟล์ ห้ามอาศัยลำดับนั้น —
+         ถ้าภาษาถูกเปลี่ยนทีหลัง watchLanguageChange() ใน motion/index.ts จะ refresh ScrollTrigger เอง -->
     <script>
       import { initMotion } from '../scripts/motion';
 
