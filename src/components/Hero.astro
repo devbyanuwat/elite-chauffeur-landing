@@ -3,11 +3,34 @@ import BookingForm from './BookingForm.astro';
 ---
 
 <section class="hero">
-  <div class="hero-bg">
-    <img src="/images/hero-bg.travelv1-baseline.webp" alt="" aria-hidden="true" width="1920" height="1080" fetchpriority="high">
+  <!-- data-depth-field: hero-depth.ts (src/scripts/motion/) mounts a three.js canvas here
+       ONLY when the triple gate passes (>=1024px, motion allowed, WebGL2 present) — see
+       docs/superpowers/plans/2026-07-27-landing-redesign-STATE.md item 8 for why strength
+       is capped at 0.03. Below the gate, or if the textures fail to load, the <img> below
+       is the only thing that ever renders here — it's never hidden by CSS or JS. -->
+  <div
+    class="hero-bg"
+    data-depth-field
+    data-depth-color="/images/hero-bg.travelv1-baseline.webp"
+    data-depth-map="/images/parallax/hero-travelv1/depth.webp"
+    data-depth-strength="0.03"
+  >
+    <img
+      class="hero-bg-photo"
+      src="/images/hero-bg.travelv1-baseline.webp"
+      alt=""
+      aria-hidden="true"
+      width="1920"
+      height="1080"
+      fetchpriority="high"
+    />
   </div>
-  <div class="wrap wrap-wide">
-    <div class="hero-grid">
+  <div class="wrap wrap-wide hero-grid">
+    <!-- MIRRORED (2026-07-27): photo open on the left (her), copy + form anchored right in
+         one stacked column — ported from mockups/parallax-boss-hero.html. The old layout
+         had .hero-copy and .booking as two side-by-side grid columns; there is only one
+         column now, so they stack. -->
+    <div class="hero-content">
       <div class="hero-copy reveal">
         <span class="hero-badge"><span class="dot"></span><span data-i18n="hero.badge">พร้อมให้บริการ 24 ชั่วโมง ทั่วไทย</span></span>
         <h1>
@@ -66,40 +89,79 @@ import BookingForm from './BookingForm.astro';
     z-index: -2;
   }
 
-  .hero-bg img {
+  .hero-bg-photo {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Unconditional (not media-gated), matching the mockup: this is the crop used
+       whenever the CSS fallback is what's on screen — below the WebGL gate, or above
+       it while the depth-field textures are still loading / failed to load. Verified
+       at 1440x900 and 390x844 (see the S3 hero-slice report) that her face, hat and
+       hands stay clear of the veil at both sizes. */
+    object-position: 30% 35%;
   }
 
+  /* hero-depth.ts appends this canvas only once the real photo + depth map have
+     loaded — sized/positioned here so it drops in without a layout jump the instant
+     it mounts. Fully opaque (the fragment shader always writes alpha 1.0), so it
+     simply paints over .hero-bg-photo; nothing needs to hide the <img> underneath. */
+  .hero-bg :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* MIRRORED (2026-07-27): the previous veil ran opaque-left → clear-right (copy sat
+     left). The boss's photo puts her on the left, so this is the same 102deg gradient
+     with the stops reversed — clear (18%) where she stands, opaque (97%) under the
+     copy/form column that now lives on the right. Ported from
+     mockups/parallax-boss-hero.html; values are the ones that keep the Thai headline
+     readable without the veil creeping onto her face. */
   .hero-bg::after {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(105deg, oklch(98% 0.008 75 / 0.97) 0%, oklch(98% 0.008 75 / 0.86) 42%, oklch(98% 0.008 75 / 0.35) 100%);
+      linear-gradient(102deg,
+        oklch(98% 0.008 75 / 0.18) 0%,
+        oklch(98% 0.008 75 / 0.86) 56%,
+        oklch(98% 0.008 75 / 0.97) 100%);
   }
 
-  @media (max-width: 880px) {
+  /* Ported as-is from the mockup's own <=1000px veil — the near-opaque photo on
+     mobile (94%->99%) is a known, NOT-yet-decided problem (see the S3 hero-slice
+     report and the redesign STATE doc); this slice keeps that mobile behaviour
+     unchanged rather than inventing a fix for it. */
+  @media (max-width: 1000px) {
     .hero-bg::after {
-      background: linear-gradient(180deg, oklch(98% 0.008 75 / 0.92) 0%, oklch(98% 0.008 75 / 0.97) 60%);
+      background: linear-gradient(180deg,
+        oklch(98% 0.008 75 / 0.94) 0%,
+        oklch(98% 0.008 75 / 0.99) 62%);
+    }
+
+    .hero-trust {
+      gap: 1.2rem;
+      flex-wrap: wrap;
     }
   }
 
+  /* MIRRORED: .hero-copy and .booking no longer sit in two side-by-side grid
+     tracks — both now live in .hero-content, a single column anchored to the
+     right so the left ~55%+ of the frame (where she stands) stays open. */
   .hero-grid {
-    display: grid;
-    /* Content-sized columns centered as a block: on wide screens the copy fills
-       its column (no dead space) and the form stays a comfortable width instead
-       of stretching edge-to-edge, so the pair reads as centered. minmax(0, ...)
-       lets both columns shrink to fit narrower desktops without overflow. */
-    grid-template-columns: minmax(0, 480px) minmax(0, 500px);
-    gap: clamp(1.75rem, 3vw, 3rem);
-    align-items: center;
-    justify-content: center;
+    display: flex;
+    justify-content: flex-end;
   }
 
-  .hero-copy {
-    max-width: 560px;
+  /* clamp(), not a flat px value: a fixed column eats a bigger *fraction* of the
+     viewport as the viewport narrows. min(100%, ...) is what lets the column go
+     full-width once the wrap itself is narrower than the clamp's floor. */
+  .hero-content {
+    width: min(100%, clamp(360px, 42vw, 560px));
+    display: grid;
+    gap: clamp(1.75rem, 3vw, 3rem);
   }
 
   .hero-badge {
@@ -242,24 +304,9 @@ import BookingForm from './BookingForm.astro';
     color: var(--text-tertiary);
   }
 
-  @media (max-width: 880px) {
-    .hero-grid {
-      grid-template-columns: 1fr;
-      gap: 2.5rem;
-    }
-
-    .hero-copy {
-      max-width: none;
-    }
-  }
-
   @media (max-width: 560px) {
     .booking {
       padding: 1rem;
-    }
-
-    .hero-trust {
-      gap: 1.2rem;
     }
   }
 

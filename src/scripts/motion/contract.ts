@@ -16,8 +16,25 @@ export interface CountSpec {
   suffix: string;
 }
 
+export interface DepthFieldSpec {
+  colorUrl: string;
+  depthUrl: string;
+  strength: number;
+}
+
 const MIN_DEPTH = 0.02;
 const MAX_DEPTH = 0.4;
+
+/**
+ * เพดานของ uStrength ที่ hero-depth.ts ยอมรับ — วัดจริงกับภาพหัวหน้า
+ * (public/images/hero-bg.travelv1-baseline.webp): 0.03 คือค่าที่ใช้งานจริง,
+ * 0.09 ปีกหมวก/แนวผมเป็นเงาซ้อนแล้ว, 0.16 ขอบฉีก (ดู
+ * docs/superpowers/plans/2026-07-27-landing-redesign-STATE.md ข้อ 8) กันไว้
+ * ไม่ให้ data-depth-strength ที่พิมพ์ผิดในอนาคตทะลุเข้าโซนพัง
+ */
+const MIN_DEPTH_STRENGTH = 0;
+const MAX_DEPTH_STRENGTH = 0.05;
+const DEFAULT_DEPTH_STRENGTH = 0.03;
 
 export function parseParallaxDepth(el: Element): number | null {
   const raw = el.getAttribute('data-parallax');
@@ -55,6 +72,24 @@ export function parseCount(el: Element): CountSpec | null {
     decimals: Number.isFinite(decimals) && decimals > 0 ? decimals : 0,
     suffix: el.getAttribute('data-suffix') ?? '',
   };
+}
+
+/**
+ * อ่านสัญญาของ WebGL depth field หนึ่งจุด (data-depth-field บน .hero-bg)
+ * คืน null ถ้าไม่มีทั้ง url สี/ความลึก — hero-depth.ts ใช้ผลนี้ตัดสินใจว่าจะ
+ * mount canvas หรือปล่อยรูป <img> เดิมไว้เป็นภาพหลัก
+ */
+export function parseDepthField(el: Element): DepthFieldSpec | null {
+  const colorUrl = el.getAttribute('data-depth-color');
+  const depthUrl = el.getAttribute('data-depth-map');
+  if (!colorUrl || !depthUrl) return null;
+
+  const rawStrength = Number.parseFloat(el.getAttribute('data-depth-strength') ?? '');
+  const strength = Number.isFinite(rawStrength)
+    ? Math.min(Math.max(rawStrength, MIN_DEPTH_STRENGTH), MAX_DEPTH_STRENGTH)
+    : DEFAULT_DEPTH_STRENGTH;
+
+  return { colorUrl, depthUrl, strength };
 }
 
 /**

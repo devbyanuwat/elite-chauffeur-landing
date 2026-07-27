@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseCount, parseParallaxDepth, parseReveal, splitLines } from '../../src/scripts/motion/contract';
+import { parseCount, parseDepthField, parseParallaxDepth, parseReveal, splitLines } from '../../src/scripts/motion/contract';
 
 function el(html: string): HTMLElement {
   const host = document.createElement('div');
@@ -55,6 +55,43 @@ describe('parseCount', () => {
 
   it('คืน null เมื่อไม่มี data-count', () => {
     expect(parseCount(el('<b></b>'))).toBeNull();
+  });
+});
+
+describe('parseDepthField', () => {
+  it('คืน null เมื่อไม่มี data-depth-color หรือ data-depth-map', () => {
+    expect(parseDepthField(el('<div></div>'))).toBeNull();
+    expect(parseDepthField(el('<div data-depth-color="/a.webp"></div>'))).toBeNull();
+    expect(parseDepthField(el('<div data-depth-map="/a.webp"></div>'))).toBeNull();
+  });
+
+  it('อ่าน url สีและความลึกเมื่อมีครบ', () => {
+    expect(
+      parseDepthField(
+        el('<div data-depth-color="/color.webp" data-depth-map="/depth.webp" data-depth-strength="0.03"></div>')
+      )
+    ).toEqual({ colorUrl: '/color.webp', depthUrl: '/depth.webp', strength: 0.03 });
+  });
+
+  it('ค่าเริ่มต้น strength เป็น 0.03 เมื่อไม่ระบุหรือระบุไม่ใช่ตัวเลข', () => {
+    expect(parseDepthField(el('<div data-depth-color="/c.webp" data-depth-map="/d.webp"></div>'))?.strength).toBe(
+      0.03
+    );
+    expect(
+      parseDepthField(el('<div data-depth-color="/c.webp" data-depth-map="/d.webp" data-depth-strength="แรง"></div>'))
+        ?.strength
+    ).toBe(0.03);
+  });
+
+  it('บีบ strength ที่แรงเกินให้ไม่เกิน 0.05 — 0.09 ทำให้ปีกหมวกเป็นเงาซ้อนแล้ว', () => {
+    expect(
+      parseDepthField(el('<div data-depth-color="/c.webp" data-depth-map="/d.webp" data-depth-strength="0.16"></div>'))
+        ?.strength
+    ).toBe(0.05);
+    expect(
+      parseDepthField(el('<div data-depth-color="/c.webp" data-depth-map="/d.webp" data-depth-strength="-1"></div>'))
+        ?.strength
+    ).toBe(0);
   });
 });
 

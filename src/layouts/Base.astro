@@ -211,5 +211,25 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
         bootMotion();
       }
     </script>
+
+    <!-- Hero WebGL depth field (S3 slice, 2026-07-27): no-op on any page without a
+         [data-depth-field] element (every page except index.astro), so it's safe to boot
+         from this shared layout the same way as the two scripts above. Booted as its own
+         module so `await import('three')` inside hero-depth.ts stays a real dynamic-import
+         chunk boundary — three.js must never land inside the gsap/motion chunk (see the
+         gzip measurements in docs/superpowers/sdd/2026-07-27-landing-motion-system/s3-hero-slice-report.md). -->
+    <script>
+      import { initHeroDepth } from '../scripts/motion/hero-depth';
+
+      function bootHeroDepth() {
+        void initHeroDepth();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootHeroDepth);
+      } else {
+        bootHeroDepth();
+      }
+    </script>
   </body>
 </html>
