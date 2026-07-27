@@ -2,6 +2,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { parseCount, parseParallaxDepth, parseReveal, splitLines } from './contract';
+import { applyPins } from './pin';
 import { FULL_TIER_MIN_WIDTH } from './tiers';
 
 const EASE = 'power3.out';
@@ -110,6 +111,7 @@ export function initMotion(root: ParentNode = document): void {
 
   mm.add(`(min-width: ${FULL_TIER_MIN_WIDTH}px) and ${NOT_REDUCED_MOTION}`, () => {
     applyParallax(root);
+    return applyPins(root);
   });
 
   mm.add(NOT_REDUCED_MOTION, () => {

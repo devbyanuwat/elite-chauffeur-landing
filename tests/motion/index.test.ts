@@ -1,18 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { fromTo, to, registerPlugin, matchMediaAdd, refresh } = vi.hoisted(() => ({
-  fromTo: vi.fn(),
-  to: vi.fn(),
-  registerPlugin: vi.fn(),
-  matchMediaAdd: vi.fn((_query: string, callback: () => void) => callback()),
-  refresh: vi.fn(),
-}));
+const { fromTo, to, registerPlugin, matchMediaAdd, refresh, timeline, set } = vi.hoisted(() => {
+  const chainable = { to: vi.fn(), fromTo: vi.fn() };
+  chainable.to.mockReturnValue(chainable);
+  chainable.fromTo.mockReturnValue(chainable);
+
+  return {
+    fromTo: vi.fn(),
+    to: vi.fn(),
+    registerPlugin: vi.fn(),
+    matchMediaAdd: vi.fn((_query: string, callback: () => void) => callback()),
+    refresh: vi.fn(),
+    timeline: vi.fn(() => chainable),
+    set: vi.fn(),
+  };
+});
 
 vi.mock('gsap', () => ({
   gsap: {
     registerPlugin,
     fromTo,
     to,
+    timeline,
+    set,
     matchMedia: () => ({ add: matchMediaAdd }),
   },
 }));
@@ -146,6 +156,18 @@ describe('initMotion', () => {
     document.documentElement.lang = 'en';
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(refresh).toHaveBeenCalled();
+  });
+
+  it('pin ทำงานเฉพาะ query ของ full tier', () => {
+    document.body.innerHTML = `
+      <section data-pin="fleet"><div data-stage="0"></div><div data-stage="1"></div></section>
+    `;
+    initMotion();
+
+    const pinQueries = matchMediaAdd.mock.calls
+      .filter((call) => (call[0] as string).includes(`min-width: ${FULL_TIER_MIN_WIDTH}px`));
+    expect(pinQueries).toHaveLength(1);
+    expect(document.querySelector('section')!.classList.contains('pin-ready')).toBe(true);
   });
 
   // legacy .reveal bridge tests moved to tests/motion/legacy-reveal.test.ts —
