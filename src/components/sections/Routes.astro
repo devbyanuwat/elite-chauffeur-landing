@@ -1,7 +1,7 @@
 ---
 ---
 
-<section class="block" id="routes" style="padding-top:0">
+<section class="block" id="routes" style="padding-top:0" data-pin="route" data-pin-length="240">
   <div class="wrap wrap-wide">
     <div class="section-head reveal">
       <span class="eyebrow" data-i18n="rt.eyebrow">เส้นทางยอดนิยม</span>
@@ -9,7 +9,10 @@
       <p data-i18n="rt.sub">เส้นทางในเมืองและต่างจังหวัด พร้อมคนขับที่รู้ทางเป็นอย่างดี</p>
     </div>
     <div class="routes-grid">
-      <a class="route-card reveal" href="airport-transfer/suvarnabhumi-bkk/">
+      <svg class="route-line" viewBox="0 0 1200 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path data-draw d="M40 200 C 300 200, 340 40, 600 40 S 900 200, 1160 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      <a class="route-card reveal" data-stage="0" href="airport-transfer/suvarnabhumi-bkk/">
         <img src="/images/service1.webp" alt="บริการรับส่งสนามบินสุวรรณภูมิ พร้อมคนขับ" width="400" height="533" loading="lazy">
         <div class="route-body">
           <span class="kicker" data-i18n="rt.airport">สนามบิน</span>
@@ -17,7 +20,7 @@
           <div class="route-meta"><span data-i18n="rt.bkk.m">รับส่ง 24 ชม.</span></div>
         </div>
       </a>
-      <a class="route-card reveal" href="routes/bangkok-to-pattaya/">
+      <a class="route-card reveal" data-stage="1" href="routes/bangkok-to-pattaya/">
         <img src="/images/service-business.webp" alt="เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปพัทยา" width="400" height="533" loading="lazy">
         <div class="route-body">
           <span class="kicker" data-i18n="rt.trip">เที่ยวต่างจังหวัด</span>
@@ -25,7 +28,7 @@
           <div class="route-meta"><span>~147 กม.</span><span>~2 ชม.</span></div>
         </div>
       </a>
-      <a class="route-card reveal" href="routes/bangkok-to-hua-hin/">
+      <a class="route-card reveal" data-stage="2" href="routes/bangkok-to-hua-hin/">
         <img src="/images/service2.webp" alt="เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปหัวหิน" width="400" height="533" loading="lazy">
         <div class="route-body">
           <span class="kicker" data-i18n="rt.trip">เที่ยวต่างจังหวัด</span>
@@ -33,7 +36,7 @@
           <div class="route-meta"><span>~200 กม.</span><span>~2.5 ชม.</span></div>
         </div>
       </a>
-      <a class="route-card reveal" href="airport-transfer/don-mueang-dmk/">
+      <a class="route-card reveal" data-stage="3" href="airport-transfer/don-mueang-dmk/">
         <img src="/images/service3.webp" alt="บริการรับส่งสนามบินดอนเมือง พร้อมคนขับ" width="400" height="533" loading="lazy">
         <div class="route-body">
           <span class="kicker" data-i18n="rt.airport">สนามบิน</span>
@@ -120,6 +123,41 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+  }
+
+  /* เส้นทางมีความหมายเฉพาะตอนที่มีอะไรมาวาดมัน จึงซ่อนเป็นค่าเริ่มต้น */
+  .route-line {
+    display: none;
+  }
+
+  /* ---- โหมด pin (desktop, motion allowed) ---- */
+  .pin-ready .routes-grid {
+    display: block;
+    position: relative;
+    min-height: 72vh;
+  }
+
+  .pin-ready .route-line {
+    display: block;
+    position: absolute;
+    inset: auto 0 8%;
+    width: 100%;
+    height: 30%;
+    color: color-mix(in oklab, var(--gold), transparent 45%);
+    pointer-events: none;
+  }
+
+  .pin-ready .route-card {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: min(100%, 520px);
+    aspect-ratio: 4 / 3;
+  }
+
+  /* hover lift เดิมชน transform ที่ scrub คุมอยู่ */
+  .pin-ready .route-card:hover {
+    transform: none;
   }
 
   @media (max-width: 880px) {
