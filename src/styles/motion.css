@@ -2,6 +2,24 @@
    ทุกกฎ gate ด้วย .js-motion ที่ Base.astro ใส่ให้ตั้งแต่ใน <head>
    ถ้า JavaScript ไม่ทำงาน class นี้จะไม่มี และไม่มีอะไรถูกซ่อนเลย */
 
+/* ---- Legacy .reveal resting state (final-review Fix 2) ----
+   ย้ายมาจาก src/styles/global.css ซึ่งเดิมซ่อน .reveal ด้วย opacity: 0 แบบไม่มี
+   เงื่อนไขใด ๆ เลย — ปิด JavaScript แล้ว 14 ไฟล์ที่ยังใช้ .reveal จะค้างมองไม่เห็น
+   ตลอดกาล ผิด Global Constraint ข้อ 2 ("ปิด JavaScript แล้วข้อความและภาพต้องเห็นครบ")
+   ตอนนี้ gate ด้วย .js-motion เหมือนกฎอื่นทุกข้อในไฟล์นี้ — เป็นการเปลี่ยนพฤติกรรม
+   ที่ตั้งใจ: ".reveal ต้องทำงานเหมือนเดิมทุกประการ" แคบลงเหลือ "...เหมือนเดิมทุก
+   ประการเมื่อ JavaScript ทำงาน" timing/easing เดิมไม่แตะ */
+.js-motion .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+.js-motion .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
 .js-motion [data-reveal] {
   opacity: 0;
 }
