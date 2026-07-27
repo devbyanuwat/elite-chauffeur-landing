@@ -1,5 +1,4 @@
 ---
-import BookingForm from './BookingForm.astro';
 ---
 
 <section class="hero">
@@ -61,15 +60,6 @@ import BookingForm from './BookingForm.astro';
             <span data-i18n="hero.trust3">ประกัน + พ.ร.บ.</span>
           </div>
         </div>
-      </div>
-
-      <!-- Booking card -->
-      <div class="booking reveal" id="booking">
-        <div class="booking-head">
-          <h2 data-i18n="book.title">จองรถ / ขอราคา</h2>
-          <span data-i18n="book.sub">ตอบกลับไว</span>
-        </div>
-        <BookingForm />
       </div>
     </div>
   </div>
@@ -276,40 +266,6 @@ import BookingForm from './BookingForm.astro';
     font-size: 0.9rem;
   }
 
-  /* ---- Booking card ---- */
-  .booking {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    padding: clamp(1.5rem, 2.5vw, 2.1rem);
-    box-shadow: var(--shadow-lg);
-    min-width: 0;
-  }
-
-  .booking-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.3rem;
-  }
-
-  .booking-head h2 {
-    font-size: 1.3rem;
-    margin: 0;
-  }
-
-  .booking-head span {
-    font-size: 0.78rem;
-    color: var(--text-tertiary);
-  }
-
-  @media (max-width: 560px) {
-    .booking {
-      padding: 1rem;
-    }
-  }
-
   /* Desktop: lift the hero up + tighten vertical rhythm so the whole hero
      (copy + booking form incl. submit) fits within the viewport height. */
   @media (min-width: 561px) {
@@ -334,14 +290,6 @@ import BookingForm from './BookingForm.astro';
 
     .hero-actions {
       margin-bottom: 1.2rem;
-    }
-
-    .booking {
-      padding: 1.1rem 1.45rem;
-    }
-
-    .booking-head {
-      margin-bottom: 0.6rem;
     }
   }
 </style>
