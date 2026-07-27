@@ -1,0 +1,42 @@
+/* สถานะพักของ element ที่รอ animate
+   ทุกกฎ gate ด้วย .js-motion ที่ Base.astro ใส่ให้ตั้งแต่ใน <head>
+   ถ้า JavaScript ไม่ทำงาน class นี้จะไม่มี และไม่มีอะไรถูกซ่อนเลย */
+
+.js-motion [data-reveal] {
+  opacity: 0;
+}
+
+.js-motion [data-reveal='mask'] {
+  opacity: 1;
+  clip-path: inset(0 0 100% 0);
+}
+
+.js-motion .split-line {
+  display: block;
+  overflow: hidden;
+}
+
+.js-motion .split-inner {
+  display: inline-block;
+}
+
+/* ชั้น parallax ต้องสูงเกินกรอบที่ครอบมัน ไม่งั้นการเลื่อนจะลากขอบว่างเข้ามา
+   กรอบเป็นหน้าที่ของ component ส่วนตัวชั้นเองรับ will-change ตอน active */
+.js-motion [data-parallax] {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-motion [data-reveal],
+  .js-motion [data-reveal='mask'] {
+    opacity: 1 !important;
+    clip-path: none !important;
+    transform: none !important;
+  }
+
+  .js-motion .split-inner,
+  .js-motion [data-parallax] {
+    transform: none !important;
+    will-change: auto;
+  }
+}
