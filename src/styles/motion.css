@@ -51,6 +51,20 @@
   }
 }
 
+/* ---- Pinned sequence (spec ข้อ 3.1) ----
+   class pin-ready มาจาก applyPins ใน src/scripts/motion/pin.ts หลังต่อ timeline
+   สำเร็จแล้ว และเฉพาะภายใน mm.add block ที่ gate ด้วย
+   (min-width: 1024px) and not all and (prefers-reduced-motion: reduce) เท่านั้น
+   ปลอดเปลื้องแล้ว จึงไม่ต้อง wrap ด้วย media query หรือ reduced-motion reset —
+   pin-ready ไม่มีทางมีชีวิตอยู่นอกเงื่อนไขเหล่านั้น และ cleanup ตัดถอน class
+   ทันทีกี่ที่ query ไม่match อีก will-change ที่อยู่นี่เป็นเพียง transition override */
+
+/* .reveal เดิมมี transition 0.7s ถ้าปล่อยไว้ในโซนที่ scrub ควบคุม opacity
+   ทุกเฟรมจะกลายเป็นการ interpolate ซ้อน interpolate ภาพจะตามมือช้าและกระตุก */
+.js-motion .pin-ready .reveal {
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .js-motion [data-reveal],
   .js-motion [data-reveal='mask'] {
