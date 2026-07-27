@@ -47,8 +47,9 @@ Mockup อ้างอิง (source of truth): `mockups/parallax-concept.html` 
 | `data-pin` | section ที่ค้างจอแล้วเล่าเรื่องตาม scroll | ชื่อฉาก (`fleet`, `route`, `how`) |
 | `data-pin-length` | ความยาว scroll ที่ใช้เล่า คิดเป็น % ของความสูงจอ | ตัวเลข เช่น `220` |
 | `data-stage` | ท่อนหนึ่งของเรื่องใน `data-pin` เดียวกัน | ลำดับเริ่มที่ `0` |
-| `data-stage-media` | ชั้นภาพที่สลับตาม stage | ลำดับ ตรงกับ `data-stage` |
 | `data-draw` | เส้น SVG ที่วาดตาม scroll (`stroke-dashoffset`) | ไม่มีค่า |
+
+ทั้ง 3 จุดใช้ตัวการ์ดเป็นทั้งข้อความและภาพในก้อนเดียว จึงไม่มี attribute แยกชั้นภาพ — ถ้าวันหนึ่งอัปเกรดเป็น frame sequence ค่อยเพิ่มตอนที่มีคนใช้จริง
 
 สามระดับผ่าน `gsap.matchMedia()`
 

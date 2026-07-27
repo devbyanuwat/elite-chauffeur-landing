@@ -53,7 +53,7 @@
 - Consumes: ไม่มี — ไฟล์นี้ห้าม import อะไรจากโมดูลอื่นในโปรเจกต์
 - Produces:
   - `export interface PinSpec { name: string; lengthVh: number }`
-  - `export interface StageGroup { index: number; panels: HTMLElement[]; media: HTMLElement[] }`
+  - `export interface StageGroup { index: number; panels: HTMLElement[] }`
   - `export function parsePin(el: Element): PinSpec | null`
   - `export function collectStages(root: Element): StageGroup[]`
 
@@ -104,17 +104,16 @@ describe('collectStages', () => {
     expect(collectStages(section).map((s) => s.index)).toEqual([0, 1, 2]);
   });
 
-  it('รวม panel กับ media ที่ลำดับเดียวกันเข้ากลุ่มเดียว', () => {
+  it('รวม element ที่ลำดับเดียวกันเข้ากลุ่มเดียว', () => {
     const section = el(`
       <section data-pin="a">
         <p data-stage="0">ข้อความ</p>
-        <img data-stage-media="0" src="/images/car1.webp">
+        <img data-stage="0" src="/images/car1.webp">
       </section>
     `);
     const groups = collectStages(section);
     expect(groups).toHaveLength(1);
-    expect(groups[0].panels).toHaveLength(1);
-    expect(groups[0].media).toHaveLength(1);
+    expect(groups[0].panels).toHaveLength(2);
   });
 
   it('ข้าม stage ที่อยู่ใน pin ซ้อนข้างใน', () => {
@@ -155,10 +154,8 @@ export interface PinSpec {
 
 export interface StageGroup {
   index: number;
-  /** element ที่ถือข้อความของท่อนนี้ (data-stage) */
+  /** element ที่ถือเนื้อหาของท่อนนี้ (data-stage) — ทั้งข้อความและภาพอยู่ในก้อนเดียว */
   panels: HTMLElement[];
-  /** ชั้นภาพของท่อนนี้ ถ้าแยกจากข้อความ (data-stage-media) */
-  media: HTMLElement[];
 }
 
 /**
@@ -192,21 +189,16 @@ export function parsePin(el: Element): PinSpec | null {
 export function collectStages(root: Element): StageGroup[] {
   const byIndex = new Map<number, StageGroup>();
 
-  const take = (attr: string, key: 'panels' | 'media'): void => {
-    root.querySelectorAll<HTMLElement>(`[${attr}]`).forEach((el) => {
-      if (el.closest('[data-pin]') !== root) return;
+  root.querySelectorAll<HTMLElement>('[data-stage]').forEach((el) => {
+    if (el.closest('[data-pin]') !== root) return;
 
-      const index = Number.parseInt(el.getAttribute(attr) ?? '', 10);
-      if (!Number.isFinite(index) || index < 0) return;
+    const index = Number.parseInt(el.getAttribute('data-stage') ?? '', 10);
+    if (!Number.isFinite(index) || index < 0) return;
 
-      const group = byIndex.get(index) ?? { index, panels: [], media: [] };
-      group[key].push(el);
-      byIndex.set(index, group);
-    });
-  };
-
-  take('data-stage', 'panels');
-  take('data-stage-media', 'media');
+    const group = byIndex.get(index) ?? { index, panels: [] };
+    group.panels.push(el);
+    byIndex.set(index, group);
+  });
 
   return Array.from(byIndex.values()).sort((a, b) => a.index - b.index);
 }
@@ -387,7 +379,7 @@ const FADE_SHARE = 0.6;
 const OVERLAP_SHARE = 0.4;
 
 function targetsOf(stage: StageGroup): HTMLElement[] {
-  return [...stage.panels, ...stage.media];
+  return stage.panels;
 }
 
 /**
@@ -535,8 +527,7 @@ git commit -m "feat(motion): drive pinned stage sequences from ScrollTrigger"
    class pin-ready มาจาก src/scripts/motion/pin.ts หลังต่อ timeline สำเร็จแล้ว
    เท่านั้น จึงไม่มีทางที่ stage จะซ้อนกันโดยไม่มีใครสลับให้ ปิด JS หรือ
    reduced-motion หรือจอแคบกว่า 1024px = ไม่มี class นี้ = layout เดิมทั้งดุ้น */
-.js-motion .pin-ready [data-stage],
-.js-motion .pin-ready [data-stage-media] {
+.js-motion .pin-ready [data-stage] {
   will-change: opacity, transform;
 }
 
@@ -547,8 +538,7 @@ git commit -m "feat(motion): drive pinned stage sequences from ScrollTrigger"
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .js-motion .pin-ready [data-stage],
-  .js-motion .pin-ready [data-stage-media] {
+  .js-motion .pin-ready [data-stage] {
     will-change: auto;
   }
 }
@@ -896,9 +886,9 @@ git commit -m "docs(landing): record the measured result of the pinned sequences
 
 ## Self-Review
 
-**1. Spec coverage** — spec ข้อ 3.1 มี 3 จุด (fleet Task 4, route Task 6, how Task 5) · contract 5 attribute (`data-pin`, `data-pin-length`, `data-stage` ใน Task 1 · `data-stage-media` ใน Task 1 และใช้ใน `collectStages`/`targetsOf` · `data-draw` ใน Task 2 และใช้ใน Task 6) · กติกา 7-12 ผูกอยู่ใน Global Constraints และวัดใน Task 7 ครบทุกข้อ · ความละเอียด "transform + text swap ไม่ใช้ frame sequence" = Global Constraint 8
+**1. Spec coverage** — spec ข้อ 3.1 มี 3 จุด (fleet Task 4, route Task 6, how Task 5) · contract 4 attribute (`data-pin`, `data-pin-length`, `data-stage` ใน Task 1 · `data-draw` ใน Task 2 และใช้ใน Task 6) · กติกา 7-12 ผูกอยู่ใน Global Constraints และวัดใน Task 7 ครบทุกข้อ · ความละเอียด "transform + text swap ไม่ใช้ frame sequence" = Global Constraint 8
 
-**ช่องว่างที่ยอมรับไว้อย่างตั้งใจ:** `data-stage-media` ไม่มี component ไหนใช้ในแผนนี้ เพราะทั้ง 3 จุดใช้ตัวการ์ดเป็นทั้งข้อความและภาพในตัวเดียว การแยกชั้นภาพออกมาจะทำให้ต้องเขียนข้อความซ้ำสองที่ (ผิด DRY และสร้างเนื้อหาซ้ำในสายตา crawler) attribute นี้ยังอยู่ใน contract เพราะเป็นทางอัปเกรดไป frame sequence ในอนาคตโดยไม่ต้องแก้ contract และมีเทสต์คุมพฤติกรรมไว้แล้ว
+**ของที่ตัดออกจากร่างแรก:** ร่างแรกมี `data-stage-media` สำหรับแยกชั้นภาพออกจากข้อความ ตัดทิ้งแล้วเพราะทั้ง 3 จุดใช้ตัวการ์ดเป็นทั้งข้อความและภาพในก้อนเดียว การแยกชั้นจะทำให้ต้องเขียนข้อความซ้ำสองที่ (ผิด DRY และสร้างเนื้อหาซ้ำในสายตา crawler) — attribute ที่ไม่มีใครใช้คือ YAGNI ถ้าวันหนึ่งอัปเกรดเป็น frame sequence ค่อยเพิ่มตอนที่มีคนใช้จริง spec ก็แก้ตามแล้ว
 
 **2. Placeholder scan** — ไม่มี TBD/TODO ทุก step ที่เป็นโค้ดมีโค้ดจริง ทุกคำสั่งรันได้ตามที่พิมพ์ ทุกค่าที่ใส่ใน markup คัดจากไฟล์ที่มีอยู่
 
