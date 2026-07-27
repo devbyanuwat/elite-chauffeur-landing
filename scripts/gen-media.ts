@@ -11,7 +11,7 @@
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
-import { planJobs, type Job, type Scene } from './media/plan';
+import { planJobs, COST_USD, type Job, type Scene } from './media/plan';
 import { SCENES } from './media/scenes';
 import { submitAndWait, type FalDeps } from './media/fal';
 
@@ -23,8 +23,8 @@ const MANIFEST_PATH = join(PARALLAX_ROOT, 'manifest.json');
 const COLOR_MODEL = 'fal-ai/bytedance/seedream/v4/text-to-image';
 const DEPTH_MODEL = 'fal-ai/imageutils/marigold-depth';
 
-/** ต้องตรงกับตารางราคาใน scripts/media/plan.ts — ใช้แค่บันทึกลง manifest ต่อ job เดียว */
-const COST_USD: Record<Job['kind'], number> = { color: 0.03, depth: 0.01 };
+// COST_USD imported from ./media/plan — single source of truth, so the dry-run estimate
+// and the per-job costUsd written to manifest.json can never drift apart again.
 
 interface Flags {
   run: boolean;

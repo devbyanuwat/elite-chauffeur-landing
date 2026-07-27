@@ -20,7 +20,7 @@ export interface Job {
  * ยอดนี้มาจากส่วนต่างยอดคงเหลือจริงของงาน hero 1 คู่ (color+depth) ลบด้วยราคาคงที่ของ color
  * ตัวเลขนี้อาจขยับได้ในอนาคตถ้าเวลา compute ของ depth เปลี่ยน แต่ใกล้เคียงพอสำหรับ dry-run estimate
  */
-const COST_USD: Record<Job['kind'], number> = { color: 0.03, depth: 0.01776 };
+export const COST_USD: Record<Job['kind'], number> = { color: 0.03, depth: 0.01776 };
 
 export function planJobs(
   scenes: Scene[],

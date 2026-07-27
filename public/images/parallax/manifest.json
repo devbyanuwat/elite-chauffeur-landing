@@ -43,5 +43,131 @@
     "fileSizeBytes": 26318,
     "aiGenerated": true,
     "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "service/airport",
+    "kind": "color",
+    "outPath": "parallax/service/airport/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Arrival hall of a modern Asian airport seen from a distance, a chauffeur waiting with a name board, travellers blurred in motion, wide calm composition with space on the left. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:47:13.209Z",
+    "fileSizeBytes": 123312,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "service/airport",
+    "kind": "depth",
+    "outPath": "parallax/service/airport/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Arrival hall of a modern Asian airport seen from a distance, a chauffeur waiting with a name board, travellers blurred in motion, wide calm composition with space on the left. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:47:34.700Z",
+    "fileSizeBytes": 24596,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "service/business",
+    "kind": "color",
+    "outPath": "parallax/service/business/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Executive sedan pulling up to a glass office tower entrance in Bangkok, morning, doorman stepping forward, reflections on the car body, wide calm composition. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:47:49.296Z",
+    "fileSizeBytes": 177156,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "service/business",
+    "kind": "depth",
+    "outPath": "parallax/service/business/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Executive sedan pulling up to a glass office tower entrance in Bangkok, morning, doorman stepping forward, reflections on the car body, wide calm composition. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:48:11.823Z",
+    "fileSizeBytes": 16222,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "service/rental",
+    "kind": "color",
+    "outPath": "parallax/service/rental/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Seven seat van on a coastal Thai highway seen from a low roadside angle, palm shadows across the road, hills in the far distance, unhurried holiday mood. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:48:26.445Z",
+    "fileSizeBytes": 165384,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "service/rental",
+    "kind": "depth",
+    "outPath": "parallax/service/rental/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Seven seat van on a coastal Thai highway seen from a low roadside angle, palm shadows across the road, hills in the far distance, unhurried holiday mood. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:48:48.067Z",
+    "fileSizeBytes": 15992,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "trust",
+    "kind": "color",
+    "outPath": "parallax/trust/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Close detail of a clean vehicle interior, folded cold towel and bottled water in a door pocket, shallow focus, nobody in frame, quiet hotel dossier mood. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:49:02.217Z",
+    "fileSizeBytes": 108260,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "close",
+    "kind": "color",
+    "outPath": "parallax/close/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Empty Bangkok expressway curve at dusk seen from above, a single dark vehicle mid-frame, city lights just beginning, generous negative space in the upper third. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:49:14.622Z",
+    "fileSizeBytes": 164356,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "close",
+    "kind": "depth",
+    "outPath": "parallax/close/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Empty Bangkok expressway curve at dusk seen from above, a single dark vehicle mid-frame, city lights just beginning, generous negative space in the upper third. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:49:34.107Z",
+    "fileSizeBytes": 29554,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "scene/airport",
+    "kind": "color",
+    "outPath": "parallax/airport/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Curbside pickup lane at Suvarnabhumi style airport terminal, luggage trolley beside a waiting van, canopy overhead, soft even light. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:49:46.309Z",
+    "fileSizeBytes": 227074,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "scene/airport",
+    "kind": "depth",
+    "outPath": "parallax/airport/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Curbside pickup lane at Suvarnabhumi style airport terminal, luggage trolley beside a waiting van, canopy overhead, soft even light. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:50:10.668Z",
+    "fileSizeBytes": 35344,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
   }
 ]
