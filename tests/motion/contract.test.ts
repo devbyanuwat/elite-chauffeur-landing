@@ -52,6 +52,10 @@ describe('parseCount', () => {
     expect(parseCount(el('<b data-count="500" data-suffix="+"></b>')))
       .toEqual({ target: 500, decimals: 0, suffix: '+' });
   });
+
+  it('คืน null เมื่อไม่มี data-count', () => {
+    expect(parseCount(el('<b></b>'))).toBeNull();
+  });
 });
 
 describe('splitLines', () => {
@@ -84,5 +88,18 @@ describe('splitLines', () => {
   it('ไม่สร้างบรรทัดว่างจาก br ที่ติดกัน', () => {
     const h1 = el('<h1 data-split>หนึ่ง<br><br>สอง</h1>');
     expect(splitLines(h1)).toHaveLength(2);
+  });
+
+  it('ห่อ element ที่ไม่มีข้อความ (เช่น svg) เพื่อไม่ให้หายไป', () => {
+    const h1 = el('<h1 data-split><svg class="icon"></svg><br>ข้อความ</h1>');
+    const inners = splitLines(h1);
+
+    // Only the text line is returned for GSAP animation
+    expect(inners).toHaveLength(1);
+    expect(inners[0].textContent).toBe('ข้อความ');
+
+    // But the SVG should still exist in the DOM inside h1
+    expect(h1.querySelector('svg.icon')).not.toBeNull();
+    expect(h1.querySelector('svg.icon')?.closest('.split-line')).not.toBeNull();
   });
 });

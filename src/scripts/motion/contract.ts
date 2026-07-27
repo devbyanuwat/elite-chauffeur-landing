@@ -80,8 +80,10 @@ export function splitLines(el: Element): HTMLElement[] {
   const inners: HTMLElement[] = [];
 
   groups.forEach((nodes) => {
+    // Skip truly empty groups (from consecutive br or trailing br)
+    if (nodes.length === 0) return;
+
     const hasText = nodes.some((node) => (node.textContent ?? '').trim() !== '');
-    if (!hasText) return;
 
     const line = doc.createElement('span');
     line.className = 'split-line';
@@ -92,7 +94,11 @@ export function splitLines(el: Element): HTMLElement[] {
 
     line.appendChild(inner);
     fragment.appendChild(line);
-    inners.push(inner);
+
+    // Only add to inners if it has text (GSAP will animate these)
+    if (hasText) {
+      inners.push(inner);
+    }
   });
 
   el.textContent = '';
