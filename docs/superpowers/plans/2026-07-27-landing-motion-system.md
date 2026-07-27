@@ -15,6 +15,7 @@
 - `prefers-reduced-motion: reduce` ต้องไม่มี transform ใด ๆ ทุกอย่างแสดงครบทันที
 - ห้าม JS สร้างข้อความใหม่ `data-split` ต้องห่อ node เดิมเท่านั้น crawler ต้องเห็นข้อความครบใน HTML ที่ server ส่ง
 - ห้ามแตะ innerHTML ของ element ที่มี `data-i18n` เพราะ `src/lib/i18n.ts:22,31` snapshot และเขียนทับ `innerHTML` ของ element เหล่านั้นตอนสลับภาษา
+- ห้ามพึ่งลำดับการรันของ bundled script (แก้ 2026-07-27): Astro เรียงแท็กตาม chunk index ไม่ใช่ตำแหน่งในไฟล์ — ใน build จริง motion ออกมาก่อน i18n ข้อกำหนดที่บังคับได้คือ "refresh ScrollTrigger หลังข้อความเปลี่ยน" ซึ่ง `watchLanguageChange()` ทำไว้แล้ว
 - งบ JS: GSAP + ScrollTrigger รวมกัน ≤ 60 KB gzip วัดจริงแล้วบันทึกลงการ์ด SABUY-52
 - `.reveal` เดิมที่ยังใช้ใน 3 component ต้องทำงานเหมือนเดิมทุกประการ
 - branch: `redesign/parallax-v1` (มีอยู่แล้ว) commit ทีละ task
