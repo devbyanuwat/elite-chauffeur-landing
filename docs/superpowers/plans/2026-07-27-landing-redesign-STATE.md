@@ -69,6 +69,47 @@ Plane: project SABUY workspace `sabuygo` REST `http://localhost:8080/api/v1/work
 
 SABUY-52 S1 (In Progress, มีคอมเมนต์ผลวัดครบ) · 53 S2 · 54 S3 index · 55 S4 routes · 56 S5 airport · 57 S6 brief+gate · 58 bug `data-vtype=premium` ไม่มีใน BOS taxonomy · 59 bug ServiceTabs ประเภทรถชุดเก่า · 60 map cache DB (ใหม่)
 
-## ขั้นถัดไปที่คุยกันไว้
+## S3 สไลซ์ 1: hero — เสร็จ (`c042c9e`)
 
-เอา hero (ภาพหัวหน้า + สลับข้าง + depth parallax + gate WebGL) เข้า `src/components/Hero.astro` จริง เพื่อให้ทดสอบบน `npm run dev` ที่ `localhost:4321` ได้ — เป็นสไลซ์แรกของ S3 ไม่ใช่ทั้ง S3
+hero สลับข้าง + ภาพหัวหน้า + depth field เข้า `src/components/Hero.astro` จริงแล้ว · 49 เทสต์ผ่าน · chunk three.js 188.4 KB gzip แยกจาก motion 46.0 KB (รวม 234.4 KB **เกินเพดาน spec 220 KB อยู่ 14 KB** บันทึกไว้ ไม่ได้กลบ) · ปิด JS ในโซน hero ซ่อน 0 element
+
+ค้าง: มือถือยังไม่เห็นภาพ เพราะ `.hero-bg` สูงเท่าเนื้อหาที่ซ้อนกันทั้งก้อน (~2014px) ทำให้ `object-position` แนวตั้งไม่มีผล หน้าเธอไปอยู่หลังการ์ดฟอร์ม — ของเดิม ไม่ใช่ของที่เพิ่งพัง ข้อเสนอ: ภาพเป็นแถบ ~45vh เหนือข้อความ ยังไม่อนุมัติ
+
+## S3 สไลซ์ 2: pin 3 จุดแบบ Apple (SABUY-61) — โค้ดครบ 7 task รอ review ปิดท้าย
+
+spec ข้อ 3.1 (`e112ebb`) · plan `docs/superpowers/plans/2026-07-27-landing-pinned-sequences.md` (`6fb4b4d`, amend `60d71b7`) · ledger `.superpowers/sdd/2026-07-27-landing-pinned-sequences/progress.md` · ผลวัด `docs/superpowers/plans/2026-07-27-landing-pinned-sequences-verify.md`
+
+ความละเอียดที่เลือก: **transform + สลับข้อความ ไม่ใช้ frame sequence** เพราะสองทางที่วัดแล้วกิน 6.34 MB และ 6.79 MB ต่อจุด (~19 MB สำหรับ 3 จุด) บวก fal $2.25 ทั้งที่ JS desktop เกินเพดานอยู่แล้ว · `data-stage` บอกท่อนเรื่อง ไม่ผูกชนิดสื่อ อัปเกรดทีหลังได้โดยไม่แก้ contract
+
+| task | commit | ผล |
+|---|---|---|
+| 1 `parsePin` + `collectStages` | `89d57b3` | review clean |
+| 2 `pin.ts` + wiring | `1900a85`, fix `3d0d12b` | fix 1 รอบ (เทสต์ tier-exclusivity ไม่ได้พิสูจน์อะไรจริง) |
+| 3 `motion.css` | `b20e0a9` | fix 1 รอบ (ลบ will-change ที่ค้างถาวร + บล็อก reduced-motion ที่ตายแล้ว) |
+| 4 Fleet 4 คัน | `7cb62e3` | review clean |
+| 5 How 3 ขั้น | `b53f39e` | review clean |
+| 6 Routes 4 เส้นทาง + เส้น SVG | `a7a9ee4` | review clean |
+| 7 วัดในเบราว์เซอร์ | `ac524c5`, fix `65e865d` | เจอ Critical (ข้างล่าง) |
+
+สัญญาใหม่: `data-pin="<ชื่อ>"` `data-pin-length="<%ของความสูงจอ 100-400>"` `data-stage="<ลำดับเริ่ม 0>"` `data-draw` (เส้น SVG) · class `pin-ready` มาจาก `src/scripts/motion/pin.ts` หลังต่อ timeline สำเร็จเท่านั้น = ปิด JS / reduced-motion / จอแคบกว่า 1024px ได้ layout เดิมทั้งดุ้น
+
+### บั๊กที่เจอ: บล็อก desktop ไม่เคยรันเลยตั้งแต่ S1
+
+query `(min-width: 1024px) and not all and (prefers-reduced-motion: reduce)` ผิดไวยากรณ์ — `not all and (...)` เป็นการปฏิเสธทั้ง query ต่อท้าย `and` ไม่ได้ เบราว์เซอร์ parse เหลือ `"not all"` = false ตลอด ยืนยันสองทาง (Playwright ของ subagent + Chrome for Testing 1228 `--dump-dom` ที่ผมรันเอง) แปลว่า `applyParallax()` **ไม่เคยทำงานบนเว็บจริงเลยตั้งแต่ S1 final-review Fix 4** ตัวที่เห็นขยับใน hero เป็น three.js ซึ่งเดินผ่าน `pickTier` ไม่ใช่ `matchMedia` จึงไม่มีใครจับได้ · เทสต์ 68 ตัวจับไม่ได้เพราะ mock `gsap.matchMedia()` ทั้งก้อน ไม่มีใคร parse query
+
+แก้แล้วที่ `65e865d`: เพิ่ม `NOT_REDUCED_MOTION_COMPOSABLE = '(not (prefers-reduced-motion: reduce))'` ใช้ในบล็อก full tier (ตัว standalone `not all and (...)` ถูกอยู่แล้ว ไม่แตะ) + regression test กันรูปแบบ `/\)\s+and\s+not\s+all/`
+
+### ผลวัดหลังแก้ (ของจริง ไม่ใช่คำอ้าง)
+
+69/69 เทสต์ผ่าน · build 0 error · chunk motion **46,427 B gzip** (+427 B จาก baseline งบ +6 KB) · three.js 188,381 B ไม่ขยับ · `pin-ready` ครบ 3 section · fleet/routes ไล่ `[0,1,2,3]` ถอย `[3,2,1,0]` · how `[0,1,2]/[2,1,0]` · ปล่อยแล้วชิด section ถัดไป gap 0px · scroll เร็วผ่านได้คลาดไม่เกิน 1px · เส้น SVG `strokeDashoffset` 1101→28 จาก 1170.56 · reduced-motion 0 pin-ready 0 hidden นับได้ 4/4/3 · สลับภาษากลาง pin ไม่หลุด stage
+
+### ค้างไว้ตรงนี้ (คุณอนุวัชรสั่งหยุด)
+
+1. **scoped re-review ของ fix round 1 ของ Task 7** (`ac524c5..65e865d`) — ยังไม่ได้ดิสแพตช์
+2. **final whole-branch review** ทั้ง branch ด้วยโมเดลที่แรงสุด ชี้ไปที่ deferred minor ใน ledger
+3. `[data-parallax]` **ไม่มีใครใช้ในมาร์กอัปเลย** (grep + live DOM = 0) กติกา parallax ทั้งหมดยังไม่มีของจริงให้ดู — ของเดิม แยกเรื่องจากบั๊กข้างบน
+4. deferred minor 4 ข้ออยู่ใน ledger
+
+## ขั้นถัดไป
+
+ปิด 2 ข้อแรกข้างบนก่อน แล้วจึง `superpowers:finishing-a-development-branch` ซึ่งจะถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ
