@@ -13,7 +13,25 @@ const EASE = 'power3.out';
 // to un-hide it. `not all and (prefers-reduced-motion: reduce)` is the
 // level-4 negation idiom and matches exactly the states the CSS side (and
 // pickTier's own reduced-motion check) already treat as "motion allowed".
+// Used standalone (as its own, complete media query) below — this form is
+// correct on its own and must stay exactly as-is.
 const NOT_REDUCED_MOTION = 'not all and (prefers-reduced-motion: reduce)';
+// verify-task fix (2026-07-27, measured in the browser, not guessed): `not all
+// and (...)` is a *whole-query* negation (`not <media-type> and <feature>`) —
+// it cannot be joined with a further `and` after a leading `(min-width: …)`
+// feature test, because a leading `not` can only prefix an entire media query,
+// not follow one. Chromium (and, per the CSS Media Queries error-handling
+// spec, every standards-compliant browser) cannot parse
+// `(min-width: 1024px) and not all and (prefers-reduced-motion: reduce)` as
+// written; it collapses to the single recognized fragment `not all`, which is
+// always false. That means the desktop-only block below — parallax AND
+// pinning — never ran in any real browser, on any viewport, under any
+// reduced-motion setting, from the moment this gate was introduced. Confirmed
+// directly: `window.matchMedia(...)` on the compound string returns
+// `{ matches: false, media: 'not all' }`; the same fragment as its own,
+// composable, parenthesized condition parses and evaluates correctly. Use
+// this form when composing with `and` after another feature test.
+const NOT_REDUCED_MOTION_COMPOSABLE = '(not (prefers-reduced-motion: reduce))';
 
 function applyParallax(root: ParentNode): void {
   root.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
@@ -109,7 +127,7 @@ export function initMotion(root: ParentNode = document): void {
 
   const mm = gsap.matchMedia();
 
-  mm.add(`(min-width: ${FULL_TIER_MIN_WIDTH}px) and ${NOT_REDUCED_MOTION}`, () => {
+  mm.add(`(min-width: ${FULL_TIER_MIN_WIDTH}px) and ${NOT_REDUCED_MOTION_COMPOSABLE}`, () => {
     applyParallax(root);
     return applyPins(root);
   });

@@ -115,6 +115,31 @@ describe('initMotion', () => {
     });
   });
 
+  it('query ของ full tier ต้องเป็นรูปที่ compose ได้จริง ไม่ใช่ "and not all" ที่ parse ไม่ผ่านในเบราว์เซอร์จริง', () => {
+    // regression test สำหรับบั๊กที่พบใน Task 7 verify (2026-07-27): `not all and
+    // (...)` เป็น negation ของ "ทั้ง query" ใช้ต่อท้าย "and" หลัง feature test
+    // ตัวอื่นไม่ได้ตามหลักไวยากรณ์ CSS Media Queries — Chromium จริงลดรูป
+    // "(min-width: 1024px) and not all and (prefers-reduced-motion: reduce)"
+    // เหลือแค่ "not all" ซึ่งเป็น false เสมอ ทำให้ context นี้ (parallax + pin)
+    // ไม่เคยทำงานเลยสักครั้งในเบราว์เซอร์จริง แม้ query ผ่าน mock ในเทสต์นี้ได้สบาย ๆ
+    //
+    // ข้อจำกัดของเทสต์นี้: mock ของ matchMediaAdd (ด้านบน) แค่ "callback(query)"
+    // มันไม่ได้เอา query string ไปให้ parser ของเบราว์เซอร์จริงตีความ ดังนั้นเทสต์นี้
+    // จับได้แค่ "รูปประโยคของ query string ที่ยิงออกไป" ไม่ได้พิสูจน์ว่า query
+    // ตัวนั้น evaluate เป็นอะไรจริงในเบราว์เซอร์ — เกทตัวจริงคือการตรวจในเบราว์เซอร์จริง
+    // ที่บันทึกไว้ใน docs/superpowers/plans/2026-07-27-landing-pinned-sequences-verify.md
+    document.body.innerHTML = '<div data-parallax="0.1"></div>';
+    initMotion();
+
+    const queries = matchMediaAdd.mock.calls.map((call) => call[0] as string);
+    const fullTierQuery = queries.find((query) => query.includes(`min-width: ${FULL_TIER_MIN_WIDTH}px`));
+
+    expect(fullTierQuery).toContain('(not (prefers-reduced-motion: reduce))');
+    queries.forEach((query) => {
+      expect(query).not.toMatch(/\)\s+and\s+not\s+all/);
+    });
+  });
+
   it('ไม่สั่ง gsap เลยถ้า query ไม่ตรง (จำลอง reduced motion จริงผ่าน matchMedia)', () => {
     const skipIfReducedMotionQuery = (query: string, callback: () => void) => {
       if (!query.includes('prefers-reduced-motion: reduce')) callback();
