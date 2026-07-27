@@ -39,9 +39,16 @@
 }
 
 /* ชั้น parallax ต้องสูงเกินกรอบที่ครอบมัน ไม่งั้นการเลื่อนจะลากขอบว่างเข้ามา
-   กรอบเป็นหน้าที่ของ component ส่วนตัวชั้นเองรับ will-change ตอน active */
-.js-motion [data-parallax] {
-  will-change: transform;
+   กรอบเป็นหน้าที่ของ component ส่วนตัว
+   final-review Fix 5: ก่อนหน้านี้ comment บอกว่า will-change ใส่ "ตอน active"
+   เท่านั้น ซึ่งไม่จริง — กฎเดิมใส่ไม่มีเงื่อนไขให้ทุก [data-parallax] ทุกความกว้างจอ
+   ทั้งที่ parallax รันจริงเฉพาะ >= 1024px (FULL_TIER_MIN_WIDTH ใน
+   src/scripts/motion/index.ts) ผลคือมือถือ/แท็บเล็ตแคบแบก compositor layer ค้าง
+   ไว้ฟรี ๆ ทั้งที่ element ไม่เคยขยับเลย จึง wrap ด้วย breakpoint เดียวกัน */
+@media (min-width: 1024px) {
+  .js-motion [data-parallax] {
+    will-change: transform;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
