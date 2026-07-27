@@ -25,51 +25,36 @@
     />
   </div>
   <div class="wrap wrap-wide hero-grid">
-    <!-- MIRRORED (2026-07-27): photo open on the left (her), copy + form anchored right in
-         one stacked column — ported from mockups/parallax-boss-hero.html. The old layout
-         had .hero-copy and .booking as two side-by-side grid columns; there is only one
-         column now, so they stack. -->
     <div class="hero-content">
-      <div class="hero-copy reveal">
-        <span class="hero-badge"><span class="dot"></span><span data-i18n="hero.badge">พร้อมให้บริการ 24 ชั่วโมง ทั่วไทย</span></span>
-        <h1>
-          <span data-i18n="hero.t1">เดินทาง</span>
-          <span class="underline" data-i18n="hero.t2">สบาย ๆ</span>
-          <span data-i18n="hero.t3">กับคนขับ</span>
-          <span class="accent" data-i18n="hero.t4">มืออาชีพ</span>
-        </h1>
-        <p class="hero-lead" data-i18n="hero.lead">
-          รถพร้อมคนขับสำหรับรับส่งสนามบิน เดินทางธุรกิจ และเที่ยวต่างจังหวัด
-          ราคาชัดเจนตั้งแต่ต้น ประกันเต็มทุกคัน จองง่ายในไม่กี่นาที
-        </p>
-        <div class="hero-actions">
-          <a href="#booking" class="btn btn-primary btn-lg" data-i18n="hero.cta1">ขอใบเสนอราคา</a>
-          <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="btn btn-ghost btn-lg" data-i18n="hero.cta2">ปรึกษาผ่าน LINE</a>
-        </div>
-        <div class="hero-trust">
-          <div class="hero-trust-item">
-            <b>4.9<span class="stars">&#9733;</span></b>
-            <span data-i18n="hero.trust1">จากลูกค้าจริง</span>
-          </div>
-          <div class="hero-trust-item">
-            <b>500+</b>
-            <span data-i18n="hero.trust2">เที่ยวปลอดภัย</span>
-          </div>
-          <div class="hero-trust-item">
-            <b>100%</b>
-            <span data-i18n="hero.trust3">ประกัน + พ.ร.บ.</span>
-          </div>
+      <h1>
+        <span data-i18n="hero.t1">เดินทาง</span>
+        <span class="underline" data-i18n="hero.t2">สบาย ๆ</span>
+        <span data-i18n="hero.t3">กับคนขับ</span>
+        <span class="accent" data-i18n="hero.t4">มืออาชีพ</span>
+      </h1>
+      <div class="hero-actions">
+        <a href="#booking" class="btn btn-primary btn-lg" data-i18n="hero.cta1">ขอใบเสนอราคา</a>
+        <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="hero-line" data-i18n="hero.cta2">ปรึกษาผ่าน LINE</a>
+      </div>
+      <div class="hero-trust">
+        <div class="hero-trust-item">
+          <b>4.9<span class="stars">&#9733;</span></b>
+          <span data-i18n="hero.trust1">จากลูกค้าจริง</span>
         </div>
       </div>
     </div>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
 </section>
 
 <style>
   .hero {
     position: relative;
-    padding-top: 128px;
-    padding-bottom: clamp(3rem, 7vw, 5.5rem);
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
     overflow: hidden;
   }
 
@@ -103,97 +88,33 @@
     display: block;
   }
 
-  /* MIRRORED (2026-07-27): the previous veil ran opaque-left → clear-right (copy sat
-     left). The boss's photo puts her on the left, so this is the same 102deg gradient
-     with the stops reversed — clear (18%) where she stands, opaque (97%) under the
-     copy/form column that now lives on the right. Ported from
-     mockups/parallax-boss-hero.html; values are the ones that keep the Thai headline
-     readable without the veil creeping onto her face. */
+  /* บังเฉพาะที่ข้อความอยู่ ไม่ทาทั้งเฟรม (spec ข้อ 8) — ครึ่งซ้ายที่เธอยืน
+     และเจดีย์กลางภาพต้องใสสนิท ตัวเลขนี้เป็นค่าตั้งต้น ปรับได้ตามผลวัด
+     contrast ใน Task 5 แต่ห้ามกลับไปทาทั้งเฟรม */
   .hero-bg::after {
     content: "";
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(102deg,
-        oklch(98% 0.008 75 / 0.18) 0%,
-        oklch(98% 0.008 75 / 0.86) 56%,
-        oklch(98% 0.008 75 / 0.97) 100%);
+    background: linear-gradient(102deg,
+        transparent 0 42%,
+        oklch(98% 0.008 75 / 0.55) 62%,
+        oklch(98% 0.008 75 / 0.92) 100%);
   }
 
-  /* Ported as-is from the mockup's own <=1000px veil — the near-opaque photo on
-     mobile (94%->99%) is a known, NOT-yet-decided problem (see the S3 hero-slice
-     report and the redesign STATE doc); this slice keeps that mobile behaviour
-     unchanged rather than inventing a fix for it. */
-  @media (max-width: 1000px) {
-    .hero-bg::after {
-      background: linear-gradient(180deg,
-        oklch(98% 0.008 75 / 0.94) 0%,
-        oklch(98% 0.008 75 / 0.99) 62%);
-    }
-
-    .hero-trust {
-      gap: 1.2rem;
-      flex-wrap: wrap;
-    }
-  }
-
-  /* MIRRORED: .hero-copy and .booking no longer sit in two side-by-side grid
-     tracks — both now live in .hero-content, a single column anchored to the
-     right so the left ~55%+ of the frame (where she stands) stays open. */
   .hero-grid {
     display: flex;
     justify-content: flex-end;
-  }
-
-  /* clamp(), not a flat px value: a fixed column eats a bigger *fraction* of the
-     viewport as the viewport narrows. min(100%, ...) is what lets the column go
-     full-width once the wrap itself is narrower than the clamp's floor. */
-  .hero-content {
-    width: min(100%, clamp(360px, 42vw, 560px));
-    display: grid;
-    gap: clamp(1.75rem, 3vw, 3rem);
-  }
-
-  .hero-badge {
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-pill);
-    padding: 0.45rem 0.95rem 0.45rem 0.55rem;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 1.5rem;
   }
 
-  .hero-badge .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 0 3px oklch(56% 0.08 210 / 0.18);
-    animation: dot-pulse 2.8s ease-in-out infinite;
-  }
-
-  @keyframes dot-pulse {
-
-    0%,
-    100% {
-      box-shadow: 0 0 0 3px oklch(56% 0.08 210 / 0.18);
-    }
-
-    50% {
-      box-shadow: 0 0 0 6px oklch(56% 0.08 210 / 0.08);
-    }
+  .hero-content {
+    width: min(100%, clamp(360px, 40vw, 520px));
   }
 
   .hero h1 {
-    font-size: clamp(2.4rem, 6vw, 4.05rem);
+    font-size: clamp(2.8rem, 5.2vw, 4.8rem);
     font-weight: 500;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.4rem;
   }
 
   .hero h1 .accent {
@@ -220,18 +141,27 @@
     border-radius: 4px;
   }
 
-  .hero-lead {
-    font-size: clamp(1.02rem, 1.7vw, 1.18rem);
-    color: var(--text-secondary);
-    margin-bottom: 1.8rem;
-    max-width: 460px;
-  }
-
+  /* ปุ่มหลักหนึ่งปุ่ม LINE เป็นลิงก์ข้อความ — สองปุ่มขนาดเท่ากันคือสองคำสั่ง
+     ที่แข่งกันเอง ใน 3 วินาทีต้องมีคำสั่งเดียวที่ชัด */
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.85rem;
-    margin-bottom: 2rem;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .hero-line {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gold-dark);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+
+  .hero-line:hover {
+    text-decoration-thickness: 2px;
   }
 
   .hero-trust {
@@ -266,30 +196,36 @@
     font-size: 0.9rem;
   }
 
-  /* Desktop: lift the hero up + tighten vertical rhythm so the whole hero
-     (copy + booking form incl. submit) fits within the viewport height. */
-  @media (min-width: 561px) {
-    .hero {
-      /* >= fixed nav height (72px) so the taller booking column never tucks
-         under the nav and loses its top edge. */
-      padding-top: 80px;
-      padding-bottom: 36px;
+  .hero-scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 1.4rem;
+    transform: translateX(-50%);
+    color: var(--text-tertiary);
+    animation: hero-bob 2.6s ease-in-out infinite;
+  }
+
+  .hero-scroll svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+
+  @keyframes hero-bob {
+
+    0%,
+    100% {
+      transform: translate(-50%, 0);
     }
 
-    .hero-badge {
-      margin-bottom: 0.9rem;
+    50% {
+      transform: translate(-50%, 6px);
     }
+  }
 
-    .hero h1 {
-      margin-bottom: 0.8rem;
-    }
-
-    .hero-lead {
-      margin-bottom: 1.1rem;
-    }
-
-    .hero-actions {
-      margin-bottom: 1.2rem;
+  @media (prefers-reduced-motion: reduce) {
+    .hero-scroll {
+      animation: none;
     }
   }
 </style>
