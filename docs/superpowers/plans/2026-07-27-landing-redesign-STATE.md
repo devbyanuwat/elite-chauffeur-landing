@@ -107,7 +107,7 @@ query `(min-width: 1024px) and not all and (prefers-reduced-motion: reduce)` ผ
 
 1. **scoped re-review ของ fix round 1 ของ Task 7** (`ac524c5..65e865d`) — ยังไม่ได้ดิสแพตช์
 2. **final whole-branch review** ทั้ง branch ด้วยโมเดลที่แรงสุด ชี้ไปที่ deferred minor ใน ledger
-3. `[data-parallax]` **ไม่มีใครใช้ในมาร์กอัปเลย** (grep + live DOM = 0) กติกา parallax ทั้งหมดยังไม่มีของจริงให้ดู — ของเดิม แยกเรื่องจากบั๊กข้างบน
+3. **แก้ไขบันทึกเดิม (final whole-branch review, 2026-07-27): ไม่ใช่แค่ `[data-parallax]` — ทั้งหมด 8 attribute ไม่มีใครใช้ในมาร์กอัปเลย** ตรวจซ้ำด้วย `grep -rn '<attr>=' src/ --include="*.astro"` ทีละตัวจริง ไม่ใช่คัดลอกจากรายการเดิม: `data-parallax` `data-reveal` `data-reveal-stagger` `data-depth-group` `data-split` `data-count` `data-decimals` `data-suffix` — ครบ 0 usages ทุกตัว แปลว่า `applyParallax` `applyReveals` `applySplitReveal` `applyCounts` ใน `src/scripts/motion/index.ts:36-105` ตายทั้งฟังก์ชัน (ไม่ใช่แค่ parallax) รวมถึง `src/styles/motion.css:23-52` และเทสต์ส่วนใหญ่ในชุดที่ทดสอบ 4 ฟังก์ชันนี้ — มีแค่ `data-pin` `data-stage` `data-draw` `data-depth-field` (+ `data-depth-color`/`data-depth-map`/`data-depth-strength` ใน Hero.astro/Base.astro) เท่านั้นที่มีของจริงในมาร์กอัป **ไม่ลบโค้ด** เก็บไว้เป็น dead-but-tested code ต่อไป — ของเดิม แยกเรื่องจากบั๊กข้างบน
 4. deferred minor 4 ข้ออยู่ใน ledger
 
 ## ขั้นถัดไป

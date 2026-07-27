@@ -1,7 +1,7 @@
 ---
 ---
 
-<section class="block" id="routes" style="padding-top:0" data-pin="route" data-pin-length="240">
+<section class="block" id="routes" data-pin="route" data-pin-length="240">
   <div class="wrap wrap-wide">
     <div class="section-head reveal">
       <span class="eyebrow" data-i18n="rt.eyebrow">เส้นทางยอดนิยม</span>
@@ -49,6 +49,16 @@
 </section>
 
 <style>
+  /* final-review I1 fix: this used to be an inline `style="padding-top:0"`
+     on the section, which no ordinary stylesheet selector can beat short of
+     `!important`. Moved here as a plain `#routes` rule instead — an id
+     selector already outranks the shared `section.block` class+type rule
+     below (see global.css) that sets `padding-block`, so this reproduces the
+     exact prior default (non-pinned) spacing with no specificity war. */
+  #routes {
+    padding-top: 0;
+  }
+
   .routes-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -130,14 +140,59 @@
     display: none;
   }
 
-  /* ---- โหมด pin (desktop, motion allowed) ---- */
-  .pin-ready .routes-grid {
-    display: block;
-    position: relative;
-    min-height: 72vh;
+  /* ---- โหมด pin (desktop, motion allowed) ----
+     final-review C1 fix: same treatment as Fleet.astro — GSAP's pin freezes
+     the section's own natural height and holds it fixed at the viewport top,
+     so that natural height must fit in one viewport with margin to spare
+     (Routes measured only 13px of headroom at 1366×768 before this fix, so a
+     longer English heading could push it over). The whole pinned section is
+     forced to exactly one viewport tall and that height is distributed with
+     flexbox — padding and heading take their natural size, the grid fills
+     the rest. Unlike Fleet, the vehicle/destination photo here is already an
+     absolutely-positioned cover background inside `.route-card` (not a
+     sibling that competes for height), so the card itself can simply be
+     `height: 100%` with no separate flex child to make elastic — the image
+     crops via `object-fit: cover`, which is already how it behaves at every
+     other size. This also gives `#routes` real top clearance under the fixed
+     nav (final-review I1), applied only while pinned so the non-pinned
+     `padding-top: 0` above is untouched.
+
+     The 100vh is trimmed by an extra 50px for the same measured reason as
+     Fleet.astro's identical comment: pin.ts's crossfade `scale` (0.97 → 1 →
+     1.03 on the [data-stage] element) stacks on a translateY(24px) GSAP
+     bakes in the first time it touches `transform`, captured from
+     `.reveal`'s pre-reveal state before `legacy-reveal.ts` can add `.in`.
+     50px covers the measured ~31px worst case with margin, without touching
+     pin.ts or legacy-reveal.ts (out of scope here). */
+  #routes.pin-ready {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 50px);
+    padding-block: 0;
   }
 
-  .pin-ready .route-line {
+  #routes.pin-ready .wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-top: max(84px, 6vh);
+    padding-bottom: clamp(20px, 4vh, 40px);
+  }
+
+  #routes.pin-ready .section-head {
+    flex: none;
+    margin-bottom: clamp(16px, 3vh, 32px);
+  }
+
+  #routes.pin-ready .routes-grid {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  #routes.pin-ready .route-line {
     display: block;
     position: absolute;
     inset: auto 0 8%;
@@ -147,16 +202,17 @@
     pointer-events: none;
   }
 
-  .pin-ready .route-card {
+  #routes.pin-ready .route-card {
     position: absolute;
     inset: 0;
-    margin: auto;
+    margin-inline: auto;
     width: min(100%, 520px);
-    aspect-ratio: 4 / 3;
+    height: 100%;
+    aspect-ratio: auto;
   }
 
   /* hover lift เดิมชน transform ที่ scrub คุมอยู่ */
-  .pin-ready .route-card:hover {
+  #routes.pin-ready .route-card:hover {
     transform: none;
   }
 

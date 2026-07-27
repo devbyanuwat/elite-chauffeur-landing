@@ -212,16 +212,33 @@ through well past its end, then walked back up the same range. Screenshots saved
 | `#how` | 3 | true throughout | **[0, 1, 2]** | **[2, 1, 0]** | 57 / 70 | flush, `gap: 0px` against `#why` (plain section) | landed at scrollY 12028 (target 12027.7) |
 
 - `mockups/pin-fleet-stage0.png` / `mockups/pin-fleet-stage3.png` — single card each
-  (Toyota Fortuner alone at stage 0; Toyota Corolla Altis alone, fully settled, at
+  (**Toyota Alphard** alone at stage 0; Toyota Corolla Altis alone, fully settled, at
   stage 3 — captured 85% through the pin range with a 400ms settle to avoid a
   crossfade-in-progress frame). One card visible at a time, exactly the intended
   Apple-style effect — a sharp visual contrast with the pre-fix screenshots, which
   showed all 4 cards simultaneously in a static grid.
-- `mockups/pin-routes-stage0.png` / `mockups/pin-routes-stage3.png` — Pattaya card
-  alone at stage 0; Hua Hin card alone at stage 3, SVG line drawn almost fully (see
-  below).
+- `mockups/pin-routes-stage0.png` / `mockups/pin-routes-stage3.png` — **Suvarnabhumi
+  BKK** card alone at stage 0; **Don Mueang DMK** card alone at stage 3, SVG line
+  drawn almost fully (see below).
 - `mockups/pin-how-stage0.png` / `mockups/pin-how-stage2.png` — step "01" alone at
   stage 0; step "03" alone (mid-crossfade with "02") at stage 2.
+
+  **Final-review correction (2026-07-27):** the three descriptions above originally
+  read "Toyota Fortuner alone at stage 0" (Fleet), "Pattaya card alone at stage 0"
+  and "Hua Hin card alone at stage 3" (Routes) — all three wrong, re-checked directly
+  against both the markup and a fresh browser render rather than trusted from memory.
+  `Fleet.astro`'s `data-stage="0"` article is the Toyota Alphard (`data-stage="1"` is
+  the Fortuner); `Routes.astro`'s `data-stage="0"` card is Suvarnabhumi (`rt.bkk`,
+  `data-stage="1"` is Pattaya) and `data-stage="3"` is Don Mueang (`rt.dmk`,
+  `data-stage="2"` is Hua Hin). Re-rendered screenshots at 1366×768 confirm: stage 0
+  of `#fleet` shows "Toyota Alphard" / ฿1,000, stage 0 of `#routes` shows "สนามบิน /
+  สุวรรณภูมิ (BKK)", and stage 3 of `#routes` shows "สนามบิน / ดอนเมือง (DMK)" — i.e.
+  the crossfade genuinely shows the card whose `data-stage` matches the active index
+  at every point checked; nothing in `pin.ts`'s `collectStages`/`applyPins` reorders
+  or off-by-ones the stage list. This was a **prose error** (written from memory
+  rather than rechecked against the screenshots at the time), not a behavioral bug —
+  the two screenshot files themselves were never re-examined, only redescribed here.
+  Fleet's stage 3 (Corolla Altis) and both How captions were already correct.
 
 **Note on a screenshot artifact caught and corrected during this re-verification:** an
 earlier attempt at `#fleet`'s last-stage screenshot (30px steps, only 80ms settle, taken
@@ -374,7 +391,7 @@ visual position in sync with a layout shift it caused, not a narrative jump.
 
 ## Files referenced
 
-- `src/scripts/motion/index.ts:8-34,112` — the fixed gate and the comment recording why
+- `src/scripts/motion/index.ts:8-34,130` — the fixed gate and the comment recording why (final-review correction: this section originally cited line 112, which was the pre-fix gate's location quoted verbatim near the top of this document — see line 34 above, correct as historical narration. The gate itself has since moved to line 130 in the current file; this "Files referenced" pointer now matches.)
 - `src/scripts/motion/pin.ts` — `applyPins()`, confirmed now invoked and building real ScrollTrigger timelines for all 3 sections
 - `tests/motion/index.test.ts` — new regression test asserting the composable query shape and rejecting the broken shape
 - `node_modules/gsap/gsap-core.js:4054-4086` — `MatchMedia.add()`, confirms the raw string is passed straight to `window.matchMedia`

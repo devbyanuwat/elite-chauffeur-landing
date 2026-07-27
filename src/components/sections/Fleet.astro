@@ -293,19 +293,82 @@
 
   /* ---- โหมด pin (desktop, motion allowed) ----
      pin-ready มาจาก pin.ts เท่านั้น ดังนั้น grid 4 คอลัมน์ด้านบนยังเป็น
-     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
+     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน
+
+     final-review C1 fix: GSAP's pin freezes the *section*'s own natural
+     (pre-pin) height and holds it fixed at the viewport top for the whole
+     scroll-driven sequence — anything below that frozen height is
+     unreachable, because the section itself owns the scroll, not its
+     content. The old rule sized the image with a fixed aspect-ratio
+     (5/4 at up to 560px wide = 448px) and let the card be as tall as
+     fit-content demanded, with no tie to the viewport that has to hold it.
+     Below, the whole pinned section is exactly one viewport tall and that
+     height is distributed with flexbox: padding and the heading claim their
+     own natural size first, the card fills what's left, and *inside* the
+     card the image (.fleet-stage) is the flexible remainder while the
+     price/CTA (.fleet-body) keep their natural, unshrunk size. A longer
+     heading (e.g. an English line-wrap) only leaves less room for the
+     image — it can never push the total past 100vh.
+
+     The 100vh is trimmed by an extra 50px, not just a rounding hair: measured
+     in a real browser, the active/incoming stage's own crossfade transform
+     (pin.ts tweens `scale` 0.97 → 1 → 1.03 on the [data-stage] element itself)
+     stacks on top of a translateY(24px) that GSAP bakes in permanently the
+     first time it touches `transform` — captured from `.reveal`'s pre-reveal
+     CSS state (motion.css) at the moment `gsap.set()` first runs, before
+     `legacy-reveal.ts`'s IntersectionObserver has necessarily added `.in`.
+     Measured effect at 1366×768: the incoming stage's rendered bottom edge
+     sits ~31px below the plain flex-computed grid bottom (16.6px from the
+     scale-1.03 growth being centered outward, 24px from the baked-in
+     translate). 50px covers that with margin, at every stage, without
+     touching pin.ts or legacy-reveal.ts (out of scope here). */
+  .fleet-section.pin-ready {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 50px);
+    padding-block: 0;
+  }
+
+  .fleet-section.pin-ready .wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    /* top clearance must beat the fixed nav (72px max) with room to spare;
+       bottom padding is purely cosmetic breathing room */
+    padding-top: max(84px, 6vh);
+    padding-bottom: clamp(20px, 4vh, 40px);
+  }
+
+  .fleet-section.pin-ready .section-head {
+    flex: none;
+    margin-bottom: clamp(16px, 3vh, 32px);
+  }
+
   .fleet-section.pin-ready .fleet-grid {
     display: block;
     position: relative;
-    min-height: 68vh;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 
   .fleet-section.pin-ready .fleet-card {
     position: absolute;
     inset: 0;
-    margin: auto;
+    margin-inline: auto;
     width: min(100%, 560px);
-    height: fit-content;
+    height: 100%;
+  }
+
+  /* the vehicle image is the elastic part — price/CTA below never shrink */
+  .fleet-section.pin-ready .fleet-stage {
+    aspect-ratio: auto;
+    flex: 1 1 auto;
+    min-height: 72px;
+  }
+
+  .fleet-section.pin-ready .fleet-body {
+    flex: none;
   }
 
   /* hover lift เดิมชน transform ที่ scrub คุมอยู่ ตัดทิ้งเฉพาะโหมดนี้ */
