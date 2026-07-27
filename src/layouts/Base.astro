@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/motion.css';
 import JsonLd from '../components/JsonLd.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -61,6 +62,11 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
 <!doctype html>
 <html lang={lang}>
   <head>
+    <script is:inline>
+      // ใส่ก่อนวาดจอ: กฎซ่อน element ใน motion.css มีผลเฉพาะเมื่อ JavaScript ทำงาน
+      // ถ้าสคริปต์นี้ไม่รัน ทุกอย่างจะแสดงตามปกติแทนที่จะค้างอยู่ที่ opacity 0
+      document.documentElement.classList.add('js-motion');
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
@@ -169,41 +175,20 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
       }
     </script>
 
-    <!-- Reveal on scroll — ported from live index.html inline script (~2935-2946).
-         .reveal elements are rendered across many section components (Task 6),
-         so this single observer lives here (global, runs once per page) rather
-         than being duplicated per-component. querySelectorAll(...).forEach is
-         null-safe by construction — it simply runs zero times on pages with no
-         .reveal elements. -->
+    <!-- Motion system กลาง: component สั่งงานผ่าน data-* เท่านั้น
+         รายละเอียดสัญญาอยู่ใน docs/superpowers/specs/2026-07-27-landing-layered-parallax-design.md
+         สคริปต์นี้อยู่หลังบล็อก i18n เพื่อให้ข้อความถูกตั้งค่าเสร็จก่อนวัดตำแหน่ง -->
     <script>
-      function boot() {
-        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (!reduce && 'IntersectionObserver' in window) {
-          var io = new IntersectionObserver(
-            function (entries) {
-              entries.forEach(function (en) {
-                if (en.isIntersecting) {
-                  en.target.classList.add('in');
-                  io.unobserve(en.target);
-                }
-              });
-            },
-            { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-          );
-          document.querySelectorAll('.reveal').forEach(function (el) {
-            io.observe(el);
-          });
-        } else {
-          document.querySelectorAll('.reveal').forEach(function (el) {
-            el.classList.add('in');
-          });
-        }
+      import { initMotion } from '../scripts/motion';
+
+      function bootMotion() {
+        initMotion();
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot);
+        document.addEventListener('DOMContentLoaded', bootMotion);
       } else {
-        boot();
+        bootMotion();
       }
     </script>
   </body>
