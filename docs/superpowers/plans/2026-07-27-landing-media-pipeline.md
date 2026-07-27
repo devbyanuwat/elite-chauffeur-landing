@@ -317,7 +317,9 @@ export async function submitAndWait(
 
 ต้องทำตามลำดับนี้: อ่าน `.env.local` เอา `FAL_KEY` (ถ้าไม่มีให้ตายพร้อมข้อความชัดเจน), สแกน `public/images/parallax/` หาไฟล์ที่มีอยู่, เรียก `planJobs`, พิมพ์ตารางงานกับยอดเงินรวม, แล้ว **ถ้าไม่มี `--run` ให้จบตรงนั้น** ถ้ามี `--run` ค่อยไล่ทำทีละงาน: color ใช้ `fal-ai/bytedance/seedream/v4/text-to-image` ส่ง `{ prompt, image_size: { width, height } }`, depth ใช้ `fal-ai/imageutils/marigold-depth` ส่ง `{ image_url }` ของ color ที่เพิ่งได้, ดาวน์โหลดแล้วแปลงเป็น webp ด้วย sharp, เขียน `manifest.json` สะสม (model, prompt, cost, timestamp, ขนาดไฟล์) ทุกครั้ง
 
-- [ ] **Step 5: ตรวจ dry-run** — `npx tsx scripts/gen-media.ts` ต้องพิมพ์ 13 งาน (6 scene × color+depth + trust color) ยอดรวม $0.19 และ **ต้องไม่มี request ออกเน็ตเลย** ยืนยันด้วยยอดคงเหลือ fal ที่ไม่ขยับ
+- [ ] **Step 5: ตรวจ dry-run** — `npx tsx scripts/gen-media.ts` ต้องพิมพ์ 13 งาน (color 7 × $0.03 + depth 6 × $0.01) ยอดรวม **$0.27** และ **ต้องไม่มี request ออกเน็ตเลย** ยืนยันด้วยยอดคงเหลือ fal ที่ไม่ขยับ
+
+> แก้ 2026-07-27: ร่างแรกของแผนเขียน $0.19 ซึ่งบวกผิด ตัวเลขที่ถูกคือ $0.27 ตามตารางราคาในแผนเอง — implementer ทักมาแทนที่จะแก้เอาต์พุตให้ตรงเลขผิด
 
 - [ ] **Step 6: Commit**
 
