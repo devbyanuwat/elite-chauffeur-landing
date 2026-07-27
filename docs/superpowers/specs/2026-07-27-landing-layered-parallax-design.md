@@ -63,7 +63,11 @@ Mockup อ้างอิง (source of truth): `mockups/parallax-concept.html` 
 2. `data-split` ต้อง wrap `<span>` ครอบข้อความเดิม ห้ามให้ JS สร้างข้อความใหม่ crawler ต้องเห็นครบใน HTML ที่ server ส่งมา
 3. ชั้นที่ขยับต้องอยู่ในกรอบที่ `overflow: hidden` และตัวมันต้องสูงเกินกรอบ (ใช้ `inset: -12% 0`) ไม่งั้น parallax ลากขอบว่างเข้ามาในจอ
 4. `will-change` เปิดเฉพาะช่วง active ไม่ทิ้งไว้ถาวร
-5. งบ JS: GSAP + ScrollTrigger ≤ 60 KB gzip สำหรับทุกเครื่อง และ three.js อีก ~150 KB gzip เฉพาะ desktop ที่ผ่านเงื่อนไขข้อ 4 รวมเพดาน desktop ≤ 220 KB gzip วัดจริงตอน build แล้วบันทึกลง plan (วัดแล้ว 2026-07-27: GSAP + ScrollTrigger + motion = **46.5 KB gzip** ผ่านงบ)
+5. งบ JS: GSAP + ScrollTrigger ≤ 60 KB gzip สำหรับทุกเครื่อง และ three.js เฉพาะ desktop ที่ผ่านเงื่อนไขข้อ 4 รวมเพดาน desktop **≤ 240 KB gzip** วัดจริงตอน build แล้วบันทึกลง plan
+
+   **แก้เพดานจาก 220 เป็น 240 KB เมื่อ 2026-07-27** ตามคำตัดสินของคุณอนุวัชร หลัง final review ชี้ว่าของจริงเกินเพดานเดิม ตัวเลขที่วัดได้: motion (GSAP + ScrollTrigger + pin) = **46,427 B gzip** · three.js = **188,381 B gzip** · รวม desktop **≈ 234.4 KB** ตอนตั้ง 220 ผมประเมิน three.js ไว้ ~150 KB ซึ่งต่ำไป 38 KB — ตัวเลขเดิมไม่เคยวัด เป็นการเดา
+
+   เหตุที่ยอมรับ: three.js โหลดเฉพาะเครื่องที่ผ่าน gate 3 ชั้นในข้อ 4 (กว้าง ≥ 1024px + motion allowed + WebGL2) มือถือไม่โหลดแม้ไบต์เดียว และภาพ hero คือภาพที่ลูกค้าภูมิใจ (ข้อ 6 ในบันทึกการตัดสินใจ) ทางเลือกที่พิจารณาแล้วไม่เอา: ตัด three.js ทิ้งใช้ CSS parallax แทน (เสียมิติลึกที่อนุมัติไปแล้ว) และเลื่อนโหลดหลัง LCP (payload รวมเท่าเดิม ยังชน 220 อยู่ดี)
 6. **ห้ามพึ่งลำดับการรันของ bundled script** (เพิ่ม 2026-07-27 หลังตรวจ build จริง): Astro เรียงแท็ก `<script>` ที่ผ่าน bundler ตาม chunk index ไม่ใช่ตามตำแหน่งในไฟล์ — ใน `dist/client/index.html` แท็กของ motion ออกมาก่อนแท็กของ i18n ทั้งที่ในซอร์ส i18n อยู่บนกว่า ข้อกำหนดที่บังคับได้จริงคือ **"ตำแหน่งที่ ScrollTrigger วัดไว้ต้องถูก refresh หลังข้อความเปลี่ยน"** ซึ่ง `watchLanguageChange()` ทำผ่าน MutationObserver บน attribute `lang` และไม่สนใจลำดับสคริปต์ ตอนโหลดไม่มีข้อความเปลี่ยนอยู่แล้ว เพราะ `initI18n` ไม่ได้อ่านภาษาที่บันทึกไว้และไม่เรียก `setLang` ตอน init
 
 ## 3.1 Pinned sequences แบบ Apple (เพิ่ม 2026-07-27)
