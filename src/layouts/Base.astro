@@ -175,7 +175,26 @@ const resolvedOgImage = new URL(ogImage, Astro.site).toString();
       }
     </script>
 
-    <!-- Motion system กลาง: component สั่งงานผ่าน data-* หรือ .reveal เดิม (legacy bridge ที่บาง component ยังใช้อยู่)
+    <!-- Legacy .reveal bridge (final-review Fix 1): kept as its own script/module so it
+         does NOT import gsap. Before this split it lived inside motion/index.ts, which
+         statically imports gsap + ScrollTrigger — that gated hero-copy/booking in
+         Hero.astro (LCP candidates) behind the ~46.5 KB gzip GSAP chunk. This module
+         has zero gsap dependency, so it boots as soon as its own tiny chunk evaluates. -->
+    <script>
+      import { applyLegacyReveal } from '../scripts/motion/legacy-reveal';
+
+      function bootLegacyReveal() {
+        applyLegacyReveal(document);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootLegacyReveal);
+      } else {
+        bootLegacyReveal();
+      }
+    </script>
+
+    <!-- Motion system กลาง: component สั่งงานผ่าน data-* เท่านั้น (ระบบ .reveal เดิมแยกไปบูตข้างบนแล้ว)
          รายละเอียดสัญญาอยู่ใน docs/superpowers/specs/2026-07-27-landing-layered-parallax-design.md
          ลำดับรันของ script bundle นี้กับบล็อก i18n ขึ้นกับการแบ่ง chunk ของ Astro ไม่ใช่ตำแหน่งในไฟล์ ห้ามอาศัยลำดับนั้น —
          ถ้าภาษาถูกเปลี่ยนทีหลัง watchLanguageChange() ใน motion/index.ts จะ refresh ScrollTrigger เอง -->

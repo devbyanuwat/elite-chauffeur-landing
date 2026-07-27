@@ -91,7 +91,7 @@ describe('initMotion', () => {
     expect(vars.scrollTrigger.trigger.tagName).toBe('SECTION');
   });
 
-  it('ผูก parallax เข้ากับ breakpoint FULL_TIER_MIN_WIDTH และทั้งสอง context เช็ค prefers-reduced-motion: no-preference', () => {
+  it('ผูก parallax เข้ากับ breakpoint FULL_TIER_MIN_WIDTH และทั้งสอง context เช็ค prefers-reduced-motion: reduce', () => {
     document.body.innerHTML = '<div data-parallax="0.1"></div>';
     initMotion();
 
@@ -99,19 +99,21 @@ describe('initMotion', () => {
     expect(queries).toHaveLength(2);
     expect(queries[0]).toContain(`min-width: ${FULL_TIER_MIN_WIDTH}px`);
     queries.forEach((query) => {
-      expect(query).toContain('prefers-reduced-motion: no-preference');
+      // final-review Fix 4: no-preference/reduce ไม่ใช่คู่ตรงข้าม สลับมาใช้
+      // "not all and (prefers-reduced-motion: reduce)" ทั้งสอง context แทน
+      expect(query).toContain('prefers-reduced-motion: reduce');
     });
   });
 
   it('ไม่สั่ง gsap เลยถ้า query ไม่ตรง (จำลอง reduced motion จริงผ่าน matchMedia)', () => {
-    const skipIfNoPreferenceQuery = (query: string, callback: () => void) => {
-      if (!query.includes('prefers-reduced-motion: no-preference')) callback();
+    const skipIfReducedMotionQuery = (query: string, callback: () => void) => {
+      if (!query.includes('prefers-reduced-motion: reduce')) callback();
     };
     // initMotion เรียก mm.add ทั้งหมด 2 ครั้ง (parallax context, split/reveal/count context)
     // — ใช้ mockImplementationOnce สองครั้งแทน mockImplementation ถาวร เพื่อไม่ต้อง restore เอง
     matchMediaAdd
-      .mockImplementationOnce(skipIfNoPreferenceQuery)
-      .mockImplementationOnce(skipIfNoPreferenceQuery);
+      .mockImplementationOnce(skipIfReducedMotionQuery)
+      .mockImplementationOnce(skipIfReducedMotionQuery);
 
     document.body.innerHTML = `
       <div data-depth-group="hero"><div data-parallax="0.1"></div></div>
@@ -146,70 +148,7 @@ describe('initMotion', () => {
     expect(refresh).toHaveBeenCalled();
   });
 
-  it('รองรับ .reveal เดิมโดยใส่ class in ให้', () => {
-    document.body.innerHTML = '<div class="reveal"></div>';
-    initMotion();
-    expect(document.querySelector('.reveal')?.classList.contains('in')).toBe(true);
-  });
-
-  it('reduced motion ทำให้ .reveal ทุกตัวแสดงทันทีโดยไม่ต้องรอ observer', () => {
-    const observe = vi.fn();
-    vi.stubGlobal('IntersectionObserver', class {
-      observe = observe;
-      unobserve = vi.fn();
-      disconnect = vi.fn();
-    });
-    vi.stubGlobal('matchMedia', (query: string) => ({
-      matches: query.includes('prefers-reduced-motion: reduce'),
-      media: query,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
-
-    document.body.innerHTML = '<div class="reveal"></div>';
-    initMotion();
-
-    expect(document.querySelector('.reveal')?.classList.contains('in')).toBe(true);
-    expect(observe).not.toHaveBeenCalled();
-
-    vi.unstubAllGlobals();
-  });
-
-  it('รอ observer จริงก่อนใส่ .in และ unobserve หลังเห็น element', () => {
-    const observedTargets: Element[] = [];
-    const unobserve = vi.fn();
-    let intersectionCallback: (entries: { target: Element; isIntersecting: boolean }[]) => void = () => {};
-
-    vi.stubGlobal(
-      'IntersectionObserver',
-      class {
-        unobserve = unobserve;
-        disconnect = vi.fn();
-
-        constructor(callback: (entries: { target: Element; isIntersecting: boolean }[]) => void) {
-          intersectionCallback = callback;
-        }
-
-        observe(target: Element) {
-          observedTargets.push(target);
-        }
-      }
-    );
-
-    document.body.innerHTML = '<div class="reveal"></div>';
-    initMotion();
-
-    const target = document.querySelector('.reveal') as HTMLElement;
-
-    expect(observedTargets).toContain(target);
-    // ยังไม่เห็น element เลย ต้องไม่ใส่ .in ทันที (พิสูจน์ว่ารอ observer จริง ไม่ใช่ fallback แสดงทันที)
-    expect(target.classList.contains('in')).toBe(false);
-
-    intersectionCallback([{ target, isIntersecting: true }]);
-
-    expect(target.classList.contains('in')).toBe(true);
-    expect(unobserve).toHaveBeenCalledWith(target);
-
-    vi.unstubAllGlobals();
-  });
+  // legacy .reveal bridge tests moved to tests/motion/legacy-reveal.test.ts —
+  // the bridge itself moved to src/scripts/motion/legacy-reveal.ts and is no
+  // longer wired through initMotion (final-review Fix 1)
 });

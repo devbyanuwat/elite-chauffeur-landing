@@ -2,10 +2,17 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { parseCount, parseParallaxDepth, parseReveal, splitLines } from './contract';
-import { FULL_TIER_MIN_WIDTH, pickTier } from './tiers';
+import { FULL_TIER_MIN_WIDTH } from './tiers';
 
 const EASE = 'power3.out';
-const NO_PREFERENCE = '(prefers-reduced-motion: no-preference)';
+// final-review Fix 4: `(prefers-reduced-motion: no-preference)` and
+// `(prefers-reduced-motion: reduce)` are not complements — a user agent that
+// implements neither evaluates both as false, which would strand
+// [data-reveal] at opacity: 0 (motion.css) with no GSAP context ever running
+// to un-hide it. `not all and (prefers-reduced-motion: reduce)` is the
+// level-4 negation idiom and matches exactly the states the CSS side (and
+// pickTier's own reduced-motion check) already treat as "motion allowed".
+const NOT_REDUCED_MOTION = 'not all and (prefers-reduced-motion: reduce)';
 
 function applyParallax(root: ParentNode): void {
   root.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
@@ -79,40 +86,6 @@ function applyCounts(root: ParentNode): void {
 }
 
 /**
- * .reveal คือระบบเดิมที่ยังใช้อยู่ในบาง component (ported มาจาก Base.astro)
- * ระบบใหม่ใช้ data-reveal แต่ของเดิมต้องไม่พังระหว่างที่ยังไม่ได้ย้ายครบ
- */
-function applyLegacyReveal(root: ParentNode): void {
-  const nodes = root.querySelectorAll<HTMLElement>('.reveal');
-  if (nodes.length === 0) return;
-
-  const tier = pickTier({
-    viewportWidth: window.innerWidth,
-    prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-  });
-
-  // เงื่อนไขเดิมจาก Base.astro:180-199 — reduced motion หรือไม่มี observer
-  // แปลว่าแสดงทุกอย่างทันที ไม่ใช่รอให้เลื่อนถึง
-  if (tier === 'static' || !('IntersectionObserver' in window)) {
-    nodes.forEach((el) => el.classList.add('in'));
-    return;
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('in');
-        observer.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-  );
-
-  nodes.forEach((el) => observer.observe(el));
-}
-
-/**
  * สลับภาษาทำให้ความยาวข้อความเปลี่ยน ตำแหน่งที่ ScrollTrigger คำนวณไว้จึงเก่า
  * i18n ไม่ได้ยิง event ออกมา จึงเฝ้า attribute lang บน <html> แทน
  */
@@ -135,16 +108,17 @@ export function initMotion(root: ParentNode = document): void {
 
   const mm = gsap.matchMedia();
 
-  mm.add(`(min-width: ${FULL_TIER_MIN_WIDTH}px) and ${NO_PREFERENCE}`, () => {
+  mm.add(`(min-width: ${FULL_TIER_MIN_WIDTH}px) and ${NOT_REDUCED_MOTION}`, () => {
     applyParallax(root);
   });
 
-  mm.add(NO_PREFERENCE, () => {
+  mm.add(NOT_REDUCED_MOTION, () => {
     splitTargets.forEach(({ el, inners }) => applySplitReveal(inners, el));
     applyReveals(root);
     applyCounts(root);
   });
 
-  applyLegacyReveal(root);
+  // legacy .reveal bridge lives in ./legacy-reveal (final-review Fix 1) and is
+  // booted separately from Base.astro so it doesn't wait on this GSAP chunk
   watchLanguageChange();
 }
