@@ -1,7 +1,7 @@
 ---
 ---
 
-<section class="block fleet-section" id="fleet">
+<section class="block fleet-section" id="fleet" data-pin="fleet" data-pin-length="240">
   <div class="wrap wrap-wide">
     <div class="section-head center reveal">
       <span class="eyebrow" data-i18n="fl.eyebrow">รถของเรา</span>
@@ -9,7 +9,7 @@
       <p data-i18n="fl.sub">รถใหม่ ดูแลสะอาด ประกันเต็มทุกคัน ราคาเริ่มต้นโปร่งใส</p>
     </div>
     <div class="fleet-grid">
-      <article class="fleet-card featured reveal">
+      <article class="fleet-card featured reveal" data-stage="0">
         <div class="fleet-stage">
           <span class="fleet-tag" data-i18n="fl.cat.vip">VIP</span>
           <span class="fleet-flag" data-i18n="fl.popular">ยอดนิยม</span>
@@ -28,7 +28,7 @@
           </div>
         </div>
       </article>
-      <article class="fleet-card reveal">
+      <article class="fleet-card reveal" data-stage="1">
         <div class="fleet-stage">
           <span class="fleet-tag" data-i18n="fl.cat.suv">SUV</span>
           <img class="fleet-img" src="/images/car3.webp" alt="Toyota Fortuner Legender" width="600" height="480" loading="lazy">
@@ -46,7 +46,7 @@
           </div>
         </div>
       </article>
-      <article class="fleet-card reveal">
+      <article class="fleet-card reveal" data-stage="2">
         <div class="fleet-stage">
           <span class="fleet-tag" data-i18n="fl.cat.family">ครอบครัว</span>
           <img class="fleet-img" src="/images/car1.webp" alt="Mitsubishi Xpander Cross" width="600" height="480" loading="lazy">
@@ -64,7 +64,7 @@
           </div>
         </div>
       </article>
-      <article class="fleet-card reveal">
+      <article class="fleet-card reveal" data-stage="3">
         <div class="fleet-stage">
           <span class="fleet-tag" data-i18n="fl.cat.eco">ประหยัด</span>
           <img class="fleet-img" src="/images/car4.webp" alt="Toyota Corolla Altis" width="600" height="480" loading="lazy">
@@ -289,6 +289,28 @@
   .fleet-book:active {
     transform: translateY(0) scale(0.985);
     transition-duration: 0.1s;
+  }
+
+  /* ---- โหมด pin (desktop, motion allowed) ----
+     pin-ready มาจาก pin.ts เท่านั้น ดังนั้น grid 4 คอลัมน์ด้านบนยังเป็น
+     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
+  .fleet-section.pin-ready .fleet-grid {
+    display: block;
+    position: relative;
+    min-height: 68vh;
+  }
+
+  .fleet-section.pin-ready .fleet-card {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: min(100%, 560px);
+    height: fit-content;
+  }
+
+  /* hover lift เดิมชน transform ที่ scrub คุมอยู่ ตัดทิ้งเฉพาะโหมดนี้ */
+  .fleet-section.pin-ready .fleet-card:hover {
+    transform: none;
   }
 
   @media (max-width: 880px) {
