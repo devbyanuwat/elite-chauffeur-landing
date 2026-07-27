@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseCount, parseDepthField, parseParallaxDepth, parseReveal, splitLines } from '../../src/scripts/motion/contract';
+import { collectStages, parseCount, parseDepthField, parseParallaxDepth, parsePin, parseReveal, splitLines } from '../../src/scripts/motion/contract';
 
 function el(html: string): HTMLElement {
   const host = document.createElement('div');
@@ -138,5 +138,78 @@ describe('splitLines', () => {
     // But the SVG should still exist in the DOM inside h1
     expect(h1.querySelector('svg.icon')).not.toBeNull();
     expect(h1.querySelector('svg.icon')?.closest('.split-line')).not.toBeNull();
+  });
+});
+
+describe('parsePin', () => {
+  it('คืน null เมื่อไม่มี attribute', () => {
+    expect(parsePin(el('<section></section>'))).toBeNull();
+  });
+
+  it('คืน null เมื่อชื่อเป็นค่าว่าง', () => {
+    expect(parsePin(el('<section data-pin="   "></section>'))).toBeNull();
+  });
+
+  it('ใช้ความยาวเริ่มต้น 200 เมื่อไม่ได้ระบุ', () => {
+    expect(parsePin(el('<section data-pin="fleet"></section>'))).toEqual({
+      name: 'fleet',
+      lengthVh: 200,
+    });
+  });
+
+  it('บีบความยาวให้อยู่ในกรอบ 100 ถึง 400', () => {
+    expect(parsePin(el('<section data-pin="a" data-pin-length="9999"></section>'))!.lengthVh).toBe(400);
+    expect(parsePin(el('<section data-pin="a" data-pin-length="10"></section>'))!.lengthVh).toBe(100);
+  });
+
+  it('ใช้ค่าเริ่มต้นเมื่อความยาวไม่ใช่ตัวเลข', () => {
+    expect(parsePin(el('<section data-pin="a" data-pin-length="ยาว"></section>'))!.lengthVh).toBe(200);
+  });
+});
+
+describe('collectStages', () => {
+  it('คืน array ว่างเมื่อไม่มี stage', () => {
+    expect(collectStages(el('<section data-pin="a"></section>'))).toEqual([]);
+  });
+
+  it('เรียงตามลำดับตัวเลข ไม่ใช่ลำดับใน DOM', () => {
+    const section = el(`
+      <section data-pin="a">
+        <div data-stage="2">สาม</div>
+        <div data-stage="0">หนึ่ง</div>
+        <div data-stage="1">สอง</div>
+      </section>
+    `);
+    expect(collectStages(section).map((s) => s.index)).toEqual([0, 1, 2]);
+  });
+
+  it('รวม element ที่ลำดับเดียวกันเข้ากลุ่มเดียว', () => {
+    const section = el(`
+      <section data-pin="a">
+        <p data-stage="0">ข้อความ</p>
+        <img data-stage="0" src="/images/car1.webp">
+      </section>
+    `);
+    const groups = collectStages(section);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].panels).toHaveLength(2);
+  });
+
+  it('ข้าม stage ที่อยู่ใน pin ซ้อนข้างใน', () => {
+    const section = el(`
+      <section data-pin="outer">
+        <div data-stage="0">ของฉัน</div>
+        <section data-pin="inner"><div data-stage="0">ของคนอื่น</div></section>
+      </section>
+    `);
+    const groups = collectStages(section);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].panels).toHaveLength(1);
+    expect(groups[0].panels[0].textContent).toBe('ของฉัน');
+  });
+
+  it('ข้ามลำดับที่อ่านเป็นตัวเลขไม่ได้', () => {
+    const section = el('<section data-pin="a"><div data-stage="แรก"></div></section>');
+    expect(collectStages(section)).toEqual([]);
   });
 });

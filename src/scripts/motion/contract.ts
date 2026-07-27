@@ -92,6 +92,63 @@ export function parseDepthField(el: Element): DepthFieldSpec | null {
   return { colorUrl, depthUrl, strength };
 }
 
+export interface PinSpec {
+  name: string;
+  /** ความยาว scroll ที่ใช้เล่าเรื่อง คิดเป็น % ของความสูง viewport */
+  lengthVh: number;
+}
+
+export interface StageGroup {
+  index: number;
+  /** element ที่ถือเนื้อหาของท่อนนี้ (data-stage) — ทั้งข้อความและภาพอยู่ในก้อนเดียว */
+  panels: HTMLElement[];
+}
+
+/**
+ * เพดานความยาว pin — spec ข้อ 3.1 กติกา 7: data-pin-length คือเพดาน ห้ามคำนวณ
+ * จากเนื้อหาแบบไม่มีขอบ ต่ำกว่า 100 (หนึ่งจอ) แล้วการค้างจอไม่ทันให้อ่าน
+ * เกิน 400 (สี่จอ) คนที่ scroll เร็วจะรู้สึกว่าติดกับดัก
+ */
+const MIN_PIN_LENGTH = 100;
+const MAX_PIN_LENGTH = 400;
+const DEFAULT_PIN_LENGTH = 200;
+
+export function parsePin(el: Element): PinSpec | null {
+  const raw = el.getAttribute('data-pin');
+  if (raw === null) return null;
+
+  const name = raw.trim();
+  if (name === '') return null;
+
+  const rawLength = Number.parseInt(el.getAttribute('data-pin-length') ?? '', 10);
+  const lengthVh = Number.isFinite(rawLength)
+    ? Math.min(Math.max(rawLength, MIN_PIN_LENGTH), MAX_PIN_LENGTH)
+    : DEFAULT_PIN_LENGTH;
+
+  return { name, lengthVh };
+}
+
+/**
+ * รวบรวมท่อนเรื่องใน section ที่ pin หนึ่งอัน จัดกลุ่มตามเลขลำดับ
+ * ข้าม element ที่อยู่ใน [data-pin] ซ้อนข้างใน เพราะเจ้าของคือ pin ตัวใน ไม่ใช่ตัวนอก
+ */
+export function collectStages(root: Element): StageGroup[] {
+  const byIndex = new Map<number, StageGroup>();
+
+  root.querySelectorAll<HTMLElement>('[data-stage]').forEach((el) => {
+    if (el.closest('[data-pin]') !== root) return;
+
+    const index = Number.parseInt(el.getAttribute('data-stage') ?? '', 10);
+    if (!Number.isFinite(index) || index < 0) return;
+
+    const group = byIndex.get(index) ?? { index, panels: [] };
+    group.panels.push(el);
+    byIndex.set(index, group);
+  });
+
+  return Array.from(byIndex.values()).sort((a, b) => a.index - b.index);
+}
+
 /**
  * ห่อแต่ละบรรทัด (คั่นด้วย <br>) ด้วย .split-line > .split-inner
  *
