@@ -17,7 +17,7 @@
 - ห้ามแตะ innerHTML ของ element ที่มี `data-i18n` เพราะ `src/lib/i18n.ts:22,31` snapshot และเขียนทับ `innerHTML` ของ element เหล่านั้นตอนสลับภาษา
 - ห้ามพึ่งลำดับการรันของ bundled script (แก้ 2026-07-27): Astro เรียงแท็กตาม chunk index ไม่ใช่ตำแหน่งในไฟล์ — ใน build จริง motion ออกมาก่อน i18n ข้อกำหนดที่บังคับได้คือ "refresh ScrollTrigger หลังข้อความเปลี่ยน" ซึ่ง `watchLanguageChange()` ทำไว้แล้ว
 - งบ JS: GSAP + ScrollTrigger รวมกัน ≤ 60 KB gzip วัดจริงแล้วบันทึกลงการ์ด SABUY-52
-- `.reveal` เดิมที่ยังใช้ใน 3 component ต้องทำงานเหมือนเดิมทุกประการ
+- `.reveal` เดิมที่ยังใช้ใน 14 ไฟล์ (นับจริงด้วย `grep -rl 'class="[^"]*\breveal\b' src` เมื่อ 2026-07-27 ตอน final review — ตัวเลข "3 component" ที่เขียนไว้ตอนแรกผิด ห่างเกือบ 5 เท่า) ต้องทำงานเหมือนเดิมทุกประการ
 - branch: `redesign/parallax-v1` (มีอยู่แล้ว) commit ทีละ task
 - ห้าม commit หรือ push ไป `main`
 
