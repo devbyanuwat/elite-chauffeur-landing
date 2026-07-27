@@ -1,22 +1,22 @@
 ---
 ---
 
-<section class="block" id="how">
+<section class="block" id="how" data-pin="how" data-pin-length="180">
   <div class="wrap">
     <div class="section-head center reveal">
       <span class="eyebrow" data-i18n="hw.eyebrow">ขั้นตอนง่าย ๆ</span>
       <h2 data-i18n="hw.title">จองรถได้ใน 3 ขั้นตอน</h2>
     </div>
     <div class="steps">
-      <div class="step reveal">
+      <div class="step reveal" data-stage="0">
         <h3 data-i18n="hw.1.t">บอกความต้องการ</h3>
         <p data-i18n="hw.1.d">เลือกประเภทรถ ระบุจุดรับ–ปลายทาง วันเวลา แล้วส่งคำขอราคา หรือทักผ่าน LINE ได้เลย</p>
       </div>
-      <div class="step reveal">
+      <div class="step reveal" data-stage="1">
         <h3 data-i18n="hw.2.t">รับราคาชัดเจน</h3>
         <p data-i18n="hw.2.d">ทีมงานยืนยันราคาแบบคงที่ ไม่มีบวกเพิ่มทีหลัง พร้อมรายละเอียดรถและคนขับ</p>
       </div>
-      <div class="step reveal">
+      <div class="step reveal" data-stage="2">
         <h3 data-i18n="hw.3.t">ออกเดินทางสบายใจ</h3>
         <p data-i18n="hw.3.d">คนขับมารับตรงเวลา ติดตามการเดินทางได้ พักผ่อนได้เต็มที่ตลอดทาง</p>
       </div>
@@ -61,6 +61,36 @@
   .step p {
     color: var(--text-secondary);
     font-size: 0.9rem;
+  }
+
+  /* ---- โหมด pin (desktop, motion allowed) ---- */
+  .pin-ready .steps {
+    display: block;
+    position: relative;
+    min-height: 46vh;
+  }
+
+  .pin-ready .step {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: min(100%, 620px);
+    height: fit-content;
+    padding: 2.6rem 2.4rem 2.4rem;
+  }
+
+  /* ตัวเลขขั้นตอนคือพระเอกของท่อนนี้ ขยายให้อ่านได้จากระยะไกล */
+  .pin-ready .step::before {
+    font-size: 4.2rem;
+    opacity: 0.8;
+  }
+
+  .pin-ready .step h3 {
+    font-size: 1.55rem;
+  }
+
+  .pin-ready .step p {
+    font-size: 1rem;
   }
 
   @media (max-width: 880px) {
