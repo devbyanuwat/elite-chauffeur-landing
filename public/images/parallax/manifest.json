@@ -1,0 +1,24 @@
+[
+  {
+    "sceneId": "hero",
+    "kind": "color",
+    "outPath": "parallax/hero/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Black luxury van waiting on a quiet Bangkok street at early morning, seen three-quarters from the front, driver in a dark suit standing by the rear door, wet asphalt, low city skyline far behind, deep depth of field separation between car and background. muted off-white and warm charcoal palette, soft overcast daylight, restrained gilded gold accents only, no neon, no teal and orange grade, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T07:30:18.150Z",
+    "fileSizeBytes": 202192,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "hero",
+    "kind": "depth",
+    "outPath": "parallax/hero/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "Black luxury van waiting on a quiet Bangkok street at early morning, seen three-quarters from the front, driver in a dark suit standing by the rear door, wet asphalt, low city skyline far behind, deep depth of field separation between car and background. muted off-white and warm charcoal palette, soft overcast daylight, restrained gilded gold accents only, no neon, no teal and orange grade, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01,
+    "generatedAt": "2026-07-27T07:30:39.763Z",
+    "fileSizeBytes": 23092,
+    "aiGenerated": true
+  }
+]
