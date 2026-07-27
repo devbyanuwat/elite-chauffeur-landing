@@ -325,7 +325,7 @@
   .fleet-section.pin-ready {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 50px);
+    height: 100vh;
     padding-block: 0;
   }
 
@@ -335,9 +335,10 @@
     flex: 1 1 auto;
     min-height: 0;
     /* top clearance must beat the fixed nav (72px max) with room to spare;
-       bottom padding is purely cosmetic breathing room */
+       bottom padding includes 50px safety margin for pinned transform overshoot
+       plus 20-40px cosmetic breathing room */
     padding-top: max(84px, 6vh);
-    padding-bottom: clamp(20px, 4vh, 40px);
+    padding-bottom: calc(50px + clamp(20px, 4vh, 40px));
   }
 
   .fleet-section.pin-ready .section-head {
