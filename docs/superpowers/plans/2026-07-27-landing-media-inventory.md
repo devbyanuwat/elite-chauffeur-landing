@@ -11,17 +11,23 @@ produced).
 | Scene | Status | Why |
 |---|---|---|
 | `hero` | **Approved** (Task 3 + fix round) | Plain MPV, no ornament/gold/badge, left 40% clear |
-| `service/airport` | **NEEDS RESHOOT** | Rolls-Royce-style grille/gold wheels, taxi roof light, taxi pickup signboard, visible sun |
-| `service/business` | **NEEDS RESHOOT** | Grille/headlight design reads as a specific real brand (Mercedes-Benz S-Class); vehicle also larger than our Altis-class fleet |
+| `service/airport` | **STILL NEEDS RESHOOT** (S2 attempt #2 failed, new problems) | Vehicle now correctly Alphard-class, but gold-plated Toyota badge + gold lower-bumper trim on the vehicle, visible sun, teal terminal signage |
+| `service/business` | **STILL NEEDS RESHOOT** (S2 attempt #2 failed, new problems) | Vehicle now correctly Corolla Altis-class, but a taxi-style roof light box, a Toyota badge on the grille, visible sun, small teal accent |
 | `service/rental` | Clean | No violations found |
-| `trust` | **NEEDS RESHOOT** | Gold-plated door handle + trim strip on the vehicle; fabricated brand-like text/logo on the water bottle label |
+| `trust` | **Improved, minor residual issues** (S2 attempt #2) | No more giant gold handle/fake bottle label, but a small gold-toned door latch and a chrome sill-trim strip remain |
 | `close` | Clean | No violations found |
-| `scene/airport` (`airport/`) | Soft concern | Van itself clean, but canopy carries a repeated row of ornate gold temple-style finials — more than "a rare accent" |
+| `scene/airport` (`airport/`) | **Kept as-is (S2 decision)** | Canopy gold finials read as generic Thai architectural ornament, not vehicle/brand trade dress — see S2 section below |
 
-Three of six newly generated scenes are not usable as-is. Per instruction, none were
-regenerated — this document and the accompanying report describe exactly what's
-wrong so a human can decide the next prompt rewrite, the same way the hero fix round
-worked.
+Three of six newly generated scenes were not usable as-is (first pass, S1). Per
+instruction, none were regenerated at the time — that first report described exactly
+what was wrong so a human could decide the next prompt rewrite. See the **"S2
+reshoot"** section near the end of this document for the second-pass results: one
+prompt rewrite round (naming the actual fleet vehicle explicitly, following the hero
+pattern) fixed the original problems on all three scenes but `service/airport` and
+`service/business` each surfaced a *new* set of violations instead of a clean pass;
+`trust` improved substantially but still has two minor residual issues. Per the "no
+retry-chasing" rule, none of the three were regenerated a third time — reported
+plainly, stopped, human decision needed again.
 
 ## File table (real dimensions and sizes)
 
@@ -30,16 +36,16 @@ worked.
 | `hero/color.webp` | 2560×1104 | 172,432 | 168.4 |
 | `hero/depth.webp` | 2560×1104 | 26,318 | 25.7 |
 | `hero/flat.webp` | 1280×552 | 36,332 | 35.5 |
-| `service/airport/color.webp` | 1920×1080 | 123,312 | 120.4 |
-| `service/airport/depth.webp` | 1920×1080 | 24,596 | 24.0 |
-| `service/airport/flat.webp` | 1280×720 | 35,328 | 34.5 |
-| `service/business/color.webp` | 1920×1080 | 177,156 | 173.0 |
-| `service/business/depth.webp` | 1920×1080 | 16,222 | 15.8 |
-| `service/business/flat.webp` | 1280×720 | 53,102 | 51.9 |
+| `service/airport/color.webp` | 1920×1080 | 169,180 | 165.2 |
+| `service/airport/depth.webp` | 1920×1080 | 19,452 | 19.0 |
+| `service/airport/flat.webp` | 1280×720 | 43,584 | 42.6 |
+| `service/business/color.webp` | 1920×1080 | 152,594 | 149.0 |
+| `service/business/depth.webp` | 1920×1080 | 21,972 | 21.5 |
+| `service/business/flat.webp` | 1280×720 | 46,080 | 45.0 |
 | `service/rental/color.webp` | 1920×1080 | 165,384 | 161.5 |
 | `service/rental/depth.webp` | 1920×1080 | 15,992 | 15.6 |
 | `service/rental/flat.webp` | 1280×720 | 44,874 | 43.8 |
-| `trust/color.webp` | 1920×1080 | 108,260 | 105.7 |
+| `trust/color.webp` | 1920×1080 | 109,778 | 107.2 |
 | `close/color.webp` | 2560×1104 | 164,356 | 160.5 |
 | `close/depth.webp` | 2560×1104 | 29,554 | 28.9 |
 | `close/flat.webp` | 1280×552 | 35,738 | 34.9 |
@@ -63,14 +69,17 @@ knowing before assuming a future scene will land on its exact declared size.
 
 ```
 $ du -sh public/images/parallax/
-1.5M
+1.6M
 ```
 
-Exact total: **1,564,286 bytes ≈ 1.49 MB** across all 19 files (manifest.json is
-negligible text on top of that). Well under the 6 MB ceiling — no webp quality
-reduction was needed. `color`/`depth` were encoded at the pipeline's existing quality
-90; `flat` composites were encoded fresh at quality 78 per this task's instruction
-(1280px wide, from the `color` pass).
+Exact total (measured after the S2 reshoot, summing every real `.webp` file on disk):
+**1,588,950 bytes ≈ 1.52 MB** across the same 19 files (`service/airport`,
+`service/business`, `trust` color/depth/flat were overwritten in place by
+`--force`; file count unchanged). manifest.json is negligible text on top of this
+and not included. Well under the 6 MB ceiling — no webp quality reduction was needed.
+`color`/`depth` are encoded at the pipeline's existing quality 90; `flat` composites
+at quality 78, 1280px wide, built fresh from each scene's `color` pass with
+`sharp(colorPath).resize({ width: 1280 }).webp({ quality: 78 })`.
 
 ## Spend and balance — full ledger across the whole media pipeline effort
 
@@ -80,8 +89,9 @@ reduction was needed. `color`/`depth` were encoded at the pipeline's existing qu
 | Task 3: original hero (color + depth, since-discarded prompt) | $9.88865 | $0.04776 |
 | Fix round: hero regenerated with corrected prompt (kept, approved) | $9.847725 | $0.040925 |
 | Task 4: remaining 6 scenes, 11 jobs (6 color + 5 depth; `trust` has no depth) | $9.567825 | $0.2799 |
-| **Total spent so far** | | **$0.368585** |
-| **Closing balance** | **$9.567825** | |
+| S2 reshoot: `service/airport` (color+depth) + `service/business` (color+depth) + `trust` (color only) | $9.435645 | $0.13218 |
+| **Total spent so far** | | **$0.500765** |
+| **Closing balance** | **$9.435645** | |
 
 Task 4's own estimate (`npx tsx scripts/gen-media.ts`, dry run before spending) was
 **$0.27** (6 × $0.03 color + 5 × $0.01776 depth = $0.2688, printed rounded). Actual
@@ -93,6 +103,14 @@ to let any lagged depth-compute billing settle — no further movement, so this 
 is final, not a snapshot mid-settle (the fix round found marigold's charge can post
 several seconds after the job reports done; this run's number had already settled by
 the time of the second check).
+
+**S2 reshoot spend** (2026-07-27, second pass): dry-run estimates were $0.05 +
+$0.05 + $0.03 = $0.13 for the three scenes (`service/airport` 2 jobs, `service/business`
+2 jobs, `trust` 1 job — `needsDepth: false`). Balance before: $9.567825. Balance
+immediately after all three `--run --force --only <id>` invocations: $9.435645;
+rechecked 15s later: unchanged at $9.435645 (settled). Actual spend: **$0.13218**,
+about 1.7% over the $0.13 estimate — consistent with `marigold-depth`'s variable
+compute-time billing.
 
 ## Prompts on record
 
@@ -216,6 +234,116 @@ scene toward an ornate/gilded look rather than the intended restrained one. Like
 fix if this needs tightening: add "plain modern canopy structure, no ornamental
 finials" to this prompt specifically.
 
+## S2 reshoot (2026-07-27, second pass) — three prompts rewritten, three results
+
+Coordinator's instruction: the three failing S1 scenes all failed for the same root
+cause diagnosed above — the prompt never named the actual vehicle, so the model
+reached for its default "luxury car" association (gold Rolls-Royce grille, Mercedes
+S-Class front end, gold-plated interior trim + a fabricated bottle label). The fix,
+following the pattern that already worked for `hero`, was to name the real fleet
+vehicle explicitly in each of the three prompts. `scripts/media/scenes.ts` was edited
+so only these three prompts changed; the shared `PALETTE` suffix and every other
+scene's prompt were left untouched (confirmed by reading the full file after editing).
+
+### `service/airport` — new prompt, STILL FAILS (different problems)
+
+```
+A plain black Toyota Alphard class three-row MPV van waiting at an airport arrivals
+kerb, no roof sign, no taxi markings, no signboard, plain unadorned grille with no
+ornament and no badge, a chauffeur in a dark suit standing at the open sliding door,
+glass terminal facade and a concrete canopy behind, travellers blurred in the far
+background, flat overcast daylight with no visible sun, calm wide composition with
+open space on the left.
+```
+
+Result: the vehicle class is now correct (reads convincingly as an Alphard/Vellfire),
+and the taxi roof-light box and taxi signboard from S1 are both gone. But the front
+end now carries a **gold-plated Toyota badge** on the grille and **gold-plated lower
+bumper/skid-plate trim** running the width of the front — the prompt explicitly said
+"no ornament and no badge" and got a prominent gold one anyway. There is also a
+**visible sun** low on the horizon with an orange glow, and **turquoise/teal
+illuminated signage** visible in the terminal glass on both sides of the frame — both
+explicitly banned by `PALETTE`. Net: two of three original problems fixed, but two
+banned elements (sun, teal) recurred and a new one (gold badge/trim on the vehicle)
+appeared. **Not regenerated a second time** — reported and stopped per instruction.
+
+### `service/business` — new prompt, STILL FAILS (different, arguably worse problems)
+
+```
+A plain black mid-size sedan of Toyota Corolla Altis class, simple horizontal grille
+with no ornament and no badge, stopped at the kerb outside a glass office tower in
+Bangkok, a doorman stepping toward the rear door, wet pavement reflecting the grey
+sky, flat overcast morning light with no visible sun, calm wide composition with open
+space on the left.
+```
+
+Result: the vehicle class is now correctly Corolla-Altis-sized (the Mercedes S-Class
+trade dress and oversized silhouette from S1 are gone) — but a **yellow/amber
+roof-mounted light box** on the car's roof reads unmistakably as a Bangkok taxi
+meter light, a **Toyota badge** is visible on the grille despite the prompt saying
+"no badge," a **visible sun** sits low on the horizon with a warm glow, and a small
+**teal-lit accent** is visible near the building's revolving door. The gold-framed
+revolving door from S1 is gone, but a taxi-signage violation that wasn't present
+before has taken its place. **Not regenerated a second time** — reported and
+stopped per instruction.
+
+### `trust` — new prompt, substantially improved, two minor residual issues
+
+```
+Close detail of a clean vehicle interior in matte black plastic and grey fabric, a
+folded grey cold towel and a plain unlabelled water bottle resting in a door pocket,
+shallow focus, nobody in frame, no gold, no chrome, no logos, no lettering of any
+kind, soft even indoor light.
+```
+
+Result: the large gold-plated door handle recess and gold trim strip from S1 are
+gone (the door trim is now genuinely matte black plastic), and the water bottle is
+now genuinely blank — no fabricated logo or text found on inspection. Two smaller
+issues remain: a small brass/gold-toned door latch or lock mechanism is visible on
+the door jamb at the left edge of the frame, and a bright chrome-look strip runs
+along the window-sill trim at the top of the door panel — both are letter-of-the-rule
+violations of "no gold, no chrome" even though neither dominates the frame the way
+the S1 version's gold trim did. **Not regenerated a second time** — reported as an
+improved-but-imperfect result, human call needed on whether this clears the bar.
+
+### `scene/airport` canopy gold finials — decision: leave as-is
+
+Looked directly at `public/images/parallax/airport/color.webp` again (full image, not
+a crop) to make this specific call. What's actually there: a row of roughly 8–9
+ornate gold spire/finial ornaments mounted atop the white support pillars of the
+terminal canopy, plus small gold accent rings at a few pillar capitals lower in the
+frame — repeated enough that, read strictly against `PALETTE`'s "gold allowed only
+as a rare accent," it's more than "rare" by simple count.
+
+**Decision: leave it, do not reshoot.** Reasoning:
+
+1. It sits entirely on background architecture (the terminal canopy), not on the
+   vehicle, the chauffeur, or anything that represents the service itself — the van
+   in this shot is a plain cream/white HiAce-style van with no badge, no gold, no
+   logo anywhere on it (checked again on this pass, unchanged from the S1 finding).
+2. It reads as a generic, recognizable Thai/regional civic-architecture motif (a
+   lotus-bud/chofa-style finial, the kind seen on real government and transit
+   buildings across Thailand) rather than an invented luxury flourish tied to a
+   specific real brand. This is categorically different from the three problems that
+   triggered this reshoot round — a Rolls-Royce grille, a Mercedes S-Class front end,
+   and a gold-plated interior detail are all *product* trade dress; a temple-style
+   finial on a terminal canopy is *place*-signalling (it says "this is Thailand"),
+   which is closer to what an establishing shot is supposed to do.
+3. This same session just demonstrated, twice, that reshooting a scene whose prompt
+   already gets most of the brief right can trade one violation for a different
+   (sometimes worse) one. `scene/airport`'s prompt was never rewritten to name a
+   specific vehicle the way the three reshot scenes were, so a reshoot here carries
+   the same risk with no corrective prompt change lined up and reviewed first. Given
+   this task's explicit authorization covered exactly three scenes, spending further
+   on a fourth without a prompt fix ready and separately approved isn't warranted.
+4. If this needs tightening later, the fix is narrow and known: add "plain modern
+   canopy structure, no ornamental finials" to this one prompt — same pattern as the
+   other fixes in this document — but that's a decision for a future round, not this
+   one.
+
+This is a judgment call, not a clean pass — flagging the tension plainly rather than
+calling it "clean" the way `service/rental` and `close` are.
+
 ## Depth convention — verified on the new scenes too, not assumed from the fix round
 
 Spot-checked three of the five new depth maps (not just trusting that the hero fix
@@ -231,6 +359,33 @@ airport             near≈246   far≈85
 All three: near brighter than far, consistent with the `negate()` fix applied
 uniformly to every `kind: 'depth'` job in `gen-media.ts`. Every depth entry written
 in this run also carries `depthConvention: "near-bright"` in `manifest.json`.
+
+**Note:** the `service/business` row above was sampled from the **S1** depth file,
+which the S2 reshoot has since overwritten on disk (`--force`) — it no longer
+describes what's actually in `service/business/depth.webp` today. The `airport` row
+refers to `scene/airport`, which was **not** regenerated in S2 and is still accurate.
+
+### Depth convention — re-verified after the S2 reshoot, on the actual current files
+
+Sampled the two depth maps the S2 reshoot overwrote (`service/airport`,
+`service/business`). First rendered each depth map full-frame to confirm by eye
+*where* near and far actually are in each composition — in both shots a nearby
+canopy/glass-tower structure occupies much of the upper frame, so "top of frame" is
+not a reliable proxy for "far" here; the genuinely distant element in both shots is a
+hazy background zone toward the upper-left, not the sky directly overhead. Sampled
+raw pixel values from the correctly-identified regions:
+
+```
+service/airport   van body/bumper/chauffeur/road (near): 211–239
+                  distant hazy zone under canopy (far):   35–43
+
+service/business  car body/roof/doorman/pavement (near): 208–239
+                  distant hazy skyline (far):              6–24
+```
+
+Near consistently brighter than far on both files — confirms `depthConvention:
+"near-bright"` holds on the regenerated depth maps, verified by pixel sampling against
+visually-confirmed regions, not assumed from the manifest flag.
 
 ## Known bookkeeping note (fixed going forward, not rewritten in history)
 

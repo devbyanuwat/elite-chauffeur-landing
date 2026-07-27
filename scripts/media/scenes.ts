@@ -14,11 +14,11 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'service/airport', dir: 'parallax/service/airport', width: 1920, height: 1080, needsDepth: true,
-    prompt: `Arrival hall of a modern Asian airport seen from a distance, a chauffeur waiting with a name board, travellers blurred in motion, wide calm composition with space on the left. ${PALETTE}`,
+    prompt: `A plain black Toyota Alphard class three-row MPV van waiting at an airport arrivals kerb, no roof sign, no taxi markings, no signboard, plain unadorned grille with no ornament and no badge, a chauffeur in a dark suit standing at the open sliding door, glass terminal facade and a concrete canopy behind, travellers blurred in the far background, flat overcast daylight with no visible sun, calm wide composition with open space on the left. ${PALETTE}`,
   },
   {
     id: 'service/business', dir: 'parallax/service/business', width: 1920, height: 1080, needsDepth: true,
-    prompt: `Executive sedan pulling up to a glass office tower entrance in Bangkok, morning, doorman stepping forward, reflections on the car body, wide calm composition. ${PALETTE}`,
+    prompt: `A plain black mid-size sedan of Toyota Corolla Altis class, simple horizontal grille with no ornament and no badge, stopped at the kerb outside a glass office tower in Bangkok, a doorman stepping toward the rear door, wet pavement reflecting the grey sky, flat overcast morning light with no visible sun, calm wide composition with open space on the left. ${PALETTE}`,
   },
   {
     id: 'service/rental', dir: 'parallax/service/rental', width: 1920, height: 1080, needsDepth: true,
@@ -26,7 +26,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'trust', dir: 'parallax/trust', width: 1920, height: 1080, needsDepth: false,
-    prompt: `Close detail of a clean vehicle interior, folded cold towel and bottled water in a door pocket, shallow focus, nobody in frame, quiet hotel dossier mood. ${PALETTE}`,
+    prompt: `Close detail of a clean vehicle interior in matte black plastic and grey fabric, a folded grey cold towel and a plain unlabelled water bottle resting in a door pocket, shallow focus, nobody in frame, no gold, no chrome, no logos, no lettering of any kind, soft even indoor light. ${PALETTE}`,
   },
   {
     id: 'close', dir: 'parallax/close', width: 2560, height: 1097, needsDepth: true,

@@ -169,5 +169,62 @@
     "fileSizeBytes": 35344,
     "aiGenerated": true,
     "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "service/airport",
+    "kind": "color",
+    "outPath": "parallax/service/airport/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "A plain black Toyota Alphard class three-row MPV van waiting at an airport arrivals kerb, no roof sign, no taxi markings, no signboard, plain unadorned grille with no ornament and no badge, a chauffeur in a dark suit standing at the open sliding door, glass terminal facade and a concrete canopy behind, travellers blurred in the far background, flat overcast daylight with no visible sun, calm wide composition with open space on the left. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T08:13:53.260Z",
+    "fileSizeBytes": 169180,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "service/airport",
+    "kind": "depth",
+    "outPath": "parallax/service/airport/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "A plain black Toyota Alphard class three-row MPV van waiting at an airport arrivals kerb, no roof sign, no taxi markings, no signboard, plain unadorned grille with no ornament and no badge, a chauffeur in a dark suit standing at the open sliding door, glass terminal facade and a concrete canopy behind, travellers blurred in the far background, flat overcast daylight with no visible sun, calm wide composition with open space on the left. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01776,
+    "generatedAt": "2026-07-27T08:14:16.361Z",
+    "fileSizeBytes": 19452,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "service/business",
+    "kind": "color",
+    "outPath": "parallax/service/business/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "A plain black mid-size sedan of Toyota Corolla Altis class, simple horizontal grille with no ornament and no badge, stopped at the kerb outside a glass office tower in Bangkok, a doorman stepping toward the rear door, wet pavement reflecting the grey sky, flat overcast morning light with no visible sun, calm wide composition with open space on the left. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T08:15:14.990Z",
+    "fileSizeBytes": 152594,
+    "aiGenerated": true
+  },
+  {
+    "sceneId": "service/business",
+    "kind": "depth",
+    "outPath": "parallax/service/business/depth.webp",
+    "model": "fal-ai/imageutils/marigold-depth",
+    "prompt": "A plain black mid-size sedan of Toyota Corolla Altis class, simple horizontal grille with no ornament and no badge, stopped at the kerb outside a glass office tower in Bangkok, a doorman stepping toward the rear door, wet pavement reflecting the grey sky, flat overcast morning light with no visible sun, calm wide composition with open space on the left. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.01776,
+    "generatedAt": "2026-07-27T08:15:39.647Z",
+    "fileSizeBytes": 21972,
+    "aiGenerated": true,
+    "depthConvention": "near-bright"
+  },
+  {
+    "sceneId": "trust",
+    "kind": "color",
+    "outPath": "parallax/trust/color.webp",
+    "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+    "prompt": "Close detail of a clean vehicle interior in matte black plastic and grey fabric, a folded grey cold towel and a plain unlabelled water bottle resting in a door pocket, shallow focus, nobody in frame, no gold, no chrome, no logos, no lettering of any kind, soft even indoor light. muted off-white and warm charcoal palette, soft overcast daylight, gold allowed only as a rare accent in the scene and never on the vehicle, no gold trim on the car, no chrome ornaments, no brand logos or badges, no taxi signage, no neon signs, no sunset or orange sky, no teal, no lens flare, no text, no watermark, photographic, medium format look",
+    "costUsd": 0.03,
+    "generatedAt": "2026-07-27T08:16:20.453Z",
+    "fileSizeBytes": 109778,
+    "aiGenerated": true
   }
 ]
