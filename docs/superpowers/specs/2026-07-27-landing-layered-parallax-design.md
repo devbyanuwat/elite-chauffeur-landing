@@ -14,7 +14,7 @@ Mockup อ้างอิง (source of truth): `mockups/parallax-concept.html` 
 
 | เรื่อง | ผลตัดสิน | ใครตัดสิน |
 |---|---|---|
-| แนวทาง motion | C — Layered Parallax (ไม่ pin ไม่ hijack scroll) | คุณอนุวัชร |
+| แนวทาง motion | C — Layered Parallax เป็นพื้น **+ pin 3 จุดแบบ Apple** (แก้ 2026-07-27 ดูข้อ 3.1) | คุณอนุวัชร |
 | ไลบรารี | GSAP + ScrollTrigger, ไม่ใช้ ScrollSmoother | ตามข้อจำกัด no scroll-jacking |
 | WebGL | three.js เฉพาะ hero depth field จุดเดียว | คุณอนุวัชร |
 | มุม | โครงคม จุดสัมผัสมน: `--r-touch: 5px`, `--r-frame: 0` | คุณอนุวัชร |
@@ -44,11 +44,16 @@ Mockup อ้างอิง (source of truth): `mockups/parallax-concept.html` 
 | `data-depth-group` | กลุ่มชั้นในฉากเดียว ใช้เป็น ScrollTrigger trigger | ชื่อฉาก |
 | `data-split` | หัวข้อที่แตกเป็นบรรทัดแล้วปัดขึ้น | ไม่มีค่า |
 | `data-count` + `data-decimals` + `data-suffix` | ตัวเลขนับขึ้น | ค่าเป้าหมาย |
+| `data-pin` | section ที่ค้างจอแล้วเล่าเรื่องตาม scroll | ชื่อฉาก (`fleet`, `route`, `how`) |
+| `data-pin-length` | ความยาว scroll ที่ใช้เล่า คิดเป็น % ของความสูงจอ | ตัวเลข เช่น `220` |
+| `data-stage` | ท่อนหนึ่งของเรื่องใน `data-pin` เดียวกัน | ลำดับเริ่มที่ `0` |
+| `data-stage-media` | ชั้นภาพที่สลับตาม stage | ลำดับ ตรงกับ `data-stage` |
+| `data-draw` | เส้น SVG ที่วาดตาม scroll (`stroke-dashoffset`) | ไม่มีค่า |
 
 สามระดับผ่าน `gsap.matchMedia()`
 
-- `≥1024px` + motion allowed: parallax + mask + split + count
-- `<1024px`: ตัด parallax ทิ้ง เหลือ fade/mask (transform หลายชั้นบนมือถือคือต้นเหตุ jank)
+- `≥1024px` + motion allowed: parallax + mask + split + count + **pin**
+- `<1024px`: ตัด parallax และ **ตัด pin** ทิ้ง เหลือ fade/mask (transform หลายชั้นบนมือถือคือต้นเหตุ jank และการค้างจอบนมือถือชนกับ address bar ที่ยืดหุบ)
 - `prefers-reduced-motion: reduce`: ไม่มี transform ทุกอย่างแสดงครบทันที
 
 ### กติกาที่ห้ามละเมิด
@@ -59,6 +64,39 @@ Mockup อ้างอิง (source of truth): `mockups/parallax-concept.html` 
 4. `will-change` เปิดเฉพาะช่วง active ไม่ทิ้งไว้ถาวร
 5. งบ JS: GSAP + ScrollTrigger ≤ 60 KB gzip สำหรับทุกเครื่อง และ three.js อีก ~150 KB gzip เฉพาะ desktop ที่ผ่านเงื่อนไขข้อ 4 รวมเพดาน desktop ≤ 220 KB gzip วัดจริงตอน build แล้วบันทึกลง plan (วัดแล้ว 2026-07-27: GSAP + ScrollTrigger + motion = **46.5 KB gzip** ผ่านงบ)
 6. **ห้ามพึ่งลำดับการรันของ bundled script** (เพิ่ม 2026-07-27 หลังตรวจ build จริง): Astro เรียงแท็ก `<script>` ที่ผ่าน bundler ตาม chunk index ไม่ใช่ตามตำแหน่งในไฟล์ — ใน `dist/client/index.html` แท็กของ motion ออกมาก่อนแท็กของ i18n ทั้งที่ในซอร์ส i18n อยู่บนกว่า ข้อกำหนดที่บังคับได้จริงคือ **"ตำแหน่งที่ ScrollTrigger วัดไว้ต้องถูก refresh หลังข้อความเปลี่ยน"** ซึ่ง `watchLanguageChange()` ทำผ่าน MutationObserver บน attribute `lang` และไม่สนใจลำดับสคริปต์ ตอนโหลดไม่มีข้อความเปลี่ยนอยู่แล้ว เพราะ `initI18n` ไม่ได้อ่านภาษาที่บันทึกไว้และไม่เรียก `setLang` ตอน init
+
+## 3.1 Pinned sequences แบบ Apple (เพิ่ม 2026-07-27)
+
+เดิมข้อ 2 ล็อกไว้ว่า "ไม่ pin" คุณอนุวัชรเปลี่ยนคำสั่งเป็น **pin 3 จุด** หลังเห็นผลวัดจาก `mockups/apple-sequence-prototype.html` เอกสารนี้จึงทับข้อเดิมของตัวเอง
+
+### จุดที่ pin
+
+| จุด | section | เรื่องที่เล่า | ชั้นภาพ |
+|---|---|---|---|
+| `fleet` | `Fleet.astro` | รถ 4 ประเภทไล่ทีละคัน ข้อความสเปกสลับตามคัน | `car2/car3/car1/car4.webp` ที่มีอยู่แล้ว |
+| `route` | `Routes.astro` | เส้นทางวาดจากจุดรับไปปลายทาง ชื่อเส้นทางสลับตามช่วง | SVG เส้น + ภาพ route ที่มีอยู่แล้ว |
+| `how` | `How.astro` | 3 ขั้นตอนไล่ทีละขั้น เลขขั้นโตขึ้นตรงกลาง | ข้อความล้วน ไม่ใช้ภาพ |
+
+### ความละเอียด: transform + สลับข้อความ ไม่ใช้ frame sequence
+
+วัดจริงแล้วทั้งสองทาง (2026-07-27)
+
+| ทาง | ขนาดต่อจุด | fps desktop | ค่า fal |
+|---|---|---|---|
+| canvas frame sequence 96 เฟรม | 6,338,782 B | 40.5 | $0.75/clip |
+| วิดีโอ keyframe หนา scrub | 6,786,839 B | 36.3 | $0.75/clip |
+| **transform + text swap (เลือกอันนี้)** | **0 B เพิ่ม** | ไม่ต้องถอดรหัสวิดีโอ | **$0** |
+
+เหตุที่เลือกทางที่สาม: สองทางแรกกิน ~19 MB สำหรับ 3 จุด และ $2.25 ทั้งที่ JS desktop วัดได้ 234.4 KB gzip **เกินเพดานข้อ 5 ไปแล้ว 14 KB** ส่วน Apple เองก็ใช้ pin + สลับข้อความ + scale/clip เป็นส่วนใหญ่ ไม่ใช่วิดีโอทุกจุด ทางนี้อัปเกรดเป็น sequence ทีหลังได้โดยไม่ต้องรื้อ contract เพราะ `data-stage` เป็นตัวบอกท่อนเรื่อง ไม่ได้ผูกกับชนิดสื่อ
+
+### กติกาเพิ่มสำหรับ pin
+
+7. **pin ต้องไม่กิน scroll เกินที่ประกาศ** `data-pin-length` เป็นเพดาน ห้ามคำนวณจากเนื้อหาแบบไม่มีขอบ คนที่ scroll เร็วต้องผ่านได้ ไม่ใช่ติดกับดัก
+8. **ทุก stage ต้องอยู่ครบใน HTML ที่ server ส่ง** JS มีหน้าที่ซ่อน/แสดง ไม่ใช่สร้างเนื้อหา — เหมือนกติกาข้อ 2 SEO ต้องเห็นสเปกรถทั้ง 4 คันและทั้ง 3 ขั้นตอน
+9. **ปิด JS หรือ reduced-motion = section ต้องอ่านได้ครบทั้ง 4 คัน/3 ขั้น** เรียงต่อกันลงมาแบบเดิม ไม่ใช่ค้างที่ stage 0 (วัดด้วยจำนวน element ที่ซ่อน ต้องเป็น 0)
+10. **`pinSpacing` ต้องไม่ทำให้ footer กระตุก** ใช้ `pinSpacing: true` และตรวจว่า section ถัดไปไม่ทับ
+11. **pin ต้อง `ScrollTrigger.refresh()` เมื่อสลับภาษา** ความยาวข้อความไทย/อังกฤษต่างกัน ตำแหน่ง pin ที่วัดไว้จะเก่า — `watchLanguageChange()` ที่มีอยู่ครอบให้แล้ว ต้องยืนยันว่าครอบ pin ด้วย
+12. **ห้ามเพิ่ม gsap plugin ตัวใหม่** ScrollTrigger ตัวเดียวทำ pin ได้ ไม่ต้อง ScrollSmoother ไม่ต้อง Observer (ชนข้อ no scroll-jacking และงบ JS)
 
 ## 4. WebGL hero depth field
 
