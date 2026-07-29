@@ -18,3 +18,7 @@ refs/
 mqx*.png
 .od-skills/
 mockups/
+
+# Serena MCP — project.yml is shared, the symbol cache and local overrides are not
+.serena/cache/
+.serena/project.local.yml
