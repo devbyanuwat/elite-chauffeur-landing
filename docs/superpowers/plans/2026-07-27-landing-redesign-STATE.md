@@ -110,6 +110,53 @@ query `(min-width: 1024px) and not all and (prefers-reduced-motion: reduce)` ผ
 3. **แก้ไขบันทึกเดิม (final whole-branch review, 2026-07-27): ไม่ใช่แค่ `[data-parallax]` — ทั้งหมด 8 attribute ไม่มีใครใช้ในมาร์กอัปเลย** ตรวจซ้ำด้วย `grep -rn '<attr>=' src/ --include="*.astro"` ทีละตัวจริง ไม่ใช่คัดลอกจากรายการเดิม: `data-parallax` `data-reveal` `data-reveal-stagger` `data-depth-group` `data-split` `data-count` `data-decimals` `data-suffix` — ครบ 0 usages ทุกตัว แปลว่า `applyParallax` `applyReveals` `applySplitReveal` `applyCounts` ใน `src/scripts/motion/index.ts:36-105` ตายทั้งฟังก์ชัน (ไม่ใช่แค่ parallax) รวมถึง `src/styles/motion.css:23-52` และเทสต์ส่วนใหญ่ในชุดที่ทดสอบ 4 ฟังก์ชันนี้ — มีแค่ `data-pin` `data-stage` `data-draw` `data-depth-field` (+ `data-depth-color`/`data-depth-map`/`data-depth-strength` ใน Hero.astro/Base.astro) เท่านั้นที่มีของจริงในมาร์กอัป **ไม่ลบโค้ด** เก็บไว้เป็น dead-but-tested code ต่อไป — ของเดิม แยกเรื่องจากบั๊กข้างบน
 4. deferred minor 4 ข้ออยู่ใน ledger
 
+### ปิดครบแล้วเมื่อ 2026-07-28
+
+- scoped re-review ของ Task 7 ผ่าน — reviewer พิสูจน์เองด้วยการย้อนโค้ดกลับแล้วเทสต์ fail จริง
+- final whole-branch review (opus) ตีกลับ **Not ready** ด้วย C1 (การ์ด Fleet ตอน pin ตกใต้ขอบจอทุก viewport 1440×900 ตก 207px) + I1 (หัวข้อ `#routes` มุดใต้ nav) + I5 (`fal.ts` ไม่เช็ค `r.ok`) + I3 (เพดาน JS)
+- I3 ปิดโดยคุณอนุวัชรเลือก **ยกเพดาน 220 → 240 KB** (`c9d1f87`) พร้อมบันทึกว่าเลข 220 เดิมไม่เคยวัด (ประเมิน three.js ไว้ ~150 KB ของจริง 188 KB)
+- fix wave `9b7c192` — 72/72 · C1 แก้โดยให้ section ที่ pin สูงเท่า viewport พอดี ภาพเป็นส่วนยืดหยุ่น ราคา/ปุ่ม/ชิปไม่ถูกย่อ · เทสต์ redact ฝัง key จริงลง body แล้วพิสูจน์ว่าถูกลบ
+- re-review ของ fix wave เจอของที่ fix wave ทำพังเอง: `height: calc(100vh - 50px)` ทิ้งแถบล่าง 50px โชว์ `--bg-primary` ใต้ `--bg-secondary` เป็นรอยต่อ แก้ที่ `fc59666` ย้าย margin เข้าไปข้างใน · ผมวัดเองยืนยัน: section 768 = 100vh พอดี ขอบล่างเทียบจอ 0 แถวล่างสุดถูกทาโดย `section.block` ระยะปุ่ม 82/83px
+- **ยังค้าง**: `pin.ts` อบ `translateY(24px)` ติดถาวรตอนแตะ transform ครั้งแรก (จับสถานะ `.reveal` ก่อน `legacy-reveal.ts` ใส่ `.in`) วัดได้ ~31px ตอนนี้กลบด้วย safety margin · re-reviewer ยืนยันว่าการแก้ C1 **ไม่ได้พึ่ง**บั๊กนี้ แก้ทีหลังปลอดภัย
+
+## S3 สไลซ์ 3: hero 3 วินาที (SABUY-62) — โค้ดครบ 5 task ยังไม่ปิด review
+
+spec `docs/superpowers/specs/2026-07-28-hero-three-second-design.md` (`3087b8f`) · plan `docs/superpowers/plans/2026-07-28-hero-three-second.md` (`e4350dc`) · ledger `.superpowers/sdd/2026-07-28-hero-three-second/progress.md` · ผลวัด `docs/superpowers/plans/2026-07-28-hero-three-second-verify.md`
+
+**ปัญหาที่วัดได้ก่อนแก้**: จอแรก 1440×900 = 19 ก้อน 52 คำ 364 ตัวอักษรไทย ขณะที่งบ 3 วินาทีจริงราว 6-8 คำ + ปุ่มเดียว · มือถือภาพมองไม่เห็นเลยเพราะ veil 94→99% ถูกทาบนกล่องสูง 2014px บนจอสูง 844px
+
+**การตัดสินใจของคุณอนุวัชร 2026-07-28**: ฟอร์มขอราคา **ย้ายลงล่างทั้งหมด** เหลือปุ่มใน hero — **ทับ spec 2026-07-27 ข้อ 1** ที่เขียนว่าฟอร์มต้องไม่หายจากสายตา แจ้งความขัดแย้งก่อนถามแล้วได้คำตอบเดิม ความเสี่ยงที่รับไว้: คนเริ่มกรอกฟอร์มอาจลดลง · ข้าม mockup ลงโค้ดจริงเลย · palette = UI สีนิ่งกรอบภาพสดหนึ่งภาพ ไม่ regenerate ภาพ
+
+| task | commit | ผล |
+|---|---|---|
+| 1 ย้ายฟอร์มไป `sections/Booking.astro` | `990bebb`, fix `d3982eb` | fix 1 รอบ (รายงานพิมพ์ตัวเลขที่คำสั่งไม่ได้ให้) |
+| 2 ตัดจอแรกเหลือ 5 ก้อน | `eaddc47` | fix 1 รอบ (รายงานอ้างว่า mobile veil ไม่ถูกแตะ ทั้งที่ลบไปแล้ว) |
+| 3 `.hero-bg` เป็นแถบ 52svh บนมือถือ | `a2d911e` | review clean |
+| 4 แก้ `.impeccable.md` + `CLAUDE.md` | `32345c6`, fix `b903b2b` | fix 1 รอบ (ลำดับ bullet) |
+| 5 วัดจริง + `scripts/measure-viewport.mjs` | `c3f0956` | ยังไม่ได้ review |
+
+**ผลวัดที่ controller ยืนยันเอง** (ไม่ใช่แค่คำอ้างของ agent): 1440×900 = **5 ก้อน 10 คำ** · 390×844 = **4 ก้อน 10 คำ** `bgShareOfHero` 0.558 `veilDisplay` none · `h1Opacity` 1 ทั้งสองจอ · contrast 15.57:1 · เห็นด้วยตาจากภาพหน้าจอ: เดสก์ท็อปเจดีย์กลับมาเห็นเป็นเจดีย์ มือถือหน้าเธอเห็นครบไม่มีอะไรทับ
+
+**ค้างของ SABUY-62**
+1. **task review ของ Task 5** — ยังไม่ได้ดิสแพตช์ (มี review package `review-b903b2b..c3f0956.diff` เตรียมไว้แล้ว)
+2. **final whole-branch review** รอบใหม่ ครอบทั้ง pin + hero
+3. **finding ของ controller จากการดูภาพเอง**: H1 เดสก์ท็อป 1440px **ตัดคำกลางคำ** "กับคนขับ" หักเป็น `กับคน` / `ขับ` — ไม่มีเกณฑ์ตัวเลขไหนจับได้ ต้องใช้ตา ยังไม่แก้
+4. agent เจอบั๊กในสคริปต์ของ plan เอง 2 จุดแล้วแก้: สคริปต์ contrast สมมติ `rgb()` แต่ Chrome คืน `oklch()` ได้ ratio ปลอม 1.03 · สคริปต์เช็ค anchor อ่าน `scrollY` ก่อน smooth scroll จบ
+
+## Serena (ตั้งค่าเมื่อ 2026-07-29)
+
+ทั้งสอง repo ลงทะเบียนเป็น MCP local scope ชี้ `--project` ของตัวเอง `--context ide-assistant` · **ต้อง restart session ถึงจะใช้ได้**
+
+| | landing | BOS |
+|---|---|---|
+| ชื่อ | `sabuygo-landing` | `sabuygo-bos` |
+| index | 34 ไฟล์ | 470 ไฟล์ |
+| cache | 808 KB | 18 MB |
+
+**ข้อจำกัดที่ต้องรู้**: serena ไม่รองรับภาษา astro ไฟล์ `.astro` ทั้งหมด (ที่งานจริงอยู่) จึงไม่ถูก index เป็น symbol — บน landing ได้ประโยชน์เฉพาะ `src/scripts/`, `src/lib/`, `scripts/` ส่วน BOS ได้เต็ม
+
+`.serena/cache/` กับ `.serena/project.local.yml` ใส่ `.gitignore` แล้วทั้งสอง repo เพราะ hook `PreCompact` รัน `git add -A && git commit` บน BOS ถ้าไม่กันจะได้ commit 18 MB · `project.yml` track ไว้ให้ทีมใช้ร่วม
+
 ## ขั้นถัดไป
 
-ปิด 2 ข้อแรกข้างบนก่อน แล้วจึง `superpowers:finishing-a-development-branch` ซึ่งจะถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ
+ปิด 3 ข้อค้างของ SABUY-62 ข้างบน แล้วจึง `superpowers:finishing-a-development-branch` ซึ่งจะถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ
