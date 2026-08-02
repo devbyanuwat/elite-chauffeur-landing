@@ -176,6 +176,49 @@ commits `535c2c0` (collection+YAML) → `fed4c41` (แก้ plan เอง) →
 
 **deferred minors (ไม่ block merge)**: van.yaml `related.desc` มีวลี "เหมารถพร้อมคนขับ" (ไม่ใช่ lead — reword เป็น "เหมารถรายวันกับคนขับ" เมื่อสะดวก) · `<th/>` แรกของ price table ว่าง screen reader อ่าน header เปล่า (pattern เดียวกับ routes ที่ ship แล้ว) · glyph ✓ ใน `.hero-points li::before` ไม่มี alt-text syntax
 
+## Editions scroll story (2026-08-03)
+
+Branch `redesign/editions-scroll-v1` (จาก `cf18959`) — สร้างชุด scroll-story chapters แบบ Editions (pin 3 จุด + intro transform) ทับ hero/services/fleet/how/routes เดิม ตาม spec `.superpowers/sdd/2026-08-03-editions-scroll-story/` (spec → plan → 8 tasks) SDD loop สำเร็จครบ 8 task บน session เดียว ledger เต็มอยู่ที่ `.superpowers/sdd/2026-08-03-editions-scroll-story/progress.md`
+
+**Task-by-task (implement → review → fix rounds)**:
+- Task 1 (hero-to-services intro chapter): complete, review clean 0 findings รอบแรก — minor deferred: plan self-contradicts tag list ลำดับ (ผู้ทำตามตามคำ clarifier ถูกแล้ว)
+- Task 2 (reorder page + sticky CTA + blog teaser): complete, review clean — minor deferred: `Services.astro` กลายเป็น dead code (ลบตอน cleanup), พิจารณา shared continuous-chapter builder ถ้ามี chapter ไม่มี stage เพิ่ม
+- Task 3 (fleet 3-layer depth chapter): 1 fix round — เจอ Important 2 จุด (fleet-tabs ซ่อนผูกกับ pin-ready เดียว หลุดโชว์ pill บน desktop no-JS/reduced-motion; meta layer snap ไม่มี fromTo ตาม mockup) แก้แล้ว re-review PASS
+- Task 4 (photo-collage 3-step how chapter): 1 fix round — เจอ Important (how-cap เขียนไทยตรง ๆ ใน JS ค้างเมื่อสลับ EN) + reviewer เจอบั๊กคลาสเดียวกันใน T3 fleet chips ที่ merge ไปแล้วด้วย ตั้งกฎ **JS ห้ามเขียนข้อความไทยที่ EN toggle แก้ไม่ได้ — ต้องอ่านจาก data-i18n DOM (hidden bank pattern)** แก้ทั้งคู่ re-review PASS
+- Task 5 (routes dark scroll-driven track): complete, review clean 0 findings — ราคาสอบทานตรง source YAML ครบ
+- Task 6 (reviews seamless drift loop): 1 fix round — implementer เจอ+แก้บั๊กจริงในตรรกะ drift เอง 2 จุด (scroll-snap ปฏิเสธการเขียนนอก snap point; scrollLeft getter ปัดเศษ 0.45px ต่อ step ทำ accumulator เพี้ยน) review รอบแรก Not approved: Critical (MutationObserver เฝ้า node เดิมที่ island swap แทนที่ไปแล้ว → ไม่ทำงานเลยเมื่อ island ตอบช้า 1200ms ในโปรดักชันจริง) + Important (scrollSnapType ถูกปิดค้างตลอดชีพ, pause ไม่คืนค่า) แก้แล้ว re-review PASS พร้อมตรวจ Astro runtime source ยืนยัน — minor deferred: `.tm-cta` inline script ที่ตายแล้วใน index.astro, ข้อความ "(คำชมตัวอย่างสำหรับ mockup นี้)" มีอยู่ก่อนงานนี้แล้ว, key `tm.q/n/r` เหลือค้างใน en.json, ฟีเจอร์ per-card booking-prefill CTA หายไปจาก reviews (mockup/spec เป็น quote-only ผู้ใช้อนุมัติแล้ว — แจ้งตอนปิดงาน)
+- Task 7 (mobile motion tier): complete, review clean (Approved) — agent เอง browser-verify ไม่ได้เพราะ env chromium เต็มรูปแบบเสีย loopback-http กลางเซสชัน (ระดับเครื่อง ไม่ใช่โค้ด); ผู้ควบคุมวินิจฉัยและวัดยืนยันเองด้วย chromium_headless_shell + `[::1]` + async-IIFE (recipe ด้านล่าง) — 390: pin-spacer 0, `.hm-step` 3, sticky show กลางหน้า/hidden บนสุด, ไม่มี reveal ตกค้างยกเว้น legacy Stats + sticky เอง; 1440: pin 4, overflow 0, sticky โผล่หลัง intro pin จบ (ตรงกับ mockup)
+- Task 8 (final verification + docs): กำลังบันทึกในส่วนนี้
+
+**Verification ตัวเลขจริง (task 8, รันวันนี้)**:
+- `npm test`: 10 test files, 108 tests — ผ่านหมด
+- `npm run build`: 0 errors, 0 warnings (11 hints เดิมไม่เกี่ยวกับ branch นี้ — Turnstile CSP, inline script is:inline hint, unused Props)
+- งบ JS gzip ต่อ chunk (`dist/client/_astro/*.js`):
+  - `Base.astro..._index_0...js` 2,425 B
+  - `Base.astro..._index_1...js` 49,216 B (motion bundle)
+  - `Base.astro..._index_2...js` 459 B
+  - `Base.astro..._index_3...js` 3,669 B
+  - `contract...js` 877 B
+  - `three.module...js` 188,381 B
+  - `tiers...js` 169 B
+  - **รวม 245,196 B** ต่ำกว่าเพดาน 245,760 B (240 KiB) อยู่ 564 B — ผ่านแบบเฉียด ต้องระวังถ้ามีของเพิ่มอีก
+- Desktop 1440×900: pin-spacer 4 ตัว ลำดับ `intro → fleet → how → routes` ตรง spec; stage count `#services .svc` 4, `#fleet .rail button` 4, `#how .how-step` 3, `#routes .route-card` 4; หลัง `scrollTo(0,6000)` + รอ 1s: `.sticky-cta` มีคลาส `show`, overflow แนวนอน 0; ลำดับหน้า `reviews`(18500) < `faq`(19365) < `booking`(20096) < `blog-teaser` — blog-teaser ไม่ render ตอน build offline (blog API fetch failed ตามที่คาด ไม่ใช่บั๊ก); EN toggle sweep: หา `[data-i18n]` ที่ยังมีอักษรไทยหลังกด `button[data-lang="en"]` = 0, กด rail button เปลี่ยน fleet stage แล้วนับซ้ำ = 0 เช่นกัน
+- Mobile 390×844: pin-spacer 0, `.hm-step` 3, `.fleet-tabs` visible, `.track-clip` scrollable = true, overflow 0, sticky hidden ที่บนสุด/แสดงกลางหน้าหลัง scroll — EN toggle sweep (เปิดเมนูมือถือก่อนกด) = 0 ค้างไทย
+- Reduced motion: ตรวจแบบ static (measure script emulate ไม่ได้) — grep `src/scripts/motion/index.ts` ยืนยัน parallax/pins/editions-pins/sticky-cta/split-reveal/reveals/counts/review-drift ทั้งหมดลงทะเบียนอยู่ใน `gsap.matchMedia()` block ที่ query มี `(not (prefers-reduced-motion: reduce))` หรือ `not all and (prefers-reduced-motion: reduce)` เท่านั้น; บรรทัดเดียวที่เช็ค `matchMedia('(prefers-reduced-motion: reduce)').matches` ตรง ๆ (บรรทัด 212) คือ fallback `applyReviewArrowsOnly` ที่ตั้งใจให้รันเฉพาะตอน reduced-motion เปิด (ตรงข้ามเงื่อนไข ไม่ใช่ข้อยกเว้น)
+- SEO: `<script type="application/ld+json">` ใน `dist/client/index.html` นับด้วย `grep -o` = 5 ตรง (4 จาก Base + 1 Organization schema); meta description + og:title ยืนยันอยู่ครบ; `git diff cf18959..HEAD --stat -- public/` ว่างเปล่า — branch นี้ไม่แตะ `robots.txt`/`sitemap.xml` เลย
+
+**Deferred minors รวมทั้ง 8 task (ไม่ block merge)**:
+1. plan Step-1 tag list ขัดแย้งกับ clarifier ของตัวเอง (T1)
+2. `Services.astro` เป็น dead code รอลบตอน cleanup (T2)
+3. พิจารณา shared continuous-chapter builder ถ้ามี non-stage chapter เพิ่ม (T2)
+4. fl.cat.* keys ที่ไม่ได้ใช้แล้ว, `animate` param ที่ไม่ได้ใช้ (T3)
+5. `.tm-cta` inline script ตายแล้วใน `index.astro` (T6)
+6. ข้อความ "(คำชมตัวอย่างสำหรับ mockup นี้)" ใน `tm.sub` (มีอยู่ก่อนงานนี้แล้ว ไม่ใช่ regression) (T6)
+7. key `tm.q`/`tm.n`/`tm.r` เหลือค้างไม่ได้ใช้ใน `en.json` (T6)
+8. per-card booking-prefill CTA หายจาก reviews section (mockup/spec ตั้งใจให้เป็น quote-only cards ผู้ใช้อนุมัติแล้ว — เป็น product note ไม่ใช่บั๊ก) (T6)
+
+**หมายเหตุสภาพแวดล้อมสำหรับ session ถัดไป (สำคัญ — เบี่ยงจากนี้จะค้าง session)**: chromium เต็มรูปแบบ (playwright `chromium-*`) เสีย loopback-http บนเครื่องนี้กลางเซสชัน 2026-08-03 (ระดับเครื่อง ไม่ใช่โค้ด) ต้องใช้ `CHROME_BIN="$HOME/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell"` กับ `scripts/measure-viewport.mjs` แทน · preview server (`npm run preview`) bind แค่ IPv6 ต้องยิง `MEASURE_URL="http://[::1]:4321/..."` (`localhost` ใช้ไม่ได้กับ CDP ตรงนี้) · expression ที่มี `await` ต้องห่อ `(async()=>{ ...; return JSON.stringify(...) })()` เพราะ Runtime.evaluate ไม่รองรับ top-level await · ห้ามใช้ Playwright เต็มรูปแบบตอนนี้, ห้ามติดตั้งอะไรเพิ่ม
+
 ## ขั้นถัดไป
 
-`superpowers:finishing-a-development-branch` — ถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ (ครอบทั้ง pin+hero+segment pages)
+`superpowers:finishing-a-development-branch` — ถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ (ครอบทั้ง pin+hero+segment pages+editions scroll story)
