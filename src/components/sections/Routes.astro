@@ -1,84 +1,189 @@
 ---
+// chapter 3 · routes (ports mockups/pinned-editions.html #routes)
+// data-chapter / data-chapter-len is editions.ts's own contract — see
+// Fleet.astro's header comment for the full pin-ready/no-JS contract this
+// follows. Default (no .pin-ready — no JS, <1024px, or reduced motion)
+// renders the track as a plain horizontally-scrollable row (overflow-x:
+// auto + scroll-snap), so every card stays reachable without any JS; only
+// once .pin-ready lands does the track switch to a pinned, scrub-driven
+// horizontal scroll (buildRoutesChapter in editions.ts).
+//
+// Card data is real, pulled from the same route/airport content this same
+// site publishes on its own detail pages — never invented for this mockup
+// port:
+//   - Bangkok -> Pattaya: src/content/routes/bangkok-to-pattaya.yaml
+//     (distanceKm: 147, travelTime: "1.45", startPrice: "฿1,500")
+//   - Bangkok -> Hua Hin: src/content/routes/bangkok-to-hua-hin.yaml
+//     (distanceKm: 200, travelTime: "3.0", startPrice: "฿2,500")
+//   - Suvarnabhumi (BKK): src/content/airports/suvarnabhumi-bkk.yaml
+//     (priceLow: "1200", waitMinutes: 60)
+interface RouteCard {
+  img: string;
+  alt: string;
+  nameKey: string;
+  nameText: string;
+  metaKey: string;
+  metaText: string;
+  price: string;
+  href: string;
+  assetTodo?: string;
+}
+
+const CARDS: RouteCard[] = [
+  {
+    img: '/images/parallax/close/color.webp',
+    alt: 'เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปพัทยา',
+    nameKey: 'rt.pattaya.name',
+    nameText: 'กรุงเทพ → พัทยา',
+    metaKey: 'rt.pattaya.meta',
+    metaText: '147 กม. · ~1.45 ชม.',
+    price: '฿1,500',
+    href: '/routes/bangkok-to-pattaya/',
+  },
+  {
+    img: '/images/parallax/service/rental/color.webp',
+    alt: 'เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปหัวหิน',
+    nameKey: 'rt.huahin.name',
+    nameText: 'กรุงเทพ → หัวหิน',
+    metaKey: 'rt.huahin.meta',
+    metaText: '200 กม. · ~3 ชม.',
+    price: '฿2,500',
+    href: '/routes/bangkok-to-hua-hin/',
+    assetTodo: 'generate clean hua-hin scene via gen-media',
+  },
+  {
+    img: '/images/parallax/airport/color.webp',
+    alt: 'บริการรับส่งสนามบินสุวรรณภูมิ พร้อมคนขับ',
+    nameKey: 'rt.bkk',
+    nameText: 'สุวรรณภูมิ (BKK)',
+    metaKey: 'rt.bkk.m',
+    metaText: 'รับส่ง 24 ชม.',
+    price: '฿1,200',
+    href: '/airport-transfer/suvarnabhumi-bkk/',
+  },
+  {
+    img: '/images/parallax/hero/color.webp',
+    alt: 'เส้นทางอื่น ๆ เขาใหญ่ กาญจนบุรี อยุธยา',
+    nameKey: 'rt.other.name',
+    nameText: 'เส้นทางอื่น ๆ',
+    metaKey: 'rt.other.meta',
+    metaText: 'เขาใหญ่ · กาญจนบุรี · อยุธยา',
+    price: 'สอบถาม',
+    href: '#booking',
+  },
+];
 ---
 
-<section class="block" id="routes" data-pin="route" data-pin-length="240">
-  <div class="wrap wrap-wide">
-    <div class="section-head reveal">
-      <span class="eyebrow" data-i18n="rt.eyebrow">เส้นทางยอดนิยม</span>
-      <h2 data-i18n="rt.title">ปลายทางที่ลูกค้าเลือกบ่อย</h2>
-      <p data-i18n="rt.sub">เส้นทางในเมืองและต่างจังหวัด พร้อมคนขับที่รู้ทางเป็นอย่างดี</p>
+<section class="chapter routes-chapter" id="routes" data-chapter="routes" data-chapter-len="360">
+  <div class="routes-viewport">
+    <div class="ch-head">
+      <div>
+        <span class="ch-eyebrow" data-i18n="rt.eyebrow">เส้นทางยอดนิยม</span>
+        <h2 class="ch-title" data-i18n="rt.title">ออกจากกรุงเทพฯ ไปได้ทุกที่</h2>
+      </div>
     </div>
-    <div class="routes-grid">
-      <svg class="route-line" viewBox="0 0 1200 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <path data-draw d="M40 200 C 300 200, 340 40, 600 40 S 900 200, 1160 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-      </svg>
-      <a class="route-card reveal" data-stage="0" href="airport-transfer/suvarnabhumi-bkk/">
-        <img src="/images/service1.webp" alt="บริการรับส่งสนามบินสุวรรณภูมิ พร้อมคนขับ" width="400" height="533" loading="lazy">
-        <div class="route-body">
-          <span class="kicker" data-i18n="rt.airport">สนามบิน</span>
-          <h3 data-i18n="rt.bkk">สุวรรณภูมิ (BKK)</h3>
-          <div class="route-meta"><span data-i18n="rt.bkk.m">รับส่ง 24 ชม.</span></div>
-        </div>
-      </a>
-      <a class="route-card reveal" data-stage="1" href="routes/bangkok-to-pattaya/">
-        <img src="/images/service-business.webp" alt="เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปพัทยา" width="400" height="533" loading="lazy">
-        <div class="route-body">
-          <span class="kicker" data-i18n="rt.trip">เที่ยวต่างจังหวัด</span>
-          <h3 data-i18n="rt.pattaya">พัทยา</h3>
-          <div class="route-meta"><span>~147 กม.</span><span>~2 ชม.</span></div>
-        </div>
-      </a>
-      <a class="route-card reveal" data-stage="2" href="routes/bangkok-to-hua-hin/">
-        <img src="/images/service2.webp" alt="เช่ารถพร้อมคนขับ เส้นทางกรุงเทพฯ ไปหัวหิน" width="400" height="533" loading="lazy">
-        <div class="route-body">
-          <span class="kicker" data-i18n="rt.trip">เที่ยวต่างจังหวัด</span>
-          <h3 data-i18n="rt.huahin">หัวหิน</h3>
-          <div class="route-meta"><span>~200 กม.</span><span>~2.5 ชม.</span></div>
-        </div>
-      </a>
-      <a class="route-card reveal" data-stage="3" href="airport-transfer/don-mueang-dmk/">
-        <img src="/images/service3.webp" alt="บริการรับส่งสนามบินดอนเมือง พร้อมคนขับ" width="400" height="533" loading="lazy">
-        <div class="route-body">
-          <span class="kicker" data-i18n="rt.airport">สนามบิน</span>
-          <h3 data-i18n="rt.dmk">ดอนเมือง (DMK)</h3>
-          <div class="route-meta"><span data-i18n="rt.dmk.m">รับส่ง 24 ชม.</span></div>
-        </div>
-      </a>
+
+    <div class="track-clip">
+      <div class="track" id="route-track">
+        {CARDS.map((card) => (
+          <a class="route-card" href={card.href}>
+            {card.assetTodo && <Fragment set:html={`<!-- TODO(asset): ${card.assetTodo} -->`} />}
+            <img src={card.img} alt={card.alt} width="680" height="425" loading="lazy" />
+            <div class="veil"></div>
+            <div class="info">
+              <div>
+                <h3 data-i18n={card.nameKey}>{card.nameText}</h3>
+                <div class="m" data-i18n={card.metaKey}>{card.metaText}</div>
+              </div>
+              <b>{card.price}</b>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="routes-foot">
+      <div class="hint" data-i18n="rt.hint">เลื่อนเพื่อดูเส้นทาง</div>
+      <div class="rprog"><i id="route-prog"></i></div>
     </div>
   </div>
 </section>
 
 <style>
-  /* final-review I1 fix: this used to be an inline `style="padding-top:0"`
-     on the section, which no ordinary stylesheet selector can beat short of
-     `!important`. Moved here as a plain `#routes` rule instead — an id
-     selector already outranks the shared `section.block` class+type rule
-     below (see global.css) that sets `padding-block`, so this reproduces the
-     exact prior default (non-pinned) spacing with no specificity war. */
-  #routes {
-    padding-top: 0;
+  .routes-chapter {
+    position: relative;
+    overflow: clip;
+    background: var(--bg-dark);
+    color: oklch(94% 0.01 80);
   }
 
-  .routes-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.1rem;
+  .routes-chapter .ch-title {
+    color: oklch(97% 0.006 80);
+  }
+
+  .routes-chapter .ch-eyebrow {
+    color: var(--gold-light);
+  }
+
+  .routes-viewport {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: clamp(20px, 5vw, 32px);
+  }
+
+  .ch-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .ch-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .ch-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+    margin-top: 0.35rem;
+  }
+
+  /* base / no-JS / <1024px: a plain horizontally-scrollable row — every card
+     stays reachable without buildRoutesChapter ever attaching (matches the
+     mockup's own <1024px override, but used here as the universal default
+     so desktop-without-motion gets the same guarantee). */
+  .track-clip {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .track-clip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .track {
+    display: flex;
+    gap: clamp(1.2rem, 2.5vw, 2.2rem);
+    padding-inline: clamp(20px, 4vw, 64px);
   }
 
   .route-card {
     position: relative;
-    aspect-ratio: 3 / 4;
-    border-radius: var(--r-lg);
+    flex: 0 0 84vw;
+    scroll-snap-align: center;
+    aspect-ratio: 16 / 10;
+    border-radius: 6px;
     overflow: hidden;
-    display: flex;
-    align-items: flex-end;
-    color: #fff;
-    isolation: isolate;
-    transition: transform 0.35s var(--ease-out);
-  }
-
-  .route-card:hover {
-    transform: translateY(-5px);
+    background: #111;
+    color: inherit;
   }
 
   .route-card img {
@@ -87,144 +192,119 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -2;
-    /* unify mixed photo tones into one warm direction */
-    filter: saturate(0.95) sepia(0.1);
-    transition: transform 0.5s var(--ease-out);
-  }
-
-  .route-card:hover img {
-    transform: scale(1.06);
-  }
-
-  .route-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: linear-gradient(180deg, oklch(20% 0.02 235 / 0) 35%, oklch(18% 0.02 235 / 0.85) 100%);
-  }
-
-  .route-body {
-    padding: 1.2rem;
-  }
-
-  .route-body .kicker {
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    transform: scale(1.12);
+    will-change: transform;
     opacity: 0.85;
   }
 
-  .route-body h3 {
-    color: #fff;
-    font-size: 1.3rem;
-    margin: 0.3rem 0 0.5rem;
-  }
-
-  .route-meta {
-    display: flex;
-    gap: 0.9rem;
-    font-size: 0.78rem;
-    opacity: 0.92;
-  }
-
-  .route-meta span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  /* เส้นทางมีความหมายเฉพาะตอนที่มีอะไรมาวาดมัน จึงซ่อนเป็นค่าเริ่มต้น */
-  .route-line {
-    display: none;
-  }
-
-  /* ---- โหมด pin (desktop, motion allowed) ----
-     final-review C1 fix: same treatment as Fleet.astro — GSAP's pin freezes
-     the section's own natural height and holds it fixed at the viewport top,
-     so that natural height must fit in one viewport with margin to spare
-     (Routes measured only 13px of headroom at 1366×768 before this fix, so a
-     longer English heading could push it over). The whole pinned section is
-     forced to exactly one viewport tall and that height is distributed with
-     flexbox — padding and heading take their natural size, the grid fills
-     the rest. Unlike Fleet, the vehicle/destination photo here is already an
-     absolutely-positioned cover background inside `.route-card` (not a
-     sibling that competes for height), so the card itself can simply be
-     `height: 100%` with no separate flex child to make elastic — the image
-     crops via `object-fit: cover`, which is already how it behaves at every
-     other size. This also gives `#routes` real top clearance under the fixed
-     nav (final-review I1), applied only while pinned so the non-pinned
-     `padding-top: 0` above is untouched.
-
-     The 100vh is trimmed by an extra 50px for the same measured reason as
-     Fleet.astro's identical comment: pin.ts's crossfade `scale` (0.97 → 1 →
-     1.03 on the [data-stage] element) stacks on a translateY(24px) GSAP
-     bakes in the first time it touches `transform`, captured from
-     `.reveal`'s pre-reveal state before `legacy-reveal.ts` can add `.in`.
-     50px covers the measured ~31px worst case with margin, without touching
-     pin.ts or legacy-reveal.ts (out of scope here). */
-  #routes.pin-ready {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 50px);
-    padding-block: 0;
-  }
-
-  #routes.pin-ready .wrap {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    min-height: 0;
-    padding-top: max(84px, 6vh);
-    padding-bottom: clamp(20px, 4vh, 40px);
-  }
-
-  #routes.pin-ready .section-head {
-    flex: none;
-    margin-bottom: clamp(16px, 3vh, 32px);
-  }
-
-  #routes.pin-ready .routes-grid {
-    display: block;
-    position: relative;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  #routes.pin-ready .route-line {
-    display: block;
-    position: absolute;
-    inset: auto 0 8%;
-    width: 100%;
-    height: 30%;
-    color: color-mix(in oklab, var(--gold), transparent 45%);
-    pointer-events: none;
-  }
-
-  #routes.pin-ready .route-card {
+  .route-card .veil {
     position: absolute;
     inset: 0;
-    margin-inline: auto;
-    width: min(100%, 520px);
-    height: 100%;
-    aspect-ratio: auto;
+    background: linear-gradient(180deg, transparent 30%, oklch(15% 0.02 235 / 0.86));
   }
 
-  /* hover lift เดิมชน transform ที่ scrub คุมอยู่ */
-  #routes.pin-ready .route-card:hover {
-    transform: none;
+  .route-card .info {
+    position: absolute;
+    left: 1.4rem;
+    right: 1.4rem;
+    bottom: 1.2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  @media (max-width: 880px) {
-    .routes-grid {
-      grid-template-columns: repeat(2, 1fr);
+  .route-card .info h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+  }
+
+  .route-card .info .m {
+    font-size: 0.78rem;
+    color: oklch(80% 0.01 80);
+    margin-top: 0.25rem;
+  }
+
+  .route-card .info b {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: var(--sun);
+  }
+
+  .routes-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid oklch(35% 0.02 235);
+  }
+
+  .routes-foot .hint {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: oklch(65% 0.01 80);
+  }
+
+  .rprog {
+    width: 180px;
+    height: 1px;
+    background: oklch(35% 0.02 235);
+    position: relative;
+  }
+
+  .rprog i {
+    position: absolute;
+    inset: 0;
+    background: var(--gold-light);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* desktop default (no pin-ready): wider cards, still a plain scrollable
+     row so this is usable with JS disabled / reduced motion / <1024px gate
+     not yet firing — "nothing hidden" default the brief calls for */
+  @media (min-width: 1024px) {
+    .route-card {
+      flex: 0 0 min(58vw, 680px);
     }
   }
 
-  @media (max-width: 560px) {
-    .routes-grid {
-      grid-template-columns: 1fr;
+  /* mobile-only guard: unconditional so it holds regardless of .pin-ready
+     (fix-review precedent from Fleet.astro's finding 1 — a viewport-scoped
+     override must never depend on a JS-added class to take effect) */
+  @media (max-width: 1023.98px) {
+    .track {
+      transform: none !important;
+    }
+  }
+
+  /* ---- โหมด pin (desktop, motion allowed) ----
+     pin-ready มาจาก editions.ts เท่านั้น — layout ด้านบนยังเป็นพฤติกรรมพื้น
+     สำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
+  @media (min-width: 1024px) {
+    .routes-chapter.pin-ready {
+      height: 100vh;
+    }
+
+    .routes-chapter.pin-ready .routes-viewport {
+      height: 100%;
+      padding: clamp(16px, 3vh, 40px) clamp(20px, 4vw, 64px);
+    }
+
+    .routes-chapter.pin-ready .track-clip {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      scroll-snap-type: none;
+    }
+
+    .routes-chapter.pin-ready .route-card {
+      scroll-snap-align: none;
     }
   }
 </style>
