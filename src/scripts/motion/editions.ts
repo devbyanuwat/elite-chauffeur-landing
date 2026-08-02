@@ -277,6 +277,81 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   };
 }
 
+const HOW_STAGE_COUNT = 3;
+
+/**
+ * สูตร stage-index จาก progress สำหรับ chapter 2 (how) — ตรงกับ mockup 1:1
+ * (`Math.min(2, Math.floor(st.progress * 3))`), แยกออกมาเป็นฟังก์ชันล้วน ๆ
+ * ให้เทสต์ได้โดยไม่ต้องพึ่ง ScrollTrigger/DOM เหมือน fleetStageForProgress
+ */
+export function howStageForProgress(progress: number): number {
+  return Math.min(HOW_STAGE_COUNT - 1, Math.floor(progress * HOW_STAGE_COUNT));
+}
+
+const HOW_CAPS = ['บอกทริปของคุณ', 'รับใบเสนอราคาใน 15 นาที', 'ออกเดินทางสบายใจ'];
+
+/**
+ * chapter 2 · how (ports mockup #how's howStage()/onUpdate 1:1) — gold numeral
+ * tweens out/in on stage change, collage image .on toggles, caption text
+ * swaps, and the vertical progress line height tracks raw progress (not
+ * stage) same as the mockup's `gsap.set(howLine,{height:(st.progress*100)+'%'})`
+ */
+export function buildHowChapter(section: HTMLElement, len: number): () => void {
+  const numeral = section.querySelector<HTMLElement>('.hugely span');
+  const howLine = section.querySelector<HTMLElement>('.line');
+  const howImgs = Array.from(section.querySelectorAll<HTMLElement>('.how-media img'));
+  const howCap = section.querySelector<HTMLElement>('.how-cap');
+  const steps = Array.from(section.querySelectorAll<HTMLElement>('.how-step'));
+
+  if (!numeral || !howLine || !howCap || howImgs.length === 0 || steps.length === 0) {
+    return () => {};
+  }
+
+  // matches buildFleetChapter's convention: the Astro markup already renders
+  // stage 0 as the resting/on state, so `cur` starts at 0 with no initial
+  // howStage() call — avoids firing a pointless gsap timeline on page load
+  let cur = 0;
+
+  function howStage(i: number): void {
+    if (i === cur) return;
+    cur = i;
+
+    steps.forEach((s, j) => s.classList.toggle('on', j === i));
+    howImgs.forEach((im, j) => im.classList.toggle('on', j === i));
+    if (howCap) howCap.textContent = HOW_CAPS[i] ?? '';
+
+    gsap
+      .timeline()
+      .to(numeral, { yPercent: -24, opacity: 0, duration: 0.25, ease: 'power2.in' })
+      .add(() => {
+        if (numeral) numeral.textContent = String(i + 1);
+      })
+      .fromTo(numeral, { yPercent: 24, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out' });
+  }
+
+  const trigger = ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: `+=${len}%`,
+    pin: section,
+    pinSpacing: true,
+    anticipatePin: 1,
+    scrub: true,
+    invalidateOnRefresh: true,
+    onUpdate(st) {
+      howStage(howStageForProgress(st.progress));
+      gsap.set(howLine, { height: st.progress * 100 + '%' });
+    },
+  });
+
+  section.classList.add(PIN_READY_CLASS);
+
+  return () => {
+    trigger.kill();
+    section.classList.remove(PIN_READY_CLASS);
+  };
+}
+
 export function applyEditionsPins(root: ParentNode): () => void {
   const cleanups: Array<() => void> = [];
 
@@ -285,6 +360,8 @@ export function applyEditionsPins(root: ParentNode): () => void {
       cleanups.push(buildIntroChapter(chapter.el as HTMLElement, chapter.len));
     } else if (chapter.name === 'fleet') {
       cleanups.push(buildFleetChapter(chapter.el as HTMLElement, chapter.len));
+    } else if (chapter.name === 'how') {
+      cleanups.push(buildHowChapter(chapter.el as HTMLElement, chapter.len));
     }
   });
 

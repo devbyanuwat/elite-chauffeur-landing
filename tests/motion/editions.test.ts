@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { collectChapters, fleetStageForProgress } from '../../src/scripts/motion/editions';
+import { collectChapters, fleetStageForProgress, howStageForProgress } from '../../src/scripts/motion/editions';
 
 function root(html: string): HTMLElement {
   const host = document.createElement('div');
@@ -64,5 +64,19 @@ describe('fleetStageForProgress', () => {
     [0.99, 3],
   ])('progress %f -> stage %i', (p, expected) => {
     expect(fleetStageForProgress(p)).toBe(expected);
+  });
+});
+
+describe('howStageForProgress', () => {
+  // chapter 2 · how มี 3 stage — สูตรตรงกับ mockup ที่ ScrollTrigger.onUpdate
+  // ยิง Math.min(2, Math.floor(st.progress * 3))
+  it.each([
+    [0, 0],
+    [0.32, 0],
+    [0.34, 1],
+    [0.66, 1],
+    [0.99, 2],
+  ])('progress %f -> stage %i', (p, expected) => {
+    expect(howStageForProgress(p)).toBe(expected);
   });
 });

@@ -1,101 +1,400 @@
 ---
+// chapter 2 · how (ports mockups/pinned-editions.html #how + its separate
+// .how-mobile block). data-chapter / data-chapter-len is editions.ts's own
+// contract — separate from pin.ts's data-pin/data-stage (old attributes
+// removed here). Default (no .pin-ready — no JS, <1024px, or reduced motion)
+// renders the collage grid with step 1 already active/readable and all three
+// steps' copy fully visible; the theatrical single-active-step dimming +
+// numeral swap only exists once buildHowChapter() has attached a working
+// ScrollTrigger, same convention as IntroStory/Fleet. Below 1024px the whole
+// collage is swapped for `.how-mobile` (3 static `.hm-step` blocks — T7 adds
+// their bouncy in/out timelines, this task ships them fully visible).
+const STEPS = [
+  {
+    k: 'how.1.k',
+    kFallback: 'ขั้นที่ 1',
+    t: 'how.1.t',
+    tFallback: 'บอกทริปของคุณ',
+    d: 'how.1.d',
+    dFallback: 'กรอกจุดรับ ปลายทาง วันเวลา — ไม่ถึงนาทีก็เสร็จ ไม่ต้องสมัครสมาชิก',
+    tag: 'how.1.tag',
+    tagFallback: 'ใช้เวลาไม่ถึง 1 นาที',
+    img: '/images/parallax/hero/color.webp',
+  },
+  {
+    k: 'how.2.k',
+    kFallback: 'ขั้นที่ 2',
+    t: 'how.2.t',
+    tFallback: 'รับใบเสนอราคาใน 15 นาที',
+    d: 'how.2.d',
+    dFallback: 'ทีมงานยืนยันราคารวมทุกอย่างก่อนจอง ไม่มีบวกเพิ่มหน้างาน',
+    tag: 'how.2.tag',
+    tagFallback: 'ราคาล็อกตั้งแต่จอง',
+    img: '/images/parallax/airport/color.webp',
+  },
+  {
+    k: 'how.3.k',
+    kFallback: 'ขั้นที่ 3',
+    t: 'how.3.t',
+    tFallback: 'ออกเดินทางสบายใจ',
+    d: 'how.3.d',
+    dFallback: 'คนขับมารับตรงเวลา ติดตามการเดินทางได้ พักผ่อนได้เต็มที่ตลอดทาง',
+    tag: 'how.3.tag',
+    tagFallback: 'ตรงเวลา · มีประกันทุกคัน',
+    img: '/images/parallax/trust/color.webp',
+  },
+];
 ---
 
-<section class="block" id="how" data-pin="how" data-pin-length="180">
-  <div class="wrap">
-    <div class="section-head center reveal">
-      <span class="eyebrow" data-i18n="hw.eyebrow">ขั้นตอนง่าย ๆ</span>
-      <h2 data-i18n="hw.title">จองรถได้ใน 3 ขั้นตอน</h2>
+<section class="chapter how-chapter" id="how" data-chapter="how" data-chapter-len="300">
+  <div class="how-viewport">
+    <div class="ch-head">
+      <div>
+        <span class="ch-eyebrow" data-i18n="how.eyebrow">ขั้นตอนง่าย ๆ</span>
+        <h2 class="ch-title" data-i18n="how.title">จองรถได้ใน 3 ขั้นตอน</h2>
+      </div>
     </div>
-    <div class="steps">
-      <div class="step reveal" data-stage="0">
-        <h3 data-i18n="hw.1.t">บอกความต้องการ</h3>
-        <p data-i18n="hw.1.d">เลือกประเภทรถ ระบุจุดรับ–ปลายทาง วันเวลา แล้วส่งคำขอราคา หรือทักผ่าน LINE ได้เลย</p>
+
+    <div class="how-grid">
+      <div class="hugely">
+        <div class="how-media">
+          {STEPS.map((s, i) => (
+            <img src={s.img} alt="" class={i === 0 ? 'on' : ''} />
+          ))}
+          <div class="tone"></div>
+          {/* JS-driven caption, same convention as Fleet's ghost/name/chips —
+              buildHowChapter() overwrites this textContent directly from a
+              hardcoded Thai HOW_CAPS array on every stage change, so it
+              intentionally carries no data-i18n key (would be clobbered back
+              to Thai on the next scroll tick regardless of language toggle) */}
+          <div class="how-cap">{STEPS[0].tFallback}</div>
+        </div>
+        <span>1</span>
       </div>
-      <div class="step reveal" data-stage="1">
-        <h3 data-i18n="hw.2.t">รับราคาชัดเจน</h3>
-        <p data-i18n="hw.2.d">ทีมงานยืนยันราคาแบบคงที่ ไม่มีบวกเพิ่มทีหลัง พร้อมรายละเอียดรถและคนขับ</p>
+
+      <div class="how-steps">
+        <div class="line"></div>
+        {STEPS.map((s, i) => (
+          <div class={i === 0 ? 'how-step on' : 'how-step'}>
+            <div class="k" data-i18n={s.k}>{s.kFallback}</div>
+            <h3 data-i18n={s.t}>{s.tFallback}</h3>
+            <p data-i18n={s.d}>{s.dFallback}</p>
+            <span class="t" data-i18n={s.tag}>{s.tagFallback}</span>
+          </div>
+        ))}
       </div>
-      <div class="step reveal" data-stage="2">
-        <h3 data-i18n="hw.3.t">ออกเดินทางสบายใจ</h3>
-        <p data-i18n="hw.3.d">คนขับมารับตรงเวลา ติดตามการเดินทางได้ พักผ่อนได้เต็มที่ตลอดทาง</p>
-      </div>
+    </div>
+
+    <!-- mobile only: one block per step, image + copy travel together
+         (static in this task — T7 wires the in/out scroll timelines) -->
+    <div class="how-mobile">
+      {STEPS.map((s, i) => (
+        <div class="hm-step">
+          <div class="hm-media">
+            <img src={s.img} alt="" />
+            <span class="hm-n">{i + 1}</span>
+          </div>
+          <div class="hm-body">
+            <div class="k" data-i18n={s.k}>{s.kFallback}</div>
+            <h3 data-i18n={s.t}>{s.tFallback}</h3>
+            <p data-i18n={s.d}>{s.dFallback}</p>
+            <span class="t" data-i18n={s.tag}>{s.tagFallback}</span>
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </section>
 
 <style>
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    counter-reset: step;
-  }
-
-  .step {
+  /* ================= default (no-JS / <1024 / reduced-motion): everything readable ================= */
+  .how-chapter {
     position: relative;
-    padding: 2rem 1.5rem 1.7rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
+    overflow: clip;
+    background: var(--bg-secondary);
   }
 
-  .step::before {
-    counter-increment: step;
-    content: "0" counter(step);
-    font-family: var(--font-display);
-    font-size: 2.4rem;
+  .how-viewport {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: clamp(20px, 5vw, 32px);
+  }
+
+  .ch-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .ch-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
     font-weight: 600;
-    color: var(--gold);
-    opacity: 0.65;
-    line-height: 1;
-    display: block;
-    margin-bottom: 0.9rem;
   }
 
-  .step h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+  .ch-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+    margin-top: 0.35rem;
   }
 
-  .step p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+  .how-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    align-items: center;
+    gap: clamp(2rem, 6vw, 6rem);
   }
 
-  /* ---- โหมด pin (desktop, motion allowed) ---- */
-  .pin-ready .steps {
-    display: block;
+  /* collage: photo card + solid numeral overlapping it */
+  .hugely {
     position: relative;
-    min-height: 46vh;
+    height: min(56vh, 520px);
   }
 
-  .pin-ready .step {
+  .how-media {
+    position: absolute;
+    inset: 0 8% 6% 0;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    box-shadow: 0 30px 60px oklch(24% 0.02 60 / 0.18);
+    background: #111;
+  }
+
+  /* the two alternate step photos are decorative crossfade targets for the
+     desktop scroll narrative — step 1's photo already carries the meaningful
+     image, so hiding these by default (no JS) loses nothing, same convention
+     as IntroStory's .svc-img */
+  .how-media img {
     position: absolute;
     inset: 0;
-    margin: auto;
-    width: min(100%, 620px);
-    height: fit-content;
-    padding: 2.6rem 2.4rem 2.4rem;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.08);
+    transition: opacity 0.6s, transform 0.8s;
   }
 
-  /* ตัวเลขขั้นตอนคือพระเอกของท่อนนี้ ขยายให้อ่านได้จากระยะไกล */
-  .pin-ready .step::before {
-    font-size: 4.2rem;
-    opacity: 0.8;
+  .how-media img.on {
+    opacity: 1;
+    transform: scale(1);
   }
 
-  .pin-ready .step h3 {
-    font-size: 1.55rem;
+  .how-media .tone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, transparent 45%, oklch(20% 0.022 235 / 0.42));
   }
 
-  .pin-ready .step p {
-    font-size: 1rem;
+  .hugely span {
+    position: absolute;
+    right: -2%;
+    bottom: -8%;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(9rem, 30vh, 17rem);
+    line-height: 0.8;
+    color: var(--gold);
+    text-shadow: 0 18px 40px oklch(24% 0.02 60 / 0.25);
   }
 
-  @media (max-width: 880px) {
-    .steps {
-      grid-template-columns: 1fr;
+  .how-cap {
+    position: absolute;
+    left: 1.2rem;
+    bottom: 1rem;
+    color: oklch(96% 0.006 80);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  .how-steps {
+    display: grid;
+    gap: 0;
+    position: relative;
+  }
+
+  .how-steps::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .how-steps .line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    background: var(--gold);
+    height: 0;
+  }
+
+  .how-step {
+    padding: 1.4rem 0 1.4rem 1.8rem;
+    opacity: 1;
+  }
+
+  .how-step h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    transition: font-size 0.35s;
+  }
+
+  .how-step.on h3 {
+    font-size: 1.5rem;
+  }
+
+  .how-step p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 44ch;
+  }
+
+  .how-step .k {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dark);
+    font-weight: 600;
+  }
+
+  .how-step .t {
+    display: inline-block;
+    margin-top: 0.55rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--gold-dark);
+    background: var(--gold-wash);
+    border-radius: var(--r-pill);
+    padding: 0.28rem 0.7rem;
+  }
+
+  /* ================= mobile-only step blocks (static this task) ================= */
+  .how-mobile {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .how-grid {
+      display: none;
+    }
+
+    .how-mobile {
+      display: grid;
+      gap: 3.5rem;
+      padding: 1rem 0 2rem;
+    }
+
+    .hm-step {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .hm-media {
+      position: relative;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      box-shadow: 0 18px 40px oklch(24% 0.02 60 / 0.16);
+    }
+
+    .hm-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hm-media .hm-n {
+      position: absolute;
+      right: 0.6rem;
+      bottom: -1.2rem;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 5.5rem;
+      line-height: 0.8;
+      color: var(--gold);
+      text-shadow: 0 10px 24px oklch(24% 0.02 60 / 0.3);
+    }
+
+    .hm-body .k {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--gold-dark);
+      font-weight: 600;
+    }
+
+    .hm-body h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0.3rem 0 0.4rem;
+    }
+
+    .hm-body p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .hm-body .t {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      background: var(--gold-wash);
+      border-radius: var(--r-pill);
+      padding: 0.28rem 0.7rem;
+    }
+  }
+
+  /* ---- โหมด pin (desktop, motion allowed): theatrical single-active-step ----
+     pin-ready มาจาก editions.ts เท่านั้น ดังนั้น layout ด้านบนยังเป็น
+     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน (no-JS, <1024, reduced-motion) */
+  @media (min-width: 1024px) {
+    .how-chapter.pin-ready {
+      height: 100vh;
+    }
+
+    .how-chapter.pin-ready .how-viewport {
+      height: 100%;
+      padding: clamp(16px, 3vh, 40px) clamp(20px, 4vw, 64px);
+      justify-content: center;
+    }
+
+    .how-chapter.pin-ready .how-grid {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .how-chapter.pin-ready .how-step {
+      opacity: 0.3;
+      transition: opacity 0.4s;
+    }
+
+    .how-chapter.pin-ready .how-step.on {
+      opacity: 1;
+    }
+
+    .how-chapter.pin-ready .how-step .t {
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .how-chapter.pin-ready .how-step.on .t {
+      opacity: 1;
     }
   }
 </style>
