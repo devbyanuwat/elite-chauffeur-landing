@@ -128,12 +128,150 @@ export function buildIntroChapter(section: HTMLElement, len: number): () => void
   };
 }
 
+interface FleetCar {
+  ghost: string;
+  name: string;
+  price: string;
+  chips: string[];
+  img: string;
+  alt: string;
+  vtype: string;
+}
+
+const FLEET_STAGE_COUNT = 4;
+
+/**
+ * สูตร stage-index จาก progress สำหรับ chapter 1 (fleet) — ตรงกับ mockup 1:1
+ * (`Math.min(3, Math.floor(st.progress * 4))`), แยกออกมาเป็นฟังก์ชันล้วน ๆ
+ * ให้เทสต์ได้โดยไม่ต้องพึ่ง ScrollTrigger/DOM
+ */
+export function fleetStageForProgress(progress: number): number {
+  return Math.min(FLEET_STAGE_COUNT - 1, Math.floor(progress * FLEET_STAGE_COUNT));
+}
+
+function readFleetCars(section: HTMLElement): FleetCar[] {
+  const raw = section.querySelector<HTMLScriptElement>('#fleet-data')?.textContent ?? '';
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as FleetCar[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * chapter 1 · fleet (ports mockup #fleet's fleetStage()/onUpdate 1:1)
+ * ghost word + car image + meta (name/chips/price/CTA) สลับพร้อมกันเป็นชุด
+ * ทุกครั้งที่ stage เปลี่ยน ทิศทาง exit/enter ขึ้นกับว่า stage ใหม่มากกว่าเก่า
+ * หรือน้อยกว่า (เดินหน้า/ถอยหลัง) เหมือน mockup's `dir` — ไม่มี retrigger ซ้ำ
+ * stage เดิม (เทียบ fleetCur ก่อนเสมอ) เหมือน svcStage/fleetStage ใน mockup
+ */
+export function buildFleetChapter(section: HTMLElement, len: number): () => void {
+  const cars = readFleetCars(section);
+  const ghostSpanEl = section.querySelector<HTMLElement>('.ghost span');
+  const carImgEl = section.querySelector<HTMLImageElement>('.car-layer img');
+  const nameElEl = section.querySelector<HTMLElement>('.fleet-meta .name');
+  const chipsElEl = section.querySelector<HTMLElement>('.fleet-meta .chips');
+  const priceElEl = section.querySelector<HTMLElement>('.fleet-meta .price b');
+  const pickBtn = section.querySelector<HTMLElement>('.pick');
+  const countEl = section.querySelector<HTMLElement>('.fleet-count');
+  const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+
+  if (cars.length === 0 || !ghostSpanEl || !carImgEl || !nameElEl || !chipsElEl || !priceElEl) {
+    return () => {};
+  }
+
+  // จับหลัง guard ให้ TS มองเป็น non-null ได้แม้ถูกอ้างจาก closure ซ้อนใน (การ
+  // narrow ของ TS ไม่ตกทอดเข้า nested function เดิม เพราะ struct นั้นถือว่า
+  // ตัวแปรอาจถูก reassign ได้ก่อนเรียก)
+  const ghostSpan: HTMLElement = ghostSpanEl;
+  const carImg: HTMLImageElement = carImgEl;
+  const nameEl: HTMLElement = nameElEl;
+  const chipsEl: HTMLElement = chipsElEl;
+  const priceEl: HTMLElement = priceElEl;
+
+  let cur = 0;
+
+  function renderStage(i: number, dir: 1 | -1, animate: boolean): void {
+    const car = cars[i];
+
+    railButtons.forEach((b, j) => b.classList.toggle('on', j === i));
+    if (countEl) countEl.textContent = `0${i + 1} / 0${cars.length}`;
+
+    function applyContent(): void {
+      ghostSpan.textContent = car.ghost;
+      carImg.src = car.img;
+      carImg.alt = car.alt;
+      nameEl.textContent = car.name;
+      priceEl.textContent = car.price;
+      chipsEl.innerHTML = car.chips.map((chip) => `<span class="chip">${chip}</span>`).join('');
+      if (pickBtn) pickBtn.dataset.vtype = car.vtype;
+    }
+
+    if (!animate) {
+      applyContent();
+      return;
+    }
+
+    gsap
+      .timeline()
+      .to(ghostSpan, { xPercent: -14 * dir, opacity: 0, duration: 0.28, ease: 'power2.in' }, 0)
+      .to(carImg, { xPercent: -30 * dir, opacity: 0, scale: 0.94, duration: 0.3, ease: 'power2.in' }, 0)
+      .add(applyContent)
+      .fromTo(ghostSpan, { xPercent: 14 * dir, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out' })
+      .fromTo(
+        carImg,
+        { xPercent: 30 * dir, opacity: 0, scale: 0.96 },
+        { xPercent: 0, opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' },
+        '<.05'
+      );
+  }
+
+  function fleetStage(i: number, animate = true): void {
+    if (i === cur && animate) return;
+    const dir: 1 | -1 = i >= cur ? 1 : -1;
+    cur = i;
+    renderStage(i, dir, animate);
+  }
+
+  const trigger = ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: `+=${len}%`,
+    pin: section,
+    pinSpacing: true,
+    anticipatePin: 1,
+    scrub: true,
+    invalidateOnRefresh: true,
+    onUpdate(st) {
+      fleetStage(fleetStageForProgress(st.progress));
+    },
+  });
+
+  railButtons.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const y = sectionTop + ((i + 0.5) / FLEET_STAGE_COUNT) * (len / 100) * window.innerHeight;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+  });
+
+  section.classList.add(PIN_READY_CLASS);
+
+  return () => {
+    trigger.kill();
+    section.classList.remove(PIN_READY_CLASS);
+  };
+}
+
 export function applyEditionsPins(root: ParentNode): () => void {
   const cleanups: Array<() => void> = [];
 
   collectChapters(root).forEach((chapter) => {
     if (chapter.name === 'intro') {
       cleanups.push(buildIntroChapter(chapter.el as HTMLElement, chapter.len));
+    } else if (chapter.name === 'fleet') {
+      cleanups.push(buildFleetChapter(chapter.el as HTMLElement, chapter.len));
     }
   });
 

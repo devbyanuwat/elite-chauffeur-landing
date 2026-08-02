@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { collectChapters } from '../../src/scripts/motion/editions';
+import { collectChapters, fleetStageForProgress } from '../../src/scripts/motion/editions';
 
 function root(html: string): HTMLElement {
   const host = document.createElement('div');
@@ -50,5 +50,19 @@ describe('collectChapters', () => {
     `);
     const chapters = collectChapters(doc);
     expect(chapters.map((c) => c.name)).toEqual(['intro', 'fleet']);
+  });
+});
+
+describe('fleetStageForProgress', () => {
+  // chapter 1 · fleet มี 4 stage (CARS.length === 4) — สูตรตรงกับ mockup ที่
+  // ScrollTrigger.onUpdate ยิง Math.min(3, Math.floor(st.progress * 4))
+  it.each([
+    [0, 0],
+    [0.24, 0],
+    [0.26, 1],
+    [0.5, 2],
+    [0.99, 3],
+  ])('progress %f -> stage %i', (p, expected) => {
+    expect(fleetStageForProgress(p)).toBe(expected);
   });
 });

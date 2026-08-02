@@ -1,391 +1,407 @@
 ---
+// chapter 1 · fleet (ports mockups/pinned-editions.html #fleet)
+// data-chapter / data-chapter-len is editions.ts's own contract — separate
+// from pin.ts's data-pin/data-stage. Default (no .pin-ready — no JS, <1024px,
+// or reduced motion) renders as a plain block layout with the Alphard card
+// (stage 0) fully visible; ghost word + car image only overlap absolutely
+// once .pin-ready is present, same as the mockup's base (non-media) rules.
+//
+// vtype MUST be a key of the verified VT_API map in BookingForm.astro
+// ('sedan' | 'suv' | 'premium' | 'any') — Alphard -> premium,
+// Fortuner/Xpander -> suv, Altis -> sedan.
+interface Car {
+  ghost: string;
+  name: string;
+  price: string;
+  chips: string[];
+  img: string;
+  alt: string;
+  vtype: 'sedan' | 'suv' | 'premium';
+}
+
+const CARS: Car[] = [
+  {
+    ghost: 'ALPHARD',
+    name: 'Toyota Alphard',
+    price: '฿1,000',
+    chips: ['7 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน', 'VIP'],
+    img: '/images/car2.webp',
+    alt: 'Toyota Alphard',
+    vtype: 'premium',
+  },
+  {
+    ghost: 'FORTUNER',
+    name: 'Toyota Fortuner',
+    price: '฿500',
+    chips: ['7 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน'],
+    img: '/images/car3.webp',
+    alt: 'Toyota Fortuner Legender',
+    vtype: 'suv',
+  },
+  {
+    ghost: 'XPANDER',
+    name: 'Mitsubishi Xpander',
+    price: '฿450',
+    chips: ['7 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน'],
+    img: '/images/car1.webp',
+    alt: 'Mitsubishi Xpander Cross',
+    vtype: 'suv',
+  },
+  {
+    ghost: 'ALTIS',
+    name: 'Toyota Corolla Altis',
+    price: '฿400',
+    chips: ['4 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน'],
+    img: '/images/car4.webp',
+    alt: 'Toyota Corolla Altis',
+    vtype: 'sedan',
+  },
+];
+
+const first = CARS[0];
 ---
 
-<section class="block fleet-section" id="fleet" data-pin="fleet" data-pin-length="240">
-  <div class="wrap wrap-wide">
-    <div class="section-head center reveal">
-      <span class="eyebrow" data-i18n="fl.eyebrow">รถของเรา</span>
-      <h2 data-i18n="fl.title">เลือกรถที่ใช่ สำหรับทุกการเดินทาง</h2>
-      <p data-i18n="fl.sub">รถใหม่ ดูแลสะอาด ประกันเต็มทุกคัน ราคาเริ่มต้นโปร่งใส</p>
+<section class="chapter fleet-chapter" id="fleet" data-chapter="fleet" data-chapter-len="380">
+  <div class="fleet-viewport">
+    <div class="ch-head">
+      <div>
+        <span class="ch-eyebrow" data-i18n="fl.eyebrow">รถของเรา</span>
+        <h2 class="ch-title" data-i18n="fl.title">เลือกรถที่ใช่ สำหรับทุกการเดินทาง</h2>
+      </div>
+      <div class="ch-eyebrow fleet-count">01 / 0{CARS.length}</div>
     </div>
-    <div class="fleet-grid">
-      <article class="fleet-card featured reveal" data-stage="0">
-        <div class="fleet-stage">
-          <span class="fleet-tag" data-i18n="fl.cat.vip">VIP</span>
-          <span class="fleet-flag" data-i18n="fl.popular">ยอดนิยม</span>
-          <img class="fleet-img" src="/images/car2.webp" alt="Toyota Alphard" width="600" height="375" loading="lazy">
-        </div>
-        <div class="fleet-body">
-          <h3>Toyota Alphard</h3>
-          <div class="fleet-specs">
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>7&nbsp;<span data-i18n="fl.seat">ที่นั่ง</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M12 3.5v6M5.2 18.2l4.3-3M18.8 18.2l-4.3-3"/></svg><span data-i18n="fl.auto">เกียร์ออโต้</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="fl.insured">ประกันเต็มคัน</span></span>
-          </div>
-          <div class="fleet-foot">
-            <div class="fleet-price"><small data-i18n="fl.from">เริ่มต้น</small><b>฿1,000</b><small data-i18n="fl.day">/วัน</small></div>
-            <button class="fleet-book" data-vtype="premium"><span data-i18n="fl.book">เลือกคันนี้</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-          </div>
-        </div>
-      </article>
-      <article class="fleet-card reveal" data-stage="1">
-        <div class="fleet-stage">
-          <span class="fleet-tag" data-i18n="fl.cat.suv">SUV</span>
-          <img class="fleet-img" src="/images/car3.webp" alt="Toyota Fortuner Legender" width="600" height="375" loading="lazy">
-        </div>
-        <div class="fleet-body">
-          <h3>Toyota Fortuner</h3>
-          <div class="fleet-specs">
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>7&nbsp;<span data-i18n="fl.seat">ที่นั่ง</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M12 3.5v6M5.2 18.2l4.3-3M18.8 18.2l-4.3-3"/></svg><span data-i18n="fl.auto">เกียร์ออโต้</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="fl.insured">ประกันเต็มคัน</span></span>
-          </div>
-          <div class="fleet-foot">
-            <div class="fleet-price"><small data-i18n="fl.from">เริ่มต้น</small><b>฿500</b><small data-i18n="fl.day">/วัน</small></div>
-            <button class="fleet-book" data-vtype="suv"><span data-i18n="fl.book">เลือกคันนี้</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-          </div>
-        </div>
-      </article>
-      <article class="fleet-card reveal" data-stage="2">
-        <div class="fleet-stage">
-          <span class="fleet-tag" data-i18n="fl.cat.family">ครอบครัว</span>
-          <img class="fleet-img" src="/images/car1.webp" alt="Mitsubishi Xpander Cross" width="600" height="375" loading="lazy">
-        </div>
-        <div class="fleet-body">
-          <h3>Mitsubishi Xpander</h3>
-          <div class="fleet-specs">
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>7&nbsp;<span data-i18n="fl.seat">ที่นั่ง</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M12 3.5v6M5.2 18.2l4.3-3M18.8 18.2l-4.3-3"/></svg><span data-i18n="fl.auto">เกียร์ออโต้</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="fl.insured">ประกันเต็มคัน</span></span>
-          </div>
-          <div class="fleet-foot">
-            <div class="fleet-price"><small data-i18n="fl.from">เริ่มต้น</small><b>฿450</b><small data-i18n="fl.day">/วัน</small></div>
-            <button class="fleet-book" data-vtype="suv"><span data-i18n="fl.book">เลือกคันนี้</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-          </div>
-        </div>
-      </article>
-      <article class="fleet-card reveal" data-stage="3">
-        <div class="fleet-stage">
-          <span class="fleet-tag" data-i18n="fl.cat.eco">ประหยัด</span>
-          <img class="fleet-img" src="/images/car4.webp" alt="Toyota Corolla Altis" width="600" height="375" loading="lazy">
-        </div>
-        <div class="fleet-body">
-          <h3>Toyota Corolla Altis</h3>
-          <div class="fleet-specs">
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>4&nbsp;<span data-i18n="fl.seat">ที่นั่ง</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M12 3.5v6M5.2 18.2l4.3-3M18.8 18.2l-4.3-3"/></svg><span data-i18n="fl.auto">เกียร์ออโต้</span></span>
-            <span class="fleet-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="fl.insured">ประกันเต็มคัน</span></span>
-          </div>
-          <div class="fleet-foot">
-            <div class="fleet-price"><small data-i18n="fl.from">เริ่มต้น</small><b>฿400</b><small data-i18n="fl.day">/วัน</small></div>
-            <button class="fleet-book" data-vtype="sedan"><span data-i18n="fl.book">เลือกคันนี้</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-          </div>
-        </div>
-      </article>
+
+    <nav class="rail" aria-hidden="true">
+      {CARS.map((c, i) => (
+        <button type="button" class={i === 0 ? 'on' : ''}>
+          <span class="idx">0{i + 1}</span><span class="bar"><i></i></span><span class="lbl">{c.ghost}</span>
+        </button>
+      ))}
+    </nav>
+
+    <div class="fleet-stagewrap">
+      <div class="ghost"><span>{first.ghost}</span></div>
+      <div class="car-layer">
+        <img src={first.img} alt={first.alt} width="600" height="375" loading="eager" />
+      </div>
     </div>
+
+    <div class="fleet-tabs">
+      {CARS.map((_c, i) => (
+        <button type="button" class={i === 0 ? 'on' : ''} aria-label={`รถคันที่ ${i + 1}`}>{i + 1}</button>
+      ))}
+    </div>
+
+    <div class="fleet-meta">
+      <div>
+        <div class="name">{first.name}</div>
+        <div class="chips">
+          {first.chips.map((chip) => <span class="chip">{chip}</span>)}
+        </div>
+      </div>
+      <div class="price">
+        <small data-i18n="fl.from">เริ่มต้น</small><br />
+        <b>{first.price}</b><small data-i18n="fl.day">/วัน</small>
+        <div>
+          <button type="button" class="pick" data-vtype={first.vtype}>
+            <span data-i18n="fl.book">เลือกคันนี้</span> →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="application/json" id="fleet-data" set:html={JSON.stringify(CARS)} />
   </div>
 </section>
 
 <style>
-  .fleet-section {
-    background: var(--bg-secondary);
-  }
-
-  .fleet-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-  }
-
-  .fleet-card {
+  .fleet-chapter {
     position: relative;
+    overflow: clip;
+    background:
+      radial-gradient(120% 100% at 70% 30%, oklch(99% 0.004 90), transparent 60%),
+      var(--bg-secondary);
+  }
+
+  .fleet-viewport {
     display: flex;
     flex-direction: column;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    overflow: hidden;
-    transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.3s;
+    gap: 1.2rem;
+    padding: clamp(20px, 5vw, 32px);
   }
 
-  .fleet-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .fleet-card.featured {
-    border-color: color-mix(in oklab, var(--gold), transparent 50%);
-  }
-
-  .fleet-stage {
-    position: relative;
-    aspect-ratio: 5 / 4;
-    display: grid;
-    place-items: center;
-    padding: 1.5rem 1.1rem 1.1rem;
-    background: radial-gradient(120% 92% at 50% 26%, oklch(99.5% 0.003 90) 0%, var(--bg-secondary) 78%);
-    overflow: hidden;
-  }
-
-  .fleet-stage::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 15%;
-    width: 68%;
-    height: 14px;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse at center, oklch(24% 0.02 60 / 0.26), transparent 70%);
-    filter: blur(4px);
-    transition: width 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
-    z-index: 0;
-  }
-
-  .fleet-card:hover .fleet-stage::after {
-    width: 78%;
-    opacity: 0.75;
-  }
-
-  .fleet-img {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.45s var(--ease-out);
-  }
-
-  .fleet-card:hover .fleet-img {
-    transform: translateY(-6px) scale(1.04);
-  }
-
-  .fleet-tag {
-    position: absolute;
-    top: 0.9rem;
-    left: 0.9rem;
-    z-index: 2;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 0.28rem 0.62rem;
-    border-radius: var(--r-pill);
-    background: var(--bg-card);
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-  }
-
-  .fleet-flag {
-    position: absolute;
-    top: 0.9rem;
-    right: 0.9rem;
-    z-index: 2;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    padding: 0.28rem 0.62rem;
-    border-radius: var(--r-pill);
-    background: var(--sun);
-    color: var(--bg-dark);
-  }
-
-  .fleet-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.15rem 1.3rem 1.4rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .fleet-body h3 {
-    font-size: 1.15rem;
-    margin: 0;
-  }
-
-  .fleet-specs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .fleet-spec {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.73rem;
-    color: var(--text-secondary);
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: var(--r-pill);
-    padding: 0.22rem 0.55rem;
-  }
-
-  .fleet-spec svg {
-    width: 13px;
-    height: 13px;
-    flex-shrink: 0;
-    color: var(--text-tertiary);
-  }
-
-  .fleet-foot {
-    margin-top: auto;
-    padding-top: 0.95rem;
-    border-top: 1px dashed var(--border);
-  }
-
-  .fleet-price {
+  .ch-head {
     display: flex;
     align-items: baseline;
-    gap: 0.35rem;
-    margin-bottom: 0.9rem;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
   }
 
-  .fleet-price small {
+  .ch-eyebrow {
     font-size: 0.72rem;
-    color: var(--text-tertiary);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
   }
 
-  .fleet-price b {
+  .ch-title {
     font-family: var(--font-display);
-    font-size: 1.55rem;
-    font-weight: 600;
-    color: var(--gold-dark);
+    font-weight: 300;
+    font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+    margin-top: 0.35rem;
   }
 
-  .fleet-book {
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    font-family: var(--font);
-    font-size: 0.86rem;
-    font-weight: 600;
-    color: var(--gold-dark);
-    background: var(--gold-wash);
-    border: 1.5px solid transparent;
-    border-radius: var(--r-pill);
-    padding: 0.72rem 1rem;
+  .fleet-count {
+    white-space: nowrap;
+  }
+
+  /* left rail — Editions-style chapter progress; scroll-jump only works once
+     buildFleetChapter() has attached click handlers, but showing it inert is
+     harmless (matches the mockup, which never gates its visibility on JS) */
+  .rail {
+    position: absolute;
+    left: clamp(20px, 4vw, 64px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    z-index: 5;
+  }
+
+  .rail button {
+    all: unset;
     cursor: pointer;
-    transition: background 0.25s, color 0.25s, transform 0.2s;
-  }
-
-  .fleet-book svg {
-    width: 15px;
-    height: 15px;
-    transition: transform 0.25s var(--ease-out);
-  }
-
-  .fleet-book:hover {
-    background: var(--gold-dark);
-    color: #fff;
-    transform: translateY(-1px);
-  }
-
-  .fleet-book:hover svg {
-    transform: translateX(3px);
-  }
-
-  .fleet-book:active {
-    transform: translateY(0) scale(0.985);
-    transition-duration: 0.1s;
-  }
-
-  /* ---- โหมด pin (desktop, motion allowed) ----
-     pin-ready มาจาก pin.ts เท่านั้น ดังนั้น grid 4 คอลัมน์ด้านบนยังเป็น
-     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน
-
-     final-review C1 fix: GSAP's pin freezes the *section*'s own natural
-     (pre-pin) height and holds it fixed at the viewport top for the whole
-     scroll-driven sequence — anything below that frozen height is
-     unreachable, because the section itself owns the scroll, not its
-     content. The old rule sized the image with a fixed aspect-ratio
-     (5/4 at up to 560px wide = 448px) and let the card be as tall as
-     fit-content demanded, with no tie to the viewport that has to hold it.
-     Below, the whole pinned section is exactly one viewport tall and that
-     height is distributed with flexbox: padding and the heading claim their
-     own natural size first, the card fills what's left, and *inside* the
-     card the image (.fleet-stage) is the flexible remainder while the
-     price/CTA (.fleet-body) keep their natural, unshrunk size. A longer
-     heading (e.g. an English line-wrap) only leaves less room for the
-     image — it can never push the total past 100vh.
-
-     The 100vh is trimmed by an extra 50px, not just a rounding hair: measured
-     in a real browser, the active/incoming stage's own crossfade transform
-     (pin.ts tweens `scale` 0.97 → 1 → 1.03 on the [data-stage] element itself)
-     stacks on top of a translateY(24px) that GSAP bakes in permanently the
-     first time it touches `transform` — captured from `.reveal`'s pre-reveal
-     CSS state (motion.css) at the moment `gsap.set()` first runs, before
-     `legacy-reveal.ts`'s IntersectionObserver has necessarily added `.in`.
-     Measured effect at 1366×768: the incoming stage's rendered bottom edge
-     sits ~31px below the plain flex-computed grid bottom (16.6px from the
-     scale-1.03 growth being centered outward, 24px from the baked-in
-     translate). 50px covers that with margin, at every stage, without
-     touching pin.ts or legacy-reveal.ts (out of scope here). */
-  .fleet-section.pin-ready {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding-block: 0;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--text-tertiary);
+    transition: color 0.3s;
   }
 
-  .fleet-section.pin-ready .wrap {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    min-height: 0;
-    /* top clearance must beat the fixed nav (72px max) with room to spare;
-       bottom padding includes 50px safety margin for pinned transform overshoot
-       plus 20-40px cosmetic breathing room */
-    padding-top: max(84px, 6vh);
-    padding-bottom: calc(50px + clamp(20px, 4vh, 40px));
+  .rail .idx {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-style: italic;
   }
 
-  .fleet-section.pin-ready .section-head {
-    flex: none;
-    margin-bottom: clamp(16px, 3vh, 32px);
-  }
-
-  .fleet-section.pin-ready .fleet-grid {
-    display: block;
+  .rail .bar {
+    width: 26px;
+    height: 1px;
+    background: var(--border);
     position: relative;
-    flex: 1 1 auto;
-    min-height: 0;
+    overflow: hidden;
   }
 
-  .fleet-section.pin-ready .fleet-card {
+  .rail .bar i {
     position: absolute;
     inset: 0;
-    margin-inline: auto;
-    width: min(100%, 560px);
-    height: 100%;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* the vehicle image is the elastic part — price/CTA below never shrink */
-  .fleet-section.pin-ready .fleet-stage {
-    aspect-ratio: auto;
-    flex: 1 1 auto;
-    min-height: 72px;
+  .rail button.on {
+    color: var(--text-primary);
   }
 
-  .fleet-section.pin-ready .fleet-body {
-    flex: none;
+  .rail button.on .bar i {
+    transform: scaleX(1);
   }
 
-  /* hover lift เดิมชน transform ที่ scrub คุมอยู่ ตัดทิ้งเฉพาะโหมดนี้ */
-  .fleet-section.pin-ready .fleet-card:hover {
+  .rail .lbl {
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: 0.35s;
+  }
+
+  .rail button.on .lbl {
+    opacity: 1;
     transform: none;
   }
 
-  @media (max-width: 880px) {
-    .fleet-grid {
-      grid-template-columns: repeat(2, 1fr);
+  /* ghost word + car image overlap by design at every breakpoint (matches the
+     mockup's base, non-media .ghost/.car-layer rules) — the giant ghost word
+     sits behind, the car photo paints over it because it comes later in the
+     DOM. This is also the complete no-JS/stage-0 default. */
+  .fleet-stagewrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 44svh;
+  }
+
+  .ghost {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .ghost span {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(3.6rem, 16vw, 6rem);
+    letter-spacing: 0.02em;
+    color: oklch(90% 0.03 60 / 0.55);
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .car-layer {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .car-layer img {
+    width: 88vw;
+    max-height: 38svh;
+    object-fit: contain;
+    filter: drop-shadow(0 30px 40px oklch(24% 0.02 60 / 0.18));
+  }
+
+  /* mobile-only numbered tabs — tap to swap car; wired by this component's
+     own plain-JS script below (buildFleetChapter never runs <1024px) */
+  .fleet-tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 0 0.2rem;
+  }
+
+  .fleet-tabs button {
+    all: unset;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill);
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .fleet-tabs button.on {
+    color: var(--gold-dark);
+    border-color: var(--gold);
+  }
+
+  .fleet-meta {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.1rem;
+  }
+
+  .fleet-meta .name {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: 400;
+  }
+
+  .chips {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    font-size: 0.72rem;
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill);
+    padding: 0.3rem 0.7rem;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+  }
+
+  .price small {
+    color: var(--text-tertiary);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+
+  .price b {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+    font-weight: 400;
+    color: var(--gold-dark);
+  }
+
+  .pick {
+    all: unset;
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+    cursor: pointer;
+  }
+
+  /* rail is Editions-only chrome — the mockup itself hides it below 1024px */
+  @media (max-width: 1023px) {
+    .rail {
+      display: none;
     }
   }
 
-  @media (max-width: 560px) {
-    .fleet-grid {
-      grid-template-columns: 1fr;
+  /* ---- โหมด pin (desktop, motion allowed) ----
+     pin-ready มาจาก editions.ts เท่านั้น ดังนั้น layout ด้านบนยังเป็น
+     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
+  @media (min-width: 1024px) {
+    .fleet-chapter.pin-ready {
+      height: 100vh;
+    }
+
+    .fleet-chapter.pin-ready .fleet-viewport {
+      height: 100%;
+      padding: clamp(16px, 3vh, 40px) clamp(20px, 4vw, 64px);
+    }
+
+    .fleet-chapter.pin-ready .fleet-stagewrap {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .fleet-chapter.pin-ready .car-layer img {
+      width: min(62vw, 860px);
+      max-height: 52vh;
+    }
+
+    .fleet-chapter.pin-ready .ghost span {
+      font-size: clamp(6rem, 17vw, 15rem);
+    }
+
+    .fleet-chapter.pin-ready .fleet-tabs {
+      display: none;
+    }
+
+    .fleet-chapter.pin-ready .fleet-meta {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .fleet-chapter.pin-ready .price {
+      text-align: right;
     }
   }
 </style>
@@ -394,6 +410,61 @@
   (function () {
     'use strict';
 
+    /* ---------- Fleet mobile tabs -> stage swap (plain JS, no GSAP) ----------
+       buildFleetChapter() in editions.ts only ever attaches under the
+       (min-width: 1024px) and not-reduced-motion matchMedia gate (see
+       src/scripts/motion/index.ts), so <1024px needs its own, independent
+       tap-to-swap wiring — same data source (#fleet-data), same DOM targets,
+       just a plain crossfade via a CSS transition instead of a GSAP timeline. */
+    var section = document.getElementById('fleet');
+    if (!section) return;
+
+    var dataEl = document.getElementById('fleet-data');
+    var cars: { ghost: string; name: string; price: string; chips: string[]; img: string; alt: string; vtype: string }[] = [];
+    try {
+      var parsed = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+      if (Array.isArray(parsed)) cars = parsed;
+    } catch (err) {
+      cars = [];
+    }
+
+    var ghostSpan = section.querySelector('.ghost span');
+    var carImg = section.querySelector('.car-layer img') as HTMLImageElement | null;
+    var nameEl = section.querySelector('.fleet-meta .name');
+    var chipsEl = section.querySelector('.fleet-meta .chips');
+    var priceEl = section.querySelector('.fleet-meta .price b');
+    var pickBtn = section.querySelector('.pick') as HTMLElement | null;
+    var countEl = section.querySelector('.fleet-count');
+    var tabButtons = section.querySelectorAll('.fleet-tabs button');
+
+    function applyStage(i: number) {
+      var car = cars[i];
+      if (!car || !ghostSpan || !carImg || !nameEl || !chipsEl || !priceEl) return;
+
+      ghostSpan.textContent = car.ghost;
+      carImg.src = car.img;
+      carImg.alt = car.alt;
+      nameEl.textContent = car.name;
+      priceEl.textContent = car.price;
+      chipsEl.innerHTML = car.chips
+        .map(function (chip: string) {
+          return '<span class="chip">' + chip + '</span>';
+        })
+        .join('');
+      if (pickBtn) pickBtn.setAttribute('data-vtype', car.vtype);
+      if (countEl) countEl.textContent = '0' + (i + 1) + ' / 0' + cars.length;
+
+      tabButtons.forEach(function (b, j) {
+        b.classList.toggle('on', j === i);
+      });
+    }
+
+    tabButtons.forEach(function (btn, i) {
+      btn.addEventListener('click', function () {
+        applyStage(i);
+      });
+    });
+
     /* ---------- Fleet "choose this car" -> prefill + scroll ----------
        Live behaviour called selectVtype() directly (single-file script scope).
        Here that function lives inside ServiceTabs.astro's own scoped <script>
@@ -401,10 +472,13 @@
        through the same shared DOM ids (.vtype-chip / #vehicleType) instead —
        the "shared DOM ids" integration point established in BookingForm.astro
        (Task 5). This reproduces selectVtype()'s exact DOM effect (chip active
-       state + hidden input value) before scrolling to #booking. */
-    document.querySelectorAll('.fleet-book').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var value = (btn as HTMLElement).dataset.vtype || 'any';
+       state + hidden input value) before scrolling to #booking. The vtype read
+       here is always the *currently displayed* car's — desktop's
+       buildFleetChapter() and the mobile tabs above both keep .pick's
+       data-vtype in sync with whichever stage is on screen. */
+    if (pickBtn) {
+      pickBtn.addEventListener('click', function () {
+        var value = pickBtn!.getAttribute('data-vtype') || 'any';
         var chips = document.querySelectorAll('.vtype-chip');
         var vtypeInput = document.getElementById('vehicleType') as HTMLInputElement | null;
         chips.forEach(function (c) {
@@ -422,6 +496,6 @@
         var pickup = document.getElementById('b_pickup') as HTMLInputElement | null;
         if (pickup) pickup.focus();
       });
-    });
+    }
   })();
 </script>
