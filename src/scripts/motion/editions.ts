@@ -213,6 +213,13 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
       return;
     }
 
+    // fix-review finding 2: meta (name + price block) is the mockup's third,
+    // fastest-arriving layer — ghost slowest, car mid, meta last-in. Without
+    // this the name/chips/price snapped in instantly while ghost/car tweened.
+    const metaTargets = [nameEl.parentElement, priceEl.closest('.price')].filter(
+      (el): el is HTMLElement => el !== null
+    );
+
     gsap
       .timeline()
       .to(ghostSpan, { xPercent: -14 * dir, opacity: 0, duration: 0.28, ease: 'power2.in' }, 0)
@@ -224,6 +231,12 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
         { xPercent: 30 * dir, opacity: 0, scale: 0.96 },
         { xPercent: 0, opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' },
         '<.05'
+      )
+      .fromTo(
+        metaTargets,
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' },
+        '<.1'
       );
   }
 

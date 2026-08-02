@@ -362,6 +362,18 @@ const first = CARS[0];
     }
   }
 
+  /* fix-review finding 1: the mobile numbered tabs must disappear at >=1024px
+     unconditionally — not only once buildFleetChapter() attaches .pin-ready.
+     Gating this on .pin-ready left the pills visible on desktop whenever JS
+     never runs (prefers-reduced-motion, JS disabled, or the matchMedia gate
+     in motion/index.ts simply hasn't fired yet), same failure mode the
+     mockup avoids by hiding `.fleet-tabs` unconditionally above 1023px. */
+  @media (min-width: 1024px) {
+    .fleet-tabs {
+      display: none;
+    }
+  }
+
   /* ---- โหมด pin (desktop, motion allowed) ----
      pin-ready มาจาก editions.ts เท่านั้น ดังนั้น layout ด้านบนยังเป็น
      พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
@@ -387,10 +399,6 @@ const first = CARS[0];
 
     .fleet-chapter.pin-ready .ghost span {
       font-size: clamp(6rem, 17vw, 15rem);
-    }
-
-    .fleet-chapter.pin-ready .fleet-tabs {
-      display: none;
     }
 
     .fleet-chapter.pin-ready .fleet-meta {
