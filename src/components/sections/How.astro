@@ -62,12 +62,16 @@ const STEPS = [
             <img src={s.img} alt="" class={i === 0 ? 'on' : ''} />
           ))}
           <div class="tone"></div>
-          {/* JS-driven caption, same convention as Fleet's ghost/name/chips —
-              buildHowChapter() overwrites this textContent directly from a
-              hardcoded Thai HOW_CAPS array on every stage change, so it
-              intentionally carries no data-i18n key (would be clobbered back
-              to Thai on the next scroll tick regardless of language toggle) */}
-          <div class="how-cap">{STEPS[0].tFallback}</div>
+          {/* fix-review M1: this initial caption mirrors step 1's h3 (same
+              key, how.1.t) so the EN toggle localizes it before any scroll —
+              i18n.ts queries every [data-i18n] element, so two elements
+              sharing one key is fine, both get the same localized string.
+              buildHowChapter()'s stage-change handler continues to own this
+              element afterward by reading the *live* (already-localized) h3
+              textContent of the newly active step, so it stays in sync with
+              whichever language is active regardless of when the toggle
+              happened relative to the scroll. */}
+          <div class="how-cap" data-i18n="how.1.t">{STEPS[0].tFallback}</div>
         </div>
         <span>1</span>
       </div>

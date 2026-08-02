@@ -66,6 +66,19 @@ export function buildIntroChapter(section: HTMLElement, len: number): () => void
   // อย่าสร้าง ScrollTrigger เปล่า ๆ ที่ pin จอค้างไว้โดยไม่มีอะไรให้เล่า
   if (!photo || !heroImg || !veil || !heroCopy || !servicesEl) return () => {};
 
+  // fix-review I2: this chapter's own gsap.context — tweens created from
+  // inside onUpdate (fired async on scroll, long after this builder's own
+  // call frame returns) are NOT captured by gsap.matchMedia's context, which
+  // only auto-tracks animations created synchronously while its mm.add()
+  // callback is executing. Wrapping the onUpdate body via ctx.add() makes
+  // every later invocation register its gsap.set/gsap.to calls onto this
+  // context, so ctx.revert() in the returned cleanup actually clears the
+  // inline styles they left — otherwise a resize across the 1024px
+  // breakpoint (mm.add's own revert path) leaves stale absolute-position
+  // styles baked in from the last onUpdate frame, corrupting the mobile
+  // stacked layout underneath.
+  const ctx = gsap.context(() => {}, section);
+
   let svcCur = -1;
 
   function svcStage(index: number): void {
@@ -86,6 +99,30 @@ export function buildIntroChapter(section: HTMLElement, len: number): () => void
     else gsap.to(heroImg, { opacity: 1, duration: 0.4 });
   }
 
+  const onUpdate = ctx.add('onUpdate', (st: ScrollTrigger) => {
+    const p = st.progress;
+    const t = gsap.utils.clamp(0, 1, p / 0.28);
+    const e = gsap.parseEase('power2.inOut')(t);
+
+    gsap.set(photo, {
+      top: e * 8 + '%',
+      bottom: e * 8 + '%',
+      left: e * 52 + '%',
+      right: e * 5 + '%',
+      borderRadius: e * 6 + 'px',
+      position: 'absolute',
+    });
+    gsap.set(veil, { opacity: 1 - e });
+    gsap.set(heroCopy, { opacity: 1 - Math.min(1, t * 1.6), y: -40 * e, xPercent: e * 20 });
+    gsap.set(servicesEl, { opacity: gsap.utils.clamp(0, 1, (t - 0.45) / 0.4), x: (1 - e) * -40 });
+
+    if (t < 1) {
+      svcStage(-1);
+    } else {
+      svcStage(Math.min(3, Math.floor((p - 0.3) / (0.7 / 4))));
+    }
+  }) as (st: ScrollTrigger) => void;
+
   const trigger = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
@@ -95,35 +132,14 @@ export function buildIntroChapter(section: HTMLElement, len: number): () => void
     anticipatePin: 1,
     scrub: true,
     invalidateOnRefresh: true,
-    onUpdate(st) {
-      const p = st.progress;
-      const t = gsap.utils.clamp(0, 1, p / 0.28);
-      const e = gsap.parseEase('power2.inOut')(t);
-
-      gsap.set(photo, {
-        top: e * 8 + '%',
-        bottom: e * 8 + '%',
-        left: e * 52 + '%',
-        right: e * 5 + '%',
-        borderRadius: e * 6 + 'px',
-        position: 'absolute',
-      });
-      gsap.set(veil, { opacity: 1 - e });
-      gsap.set(heroCopy, { opacity: 1 - Math.min(1, t * 1.6), y: -40 * e, xPercent: e * 20 });
-      gsap.set(servicesEl, { opacity: gsap.utils.clamp(0, 1, (t - 0.45) / 0.4), x: (1 - e) * -40 });
-
-      if (t < 1) {
-        svcStage(-1);
-      } else {
-        svcStage(Math.min(3, Math.floor((p - 0.3) / (0.7 / 4))));
-      }
-    },
+    onUpdate,
   });
 
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
     trigger.kill();
+    ctx.revert();
     section.classList.remove(PIN_READY_CLASS);
   };
 }
@@ -189,9 +205,14 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   const chipsEl: HTMLElement = chipsElEl;
   const priceEl: HTMLElement = priceElEl;
 
+  // fix-review I2: see buildIntroChapter's comment — same reasoning applies
+  // here, renderStage's timeline is created from onUpdate (async), so it
+  // needs its own context to be revert-able on cleanup.
+  const ctx = gsap.context(() => {}, section);
+
   let cur = 0;
 
-  function renderStage(i: number, dir: 1 | -1, animate: boolean): void {
+  const renderStage = ctx.add('renderStage', (i: number, dir: 1 | -1, animate: boolean): void => {
     const car = cars[i];
 
     railButtons.forEach((b, j) => b.classList.toggle('on', j === i));
@@ -244,7 +265,7 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
         { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' },
         '<.1'
       );
-  }
+  }) as (i: number, dir: 1 | -1, animate: boolean) => void;
 
   function fleetStage(i: number, animate = true): void {
     if (i === cur && animate) return;
@@ -267,18 +288,35 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
     },
   });
 
-  railButtons.forEach((btn, i) => {
-    btn.addEventListener('click', () => {
-      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-      const y = sectionTop + ((i + 0.5) / FLEET_STAGE_COUNT) * (len / 100) * window.innerHeight;
+  // fix-review I1: this used to compute
+  // `section.getBoundingClientRect().top + window.scrollY`, which — while the
+  // section is pinned — always equals the CURRENT scroll position (rect.top
+  // is pinned at ~0), so every click just scrolled some fixed amount
+  // *forward* from wherever the user already was, making backward nav (e.g.
+  // clicking rail 01 from stage 03) land past stage 01 instead of on it.
+  // Read the target scroll position from the ScrollTrigger instance's own
+  // (start, end) range instead — those are absolute document-scroll values
+  // that don't shift while pinned, so this works the same regardless of
+  // current scroll position or direction.
+  const railHandlers = railButtons.map((btn, i) => {
+    const handler = () => {
+      const y = trigger.start + ((i + 0.5) / FLEET_STAGE_COUNT) * (trigger.end - trigger.start);
       window.scrollTo({ top: y, behavior: 'smooth' });
-    });
+    };
+    btn.addEventListener('click', handler);
+    return handler;
   });
 
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
     trigger.kill();
+    ctx.revert();
+    // fix-review I3: remove the rail click listeners on cleanup — without
+    // this, tearing down/rebuilding this chapter (matchMedia revert on a
+    // breakpoint cross, or the mobile<->desktop tier flip) piled up duplicate
+    // listeners on the same buttons every time.
+    railButtons.forEach((btn, i) => btn.removeEventListener('click', railHandlers[i]));
     section.classList.remove(PIN_READY_CLASS);
   };
 }
@@ -316,7 +354,13 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
   // howStage() call — avoids firing a pointless gsap timeline on page load
   let cur = 0;
 
-  function howStage(i: number): void {
+  // fix-review I2: see buildIntroChapter's comment — howStage's timeline and
+  // the onUpdate's own gsap.set(howLine, ...) both fire from onUpdate
+  // (async), so both need to run inside this chapter's own context to be
+  // revert-able on cleanup.
+  const ctx = gsap.context(() => {}, section);
+
+  const howStage = ctx.add('howStage', (i: number): void => {
     if (i === cur) return;
     cur = i;
 
@@ -336,7 +380,12 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
         if (numeral) numeral.textContent = String(i + 1);
       })
       .fromTo(numeral, { yPercent: 24, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out' });
-  }
+  }) as (i: number) => void;
+
+  const onUpdate = ctx.add('onUpdate', (st: ScrollTrigger) => {
+    howStage(howStageForProgress(st.progress));
+    gsap.set(howLine, { height: st.progress * 100 + '%' });
+  }) as (st: ScrollTrigger) => void;
 
   const trigger = ScrollTrigger.create({
     trigger: section,
@@ -347,16 +396,14 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
     anticipatePin: 1,
     scrub: true,
     invalidateOnRefresh: true,
-    onUpdate(st) {
-      howStage(howStageForProgress(st.progress));
-      gsap.set(howLine, { height: st.progress * 100 + '%' });
-    },
+    onUpdate,
   });
 
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
     trigger.kill();
+    ctx.revert();
     section.classList.remove(PIN_READY_CLASS);
   };
 }
@@ -377,6 +424,27 @@ export function buildRoutesChapter(section: HTMLElement, len: number): () => voi
 
   if (!trackClip || !track || cards.length === 0) return () => {};
 
+  // fix-review I2: see buildIntroChapter's comment — this onUpdate's own
+  // gsap.set calls (track x, progress bar scaleX, per-card parallax) need to
+  // be revert-able on cleanup, same reasoning as every other chapter here.
+  const ctx = gsap.context(() => {}, section);
+
+  const onUpdate = ctx.add('onUpdate', (st: ScrollTrigger) => {
+    const max = track.scrollWidth - trackClip.clientWidth + 64;
+    gsap.set(track, { x: -st.progress * max });
+    if (prog) gsap.set(prog, { scaleX: st.progress });
+
+    // inner-image parallax: each photo drifts against the track, based on
+    // how far its card's center sits from the viewport center (mockup 1:1)
+    cards.forEach((card) => {
+      const r = card.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const p = (r.left + r.width / 2 - vw / 2) / vw;
+      const img = card.querySelector<HTMLElement>('img');
+      if (img) gsap.set(img, { xPercent: p * 10 });
+    });
+  }) as (st: ScrollTrigger) => void;
+
   const trigger = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
@@ -386,27 +454,14 @@ export function buildRoutesChapter(section: HTMLElement, len: number): () => voi
     anticipatePin: 1,
     scrub: true,
     invalidateOnRefresh: true,
-    onUpdate(st) {
-      const max = track.scrollWidth - trackClip.clientWidth + 64;
-      gsap.set(track, { x: -st.progress * max });
-      if (prog) gsap.set(prog, { scaleX: st.progress });
-
-      // inner-image parallax: each photo drifts against the track, based on
-      // how far its card's center sits from the viewport center (mockup 1:1)
-      cards.forEach((card) => {
-        const r = card.getBoundingClientRect();
-        const vw = window.innerWidth;
-        const p = (r.left + r.width / 2 - vw / 2) / vw;
-        const img = card.querySelector<HTMLElement>('img');
-        if (img) gsap.set(img, { xPercent: p * 10 });
-      });
-    },
+    onUpdate,
   });
 
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
     trigger.kill();
+    ctx.revert();
     section.classList.remove(PIN_READY_CLASS);
   };
 }
