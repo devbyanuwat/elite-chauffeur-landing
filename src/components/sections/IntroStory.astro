@@ -1,0 +1,278 @@
+---
+---
+
+<!-- chapter 0 · hero → services transform (ports mockups/pinned-editions.html #intro)
+     id="services" kept so Nav.astro's existing /#services anchor still lands here.
+     data-chapter / data-chapter-len is editions.ts's own contract (separate from
+     pin.ts's data-pin/data-stage — this chapter's timeline is a single continuous
+     transform, not a stage-swap sequence). Default (no .pin-ready — no JS, <1024px,
+     or reduced motion) renders as a plain stacked layout with the photo, headline
+     and all 4 services fully visible; the absolute Editions-style overlay only
+     exists once buildIntroChapter() has actually attached a working ScrollTrigger. -->
+<section class="chapter intro-chapter" id="services" data-chapter="intro" data-chapter-len="420">
+  <div class="intro-viewport">
+    <div class="intro-photo">
+      <img class="intro-photo-img" src="/images/hero-bg.travelv1-baseline.webp" alt="" width="1920" height="1080" loading="lazy">
+      <img class="svc-img" data-svc="0" src="/images/parallax/airport/color.webp" alt="">
+      <img class="svc-img" data-svc="1" src="/images/parallax/service/rental/color.webp" alt="">
+      <img class="svc-img" data-svc="2" src="/images/service-van-hero.webp" alt="">
+      <img class="svc-img" data-svc="3" src="/images/parallax/service/business/color.webp" alt="">
+      <div class="intro-veil"></div>
+    </div>
+
+    <div class="intro-hero-copy">
+      <h1><span data-i18n="intro.h1a">เดินทาง</span> <em class="u" data-i18n="intro.h1b">สบาย ๆ</em> <span data-i18n="intro.h1c">กับคนขับ</span> <em class="g" data-i18n="intro.h1d">มืออาชีพ</em></h1>
+      <p data-i18n="intro.lead">บริการของ SABUYGO — scroll เพื่อดู</p>
+    </div>
+
+    <div class="intro-services">
+      <div class="ch-eyebrow" data-i18n="intro.eyebrow">บริการของเรา</div>
+
+      <a class="svc" data-i="0" href="/airport-transfer/suvarnabhumi-bkk/">
+        <span class="n">01</span>
+        <span class="svc-body">
+          <span class="svc-h" data-i18n="intro.1.t">รับส่งสนามบิน</span>
+          <span class="svc-p" data-i18n="intro.1.d">ราคาล็อกตั้งแต่จอง ไม่มี surge ดึกแค่ไหนก็ราคาเดิม</span>
+        </span>
+      </a>
+      <a class="svc" data-i="1" href="/charter/">
+        <span class="n">02</span>
+        <span class="svc-body">
+          <span class="svc-h" data-i18n="intro.2.t">เหมารถเที่ยวรายวัน</span>
+          <span class="svc-p" data-i18n="intro.2.d">เที่ยวต่างจังหวัดโดยไม่ต้องขับเอง แวะได้ตามแผนของคุณ</span>
+        </span>
+      </a>
+      <a class="svc" data-i="2" href="/van/">
+        <span class="n">03</span>
+        <span class="svc-body">
+          <span class="svc-h" data-i18n="intro.3.t">เหมารถตู้พร้อมคนขับ</span>
+          <span class="svc-p" data-i18n="intro.3.d">เดินทางเป็นกลุ่มแบบหมดกังวล รถมีประกันครบทุกคัน</span>
+        </span>
+      </a>
+      <a class="svc" data-i="3" href="#booking">
+        <span class="n">04</span>
+        <span class="svc-body">
+          <span class="svc-h" data-i18n="intro.4.t">องค์กร &amp; ผู้บริหาร</span>
+          <span class="svc-p" data-i18n="intro.4.d">มาตรฐานที่ฝากแขกคนสำคัญได้ ออกใบกำกับภาษีได้</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ================= default (no-JS / <1024 / reduced-motion): plain stack, everything visible ================= */
+  .intro-chapter {
+    position: relative;
+    overflow: clip;
+    background: var(--bg-primary);
+  }
+
+  .intro-viewport {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(20px, 5vw, 32px);
+  }
+
+  .intro-photo {
+    position: relative;
+    height: 46svh;
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+
+  .intro-photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 30% 35%;
+  }
+
+  /* the four alternate service photos are purely decorative crossfade targets
+     for the desktop scroll transform — the base photo above already carries
+     the meaningful image, so hiding these by default (no JS) loses nothing */
+  .intro-photo .svc-img {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+
+  .intro-veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, oklch(20% 0.022 235 / 0.55));
+  }
+
+  .intro-hero-copy {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    top: 46svh;
+    transform: translateY(calc(-100% - 1.1rem));
+    max-width: none;
+    z-index: 2;
+  }
+
+  .intro-hero-copy h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 7.5vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.15;
+    color: #fff;
+    text-shadow: 0 2px 18px oklch(20% 0.02 235 / 0.55);
+  }
+
+  .intro-hero-copy h1 .u {
+    font-style: normal;
+    background: linear-gradient(transparent 62%, var(--sun) 62% 90%, transparent 90%);
+  }
+
+  .intro-hero-copy h1 .g {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold-light);
+  }
+
+  .intro-hero-copy p {
+    margin-top: 1rem;
+    color: oklch(94% 0.01 80);
+  }
+
+  .intro-services {
+    padding: 2rem 1.25rem 0;
+    opacity: 1;
+  }
+
+  .ch-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+
+  .svc {
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.05rem 0;
+    border-top: 1px solid var(--border);
+    color: inherit;
+    text-decoration: none;
+    opacity: 1;
+    transition: opacity 0.35s;
+  }
+
+  .svc:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .svc .n {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--gold-dark);
+    min-width: 2ch;
+  }
+
+  .svc-h {
+    display: block;
+    font-size: 1.08rem;
+    font-weight: 600;
+  }
+
+  .svc-p {
+    display: block;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    max-width: 40ch;
+  }
+
+  /* ================= >=1024px, motion allowed: Editions overlay ================= */
+  @media (min-width: 1024px) {
+    .intro-chapter.pin-ready {
+      height: 100vh;
+    }
+
+    .intro-chapter.pin-ready .intro-viewport {
+      height: 100%;
+      padding: 0;
+    }
+
+    .intro-chapter.pin-ready .intro-photo {
+      position: absolute;
+      inset: 0;
+      height: auto;
+      border-radius: 0;
+      z-index: 1;
+      will-change: transform;
+    }
+
+    /* editions.ts's buildIntroChapter drives top/bottom/left/right/border-radius
+       via gsap.set on scroll — this is only the resting (progress 0) box */
+    .intro-chapter.pin-ready .intro-veil {
+      background: linear-gradient(102deg, transparent 0 42%, oklch(98% 0.008 75 / 0.5) 62%, oklch(98% 0.008 75 / 0.85) 100%);
+    }
+
+    .intro-chapter.pin-ready .intro-hero-copy {
+      left: auto;
+      right: clamp(24px, 6vw, 90px);
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+      max-width: 520px;
+      text-align: left;
+    }
+
+    .intro-chapter.pin-ready .intro-hero-copy h1 {
+      font-size: clamp(2.4rem, 4.6vw, 4.2rem);
+      color: var(--text-primary);
+      text-shadow: none;
+    }
+
+    .intro-chapter.pin-ready .intro-hero-copy h1 .g {
+      color: var(--gold-dark);
+    }
+
+    .intro-chapter.pin-ready .intro-hero-copy p {
+      color: var(--text-secondary);
+    }
+
+    .intro-chapter.pin-ready .intro-services {
+      position: absolute;
+      left: clamp(24px, 6vw, 90px);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      width: min(40vw, 480px);
+      padding: 0;
+      /* opacity/x driven by gsap.set from progress .45 onward — this is just
+         the resting value before the first onUpdate frame runs */
+      opacity: 0;
+    }
+
+    .intro-chapter.pin-ready .svc {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .intro-chapter.pin-ready .svc.on {
+      opacity: 1;
+    }
+
+    .intro-chapter.pin-ready .svc-p {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s, max-height 0.4s;
+    }
+
+    .intro-chapter.pin-ready .svc.on .svc-p {
+      opacity: 1;
+      max-height: 4em;
+    }
+  }
+</style>
