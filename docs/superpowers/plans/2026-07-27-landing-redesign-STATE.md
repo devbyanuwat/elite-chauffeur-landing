@@ -222,3 +222,17 @@ Branch `redesign/editions-scroll-v1` (จาก `cf18959`) — สร้าง�
 ## ขั้นถัดไป
 
 `superpowers:finishing-a-development-branch` — ถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ (ครอบทั้ง pin+hero+segment pages+editions scroll story)
+
+### ปิดท้าย editions scroll story (2026-08-03 หลัง T8)
+
+- final whole-branch review (fable) ตีกลับ Not ready 4 blocker: ภาพแท็กซี่ต้องห้ามหลุดเข้า IntroStory ตาม mockup (spec เตือนไว้แล้วก็ยังหลุด), rail jump คำนวณจาก getBoundingClientRect ระหว่าง pin (ย้อนกลับไม่ได้เลย — reproduce ในเบราว์เซอร์), inline style ไม่ revert ตอนสลับ tier ข้าม 1024px (iPad หมุนจอ = layout พัง), copy "(คำชมตัวอย่างสำหรับ mockup นี้)" ค้างทับรีวิวจริง (ของเก่าตั้งแต่ v2)
+- fix wave เดียว `cdea72f` เก็บครบ + gsap.context ทุก builder + ลบ orphan i18n keys 28 ตัว — re-review PASS ยืนยันถึงระดับอ่าน source GSAP
+- สถานะสุดท้าย: 115 เทสต์ · build สะอาด · งบ JS 244,889/245,760 (เหลือ 871B — three.js กิน 77% ของงบ) · **Ready to merge**
+- deferred ไม่ block: ลบ Services.astro ตาย, ลบ script .tm-cta ตาย, mobile fleet tab เป็น crossfade ไม่ใช่สไลด์เต็ม (spec-letter miss ยอมรับแล้ว), duplication applyStage/applyContent, drift ไม่ลบ clone ตอน stop, blog teaser ต้อง verify ตอน build ที่ต่อ BOS ได้ (offline = section หายเงียบ)
+- environment เครื่องนี้ (2026-08-03): chromium ตัวเต็มเสีย loopback-http กลางเซสชัน — ใช้ chromium_headless_shell-1208 + MEASURE_URL http://[::1]:4321/ + expression ห่อ (async()=>{...})()
+
+## ขั้นถัดไป (รวมทุก branch)
+
+1. redesign/editions-scroll-v1 (ต่อยอดจาก parallax-v1) — Ready ทั้งสาย: pin+hero เดิม + segment pages + editions story
+2. merge รอคำตอบ base branch (main หรือ dev) จากคุณอนุวัชร — คำถามเดิมที่ค้างอยู่
+3. หลัง deploy: ตรวจ blog teaser บน build ที่ต่อ BOS + วัด Lighthouse จริง
