@@ -207,21 +207,21 @@ bodyI18n:
 Same structure. Copy notes that differ:
 
 ```yaml
-title: "เหมารถพร้อมคนขับ รายวัน เที่ยวต่างจังหวัด ราคาชัดเจน | SABUYGO"
-description: "เหมารถเก๋ง SUV พร้อมคนขับมืออาชีพ เที่ยวต่างจังหวัดหรือเหมาวันในเมือง รถมีประกัน ราคาแจ้งชัดก่อนจอง ไม่มี surge ไม่มีบวกหน้างาน"
+title: "เหมารถเที่ยวรายวัน รถเช่าพร้อมคนขับมืออาชีพ ราคาชัดเจน | SABUYGO"
+description: "เหมารถเก๋ง SUV กับคนขับมืออาชีพ เที่ยวต่างจังหวัดหรือเหมาวันในเมือง รถมีประกัน ราคาแจ้งชัดก่อนจอง ไม่มี surge ไม่มีบวกหน้างาน"
 canonical: "https://sabuygo.com/charter/"
 keywords: "เหมารถ, รถเช่าพร้อมคนขับ, เหมารถเที่ยว, เหมารถรายวัน, เหมารถไปต่างจังหวัด"
-ogTitle: "เหมารถพร้อมคนขับ — เที่ยวสบาย ราคาชัดตั้งแต่จอง"
+ogTitle: "เหมารถเที่ยวกับคนขับมืออาชีพ — ราคาชัดตั้งแต่จอง"
 ogDescription: "เหมารถรายวันกับคนขับมืออาชีพ รถมีประกัน แจ้งราคาก่อนจองทุกครั้ง"
-serviceName: "เหมารถพร้อมคนขับรายวัน (Daily Car Charter)"
+serviceName: "เหมารถรายวันกับคนขับ (Daily Car Charter)"
 serviceDescription: "บริการเหมารถเก๋งและ SUV พร้อมคนขับมืออาชีพ รายวันและรายเที่ยว กรุงเทพฯ และต่างจังหวัด"
 serviceType: "Daily Car Charter with Driver"
 areaServed: ["Bangkok", "Pattaya", "Hua Hin", "Khao Yai", "Kanchanaburi", "Ayutthaya"]
-breadcrumbName: "เหมารถพร้อมคนขับ"
-heroHeadingHtml: "เหมารถพร้อมคนขับ<br>เที่ยวสบาย ราคาชัดตั้งแต่จอง"
+breadcrumbName: "เหมารถเที่ยวรายวัน"
+heroHeadingHtml: "เหมารถกับคนขับมืออาชีพ<br>เที่ยวสบาย ราคาชัดตั้งแต่จอง"
 heroSub: "อยากเที่ยวโดยไม่ต้องขับเอง — คนขับมืออาชีพชำนาญเส้นทาง รถมีประกันครบ ราคาเหมารวมแจ้งก่อนจอง แวะได้ตามแผนของคุณ"
-priceHeading: "ราคาเหมาวันตามปลายทางยอดนิยม"
-priceDesc: "ตัวอย่างราคา day-trip ปลายทางยอดนิยม — เส้นทางอื่นสอบถามได้ ทีมงานยืนยันราคาก่อนจองทุกครั้ง"
+priceHeading: "ราคาเริ่มต้นรายเที่ยว (one-way) ปลายทางยอดนิยม"
+priceDesc: "ตารางนี้คือราคา one-way ขั้นต่ำตามปลายทาง — เหมาวัน ไป-กลับ หรือค้างคืน ทีมงานแจ้งราคารวมก่อนจองทุกครั้ง"
 priceCols: ["Sedan · 3 ที่นั่ง", "SUV / MPV · 6 ที่นั่ง", "VAN · 6 ที่นั่ง"]
 priceColKeys: ["price.col.sedan", "price.col.suv", "price.col.van"]
 related:
@@ -231,12 +231,12 @@ related:
   cta: "ดูบริการรถตู้"
 ```
 
-`priceLow`/`priceHigh`: set from the min/max of the copied rows (real numbers, as strings). `rateRows`: **copy every row verbatim** from `src/content/routes/bangkok-to-pattaya.yaml` → `extraRatesTable.rows`, mapping `{route→label, note→sub, [sedan,suv,van]→cols}` — open that file and transcribe; do not type numbers from memory. `heroPoints`, `included` (same 4 items as van but re-worded for cars: swap "รถตู้"→"รถ"), `priceFootnote` ("ราคา day-trip รวมรถ คนขับ และน้ำมัน ค่าทางด่วนตามจริง — เส้นทางอื่นหรือค้างคืนหลายวัน สอบถามได้ ตอบกลับใน 15 นาที"), `includedDesc` ("ทุกการเหมารถรวมสิ่งเหล่านี้ ไม่มีบวกเพิ่มภายหลัง"), and this exact `faq`:
+`priceLow`/`priceHigh`: set from the min/max of the copied rows (real numbers, as strings). `rateRows`: **copy every row verbatim** from `src/content/routes/bangkok-to-pattaya.yaml` → `extraRatesTable.rows`, mapping `{route→label, note→sub, [sedan,suv,van]→cols}` — open that file and transcribe; do not type numbers from memory. `heroPoints`, `included` (same 4 items as van but re-worded for cars: swap "รถตู้"→"รถ"), `priceFootnote` ("ราคาในตารางเป็น one-way ขั้นต่ำ รวมรถ คนขับ และน้ำมัน ค่าทางด่วนตามจริง — เหมาวัน ไป-กลับ หรือค้างคืนหลายวัน สอบถามได้ ตอบกลับใน 15 นาที"), `includedDesc` ("ทุกการเหมารถรวมสิ่งเหล่านี้ ไม่มีบวกเพิ่มภายหลัง"), and this exact `faq`:
 
 ```yaml
 faq:
   - question: "เหมารถพร้อมคนขับ คิดราคายังไง?"
-    answer: "คิดตามเส้นทางและระยะเวลา ตารางด้านบนคือราคา day-trip ปลายทางยอดนิยม เส้นทางอื่นทีมงานแจ้งราคารวมทุกอย่างให้ก่อนยืนยันจอง ไม่มีบวกเพิ่มหน้างาน"
+    answer: "คิดตามเส้นทางและระยะเวลา ตารางด้านบนคือราคา one-way ขั้นต่ำปลายทางยอดนิยม ส่วนเหมาวันหรือไป-กลับ ทีมงานแจ้งราคารวมทุกอย่างให้ก่อนยืนยันจอง ไม่มีบวกเพิ่มหน้างาน"
   - question: "แวะระหว่างทางได้ไหม?"
     answer: "ได้ ทริปเหมาวันแวะจุดท่องเที่ยว ร้านอาหาร หรือจุดถ่ายรูปได้ตามแผนของคุณ ตกลงเส้นทางคร่าว ๆ กับทีมงานตอนจองเพื่อให้ราคาที่แจ้งครอบคลุมครบ"
   - question: "คนขับพูดภาษาอังกฤษได้ไหม?"
