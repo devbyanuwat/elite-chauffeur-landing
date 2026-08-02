@@ -9,22 +9,40 @@
 // vtype MUST be a key of the verified VT_API map in BookingForm.astro
 // ('sedan' | 'suv' | 'premium' | 'any') — Alphard -> premium,
 // Fortuner/Xpander -> suv, Altis -> sedan.
+// fix-review finding 2: chips used to be plain Thai strings written straight
+// into innerHTML on every stage change (JS-only, no data-i18n) — after
+// toggling to EN, a fleet stage change would snap the chips back to Thai.
+// Each chip now carries its own i18n key; the visible chips AND every car's
+// chip set in the hidden #fleet-chip-bank below all render with data-i18n, so
+// setLang's normal [data-i18n] sweep keeps them localized regardless of which
+// car is on screen or when the toggle happens relative to a stage swap.
+interface Chip {
+  text: string;
+  key: string;
+}
+
 interface Car {
   ghost: string;
   name: string;
   price: string;
-  chips: string[];
+  chips: Chip[];
   img: string;
   alt: string;
   vtype: 'sedan' | 'suv' | 'premium';
 }
+
+const SEAT7: Chip = { text: '7 ที่นั่ง', key: 'fl.chip.seat7' };
+const SEAT4: Chip = { text: '4 ที่นั่ง', key: 'fl.chip.seat4' };
+const AUTO: Chip = { text: 'เกียร์ออโต้', key: 'fl.chip.auto' };
+const INSURED: Chip = { text: 'ประกันเต็มคัน', key: 'fl.chip.insured' };
+const VIP: Chip = { text: 'VIP', key: 'fl.chip.vip' };
 
 const CARS: Car[] = [
   {
     ghost: 'ALPHARD',
     name: 'Toyota Alphard',
     price: '฿1,000',
-    chips: ['7 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน', 'VIP'],
+    chips: [SEAT7, AUTO, INSURED, VIP],
     img: '/images/car2.webp',
     alt: 'Toyota Alphard',
     vtype: 'premium',
@@ -33,7 +51,7 @@ const CARS: Car[] = [
     ghost: 'FORTUNER',
     name: 'Toyota Fortuner',
     price: '฿500',
-    chips: ['7 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน'],
+    chips: [SEAT7, AUTO, INSURED],
     img: '/images/car3.webp',
     alt: 'Toyota Fortuner Legender',
     vtype: 'suv',
@@ -42,7 +60,7 @@ const CARS: Car[] = [
     ghost: 'XPANDER',
     name: 'Mitsubishi Xpander',
     price: '฿450',
-    chips: ['7 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน'],
+    chips: [SEAT7, AUTO, INSURED],
     img: '/images/car1.webp',
     alt: 'Mitsubishi Xpander Cross',
     vtype: 'suv',
@@ -51,7 +69,7 @@ const CARS: Car[] = [
     ghost: 'ALTIS',
     name: 'Toyota Corolla Altis',
     price: '฿400',
-    chips: ['4 ที่นั่ง', 'เกียร์ออโต้', 'ประกันเต็มคัน'],
+    chips: [SEAT4, AUTO, INSURED],
     img: '/images/car4.webp',
     alt: 'Toyota Corolla Altis',
     vtype: 'sedan',
@@ -96,7 +114,7 @@ const first = CARS[0];
       <div>
         <div class="name">{first.name}</div>
         <div class="chips">
-          {first.chips.map((chip) => <span class="chip">{chip}</span>)}
+          {first.chips.map((chip) => <span class="chip" data-i18n={chip.key}>{chip.text}</span>)}
         </div>
       </div>
       <div class="price">
@@ -110,7 +128,25 @@ const first = CARS[0];
       </div>
     </div>
 
-    <script type="application/json" id="fleet-data" set:html={JSON.stringify(CARS)} />
+    <!-- fix-review finding 2: hidden per-car chip sets, each chip carrying its
+         own data-i18n key. buildFleetChapter() / the mobile tab script below
+         clone `[data-car-index]`'s CURRENT innerHTML (post-toggle, if any)
+         into the visible .chips container instead of writing car.chips text
+         directly — that's how a stage swap after an EN toggle stays in
+         English instead of reverting to the Thai literal. -->
+    <div id="fleet-chip-bank" hidden aria-hidden="true">
+      {CARS.map((c, i) => (
+        <div data-car-index={i}>
+          {c.chips.map((chip) => <span class="chip" data-i18n={chip.key}>{chip.text}</span>)}
+        </div>
+      ))}
+    </div>
+
+    <script
+      type="application/json"
+      id="fleet-data"
+      set:html={JSON.stringify(CARS.map(({ ghost, name, price, img, alt, vtype }) => ({ ghost, name, price, img, alt, vtype })))}
+    />
   </div>
 </section>
 
@@ -155,6 +191,12 @@ const first = CARS[0];
 
   .fleet-count {
     white-space: nowrap;
+  }
+
+  /* belt-and-suspenders on top of the [hidden] attribute — this bank only
+     ever exists to be read from (querySelector), never to be seen */
+  #fleet-chip-bank {
+    display: none;
   }
 
   /* left rail — Editions-style chapter progress; scroll-jump only works once
@@ -428,7 +470,7 @@ const first = CARS[0];
     if (!section) return;
 
     var dataEl = document.getElementById('fleet-data');
-    var cars: { ghost: string; name: string; price: string; chips: string[]; img: string; alt: string; vtype: string }[] = [];
+    var cars: { ghost: string; name: string; price: string; img: string; alt: string; vtype: string }[] = [];
     try {
       var parsed = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
       if (Array.isArray(parsed)) cars = parsed;
@@ -454,11 +496,11 @@ const first = CARS[0];
       carImg.alt = car.alt;
       nameEl.textContent = car.name;
       priceEl.textContent = car.price;
-      chipsEl.innerHTML = car.chips
-        .map(function (chip: string) {
-          return '<span class="chip">' + chip + '</span>';
-        })
-        .join('');
+      // fix-review finding 2: clone the current (possibly already-toggled)
+      // localized markup from the hidden bank instead of writing the raw
+      // Thai chip text — see #fleet-chip-bank's comment above.
+      var bankEntry = document.querySelector('#fleet-chip-bank [data-car-index="' + i + '"]');
+      chipsEl.innerHTML = bankEntry ? bankEntry.innerHTML : '';
       if (pickBtn) pickBtn.setAttribute('data-vtype', car.vtype);
       if (countEl) countEl.textContent = '0' + (i + 1) + ' / 0' + cars.length;
 

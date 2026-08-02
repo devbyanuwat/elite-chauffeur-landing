@@ -132,7 +132,6 @@ interface FleetCar {
   ghost: string;
   name: string;
   price: string;
-  chips: string[];
   img: string;
   alt: string;
   vtype: string;
@@ -204,7 +203,14 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
       carImg.alt = car.alt;
       nameEl.textContent = car.name;
       priceEl.textContent = car.price;
-      chipsEl.innerHTML = car.chips.map((chip) => `<span class="chip">${chip}</span>`).join('');
+      // fix-review finding 2: clone the current (possibly already-toggled)
+      // localized markup from the hidden #fleet-chip-bank instead of writing
+      // raw Thai chip text — writing car.chips directly meant a stage change
+      // after the EN toggle snapped the chips back to Thai. Bank entries
+      // carry their own data-i18n keys, so setLang keeps them (and any clone
+      // of them) in sync regardless of when the toggle happens.
+      const bankEntry = section.querySelector(`#fleet-chip-bank [data-car-index="${i}"]`);
+      chipsEl.innerHTML = bankEntry ? bankEntry.innerHTML : '';
       if (pickBtn) pickBtn.dataset.vtype = car.vtype;
     }
 
@@ -288,8 +294,6 @@ export function howStageForProgress(progress: number): number {
   return Math.min(HOW_STAGE_COUNT - 1, Math.floor(progress * HOW_STAGE_COUNT));
 }
 
-const HOW_CAPS = ['บอกทริปของคุณ', 'รับใบเสนอราคาใน 15 นาที', 'ออกเดินทางสบายใจ'];
-
 /**
  * chapter 2 · how (ports mockup #how's howStage()/onUpdate 1:1) — gold numeral
  * tweens out/in on stage change, collage image .on toggles, caption text
@@ -318,7 +322,12 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
 
     steps.forEach((s, j) => s.classList.toggle('on', j === i));
     howImgs.forEach((im, j) => im.classList.toggle('on', j === i));
-    if (howCap) howCap.textContent = HOW_CAPS[i] ?? '';
+    // fix-review finding 1: HOW_CAPS was a Thai-only literal array, so the
+    // caption snapped back to Thai on the next scroll tick regardless of the
+    // EN toggle. Read the already-i18n'd step heading instead — setLang
+    // mutates [data-i18n] innerHTML in place, so h3 always holds the live
+    // localized text, in whichever language is currently active.
+    if (howCap) howCap.textContent = steps[i]?.querySelector('h3')?.textContent ?? '';
 
     gsap
       .timeline()
