@@ -2,57 +2,30 @@
 import { getReviews } from '../../lib/reviews-api';
 import StaticReviews from './StaticReviews.astro';
 
-const VEH_UI: Record<string, string> = {
-  sedan: 'sedan', suv: 'suv', van: 'premium', mpv: 'premium',
-};
 const VEH_LABEL: Record<string, string> = {
-  sedan: 'รถเก๋ง', suv: 'รถ SUV', premium: 'พรีเมียมแวน', any: 'บริการโดย SABUYGO',
+  sedan: 'รถเก๋ง', suv: 'รถ SUV', van: 'พรีเมียมแวน', mpv: 'พรีเมียมแวน',
 };
 
-// serviceType ไม่มีใน BOS main (SP-B ยังไม่ merge) — CTA pre-fill vehicle เท่านั้น
-const reviews = (await getReviews()).map((r) => ({
-  ...r,
-  vehUi: VEH_UI[r.vehicleType ?? ''] ?? 'any',
-}));
-const half = Math.ceil(reviews.length / 2);
-const row1 = reviews.slice(0, half);
-const row2 = reviews.slice(half);
+const reviews = await getReviews();
 ---
 
 {reviews.length > 0 ? (
-  <div class="tm-rows">
-    <div class="marquee" role="group" aria-label="รีวิวลูกค้า">
-      <div class="marquee-track">
-        {[...row1, ...row1].map((r, i) => (
-          <figure class="tm-card" aria-hidden={i >= row1.length ? 'true' : undefined}>
-            {r.carPhotoUrl && <div class="tm-car"><img src={r.carPhotoUrl} alt="รถของคนขับ SABUYGO" loading="lazy" width="200" height="150" /></div>}
-            <div class="tm-body">
-              <div class="tm-stars" aria-hidden="true">{'★'.repeat(Math.max(1, Math.min(5, r.rating)))}</div>
-              <blockquote class="tm-quote">"{r.comment}"</blockquote>
-              <figcaption class="tm-author"><b>{r.customerNameMasked}</b><small>{VEH_LABEL[r.vehUi]}</small></figcaption>
-              <button type="button" class="tm-cta" data-vehicle={r.vehUi}>จองบริการนี้</button>
-            </div>
-          </figure>
-        ))}
-      </div>
+  <div class="rev-slider-wrap">
+    <div class="rev-track" id="rev-track">
+      {reviews.map((r) => (
+        <figure class="rev-card">
+          {r.carPhotoUrl && <img src={r.carPhotoUrl} alt="รถของคนขับ SABUYGO" loading="lazy" width="320" height="200" />}
+          <figcaption>
+            <p>&ldquo;{r.comment}&rdquo;</p>
+            <span>{r.customerNameMasked} · {VEH_LABEL[r.vehicleType ?? ''] ?? 'บริการโดย SABUYGO'}</span>
+          </figcaption>
+        </figure>
+      ))}
     </div>
-    {row2.length > 0 && (
-      <div class="marquee" role="group" aria-label="รีวิวลูกค้า">
-        <div class="marquee-track ltr">
-          {[...row2, ...row2].map((r, i) => (
-            <figure class="tm-card" aria-hidden={i >= row2.length ? 'true' : undefined}>
-              {r.carPhotoUrl && <div class="tm-car"><img src={r.carPhotoUrl} alt="รถของคนขับ SABUYGO" loading="lazy" width="200" height="150" /></div>}
-              <div class="tm-body">
-                <div class="tm-stars" aria-hidden="true">{'★'.repeat(Math.max(1, Math.min(5, r.rating)))}</div>
-                <blockquote class="tm-quote">"{r.comment}"</blockquote>
-                <figcaption class="tm-author"><b>{r.customerNameMasked}</b><small>{VEH_LABEL[r.vehUi]}</small></figcaption>
-                <button type="button" class="tm-cta" data-vehicle={r.vehUi}>จองบริการนี้</button>
-              </div>
-            </figure>
-          ))}
-        </div>
-      </div>
-    )}
+    <div class="rev-nav">
+      <button type="button" class="rev-arrow" data-dir="-1" aria-label="ก่อนหน้า">←</button>
+      <button type="button" class="rev-arrow" data-dir="1" aria-label="ถัดไป">→</button>
+    </div>
   </div>
 ) : (
   <StaticReviews />

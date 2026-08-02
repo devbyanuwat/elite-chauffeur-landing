@@ -244,59 +244,51 @@ section.block {
   padding-block: var(--section-spacing);
 }
 
-/* ---------- Reviews cards: photo-left, reveal-on-interaction ---------- */
+/* ---------- Reviews: quiet slider (mockups/pinned-editions.html .reviews) ----------
+   Auto-drift + arrows come from src/scripts/motion/mobile-lite.ts (JS clones the
+   card set for the seamless loop — markup below renders ONE set only). Reduced
+   motion / no-JS: `.rev-track` stays a plain scroll-snap row — mouse wheel, trackpad
+   and touch scrolling all work with zero script. */
 .tm-section { background: var(--bg-secondary); overflow: hidden; }
-.tm-rows { display: flex; flex-direction: column; gap: 1rem; overflow: hidden; }
 
-.tm-card {
-  flex: 0 0 auto;
-  width: clamp(280px, 82vw, 360px);
-  margin-right: 1.25rem;
+.rev-slider-wrap { position: relative; }
+.rev-track {
   display: flex;
-  gap: 0.9rem;
-  background: var(--bg-card);
+  gap: 1.2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+.rev-track::-webkit-scrollbar { display: none; }
+
+.rev-card {
+  margin: 0;
+  flex: 0 0 clamp(240px, 78vw, 320px);
+  scroll-snap-align: start;
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  padding: 1rem;
+  overflow: hidden;
+  background: var(--bg-card);
   box-shadow: var(--shadow-sm);
 }
-
-.tm-car { flex: 0 0 84px; align-self: stretch; border-radius: var(--r-md); overflow: hidden; background: var(--bg-secondary); }
-.tm-car img { width: 84px; height: 100%; object-fit: cover; }
-
-.tm-body { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; flex: 1; }
-.tm-stars { color: var(--gold); letter-spacing: 2px; font-size: 0.82rem; line-height: 1; }
-.tm-quote {
-  font-family: var(--font-display); font-size: 1rem; font-weight: 400; line-height: 1.45; color: var(--text-primary);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+.rev-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.rev-card figcaption { padding: 1rem 1.1rem 1.2rem; }
+.rev-card p {
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 400; line-height: 1.55; color: var(--text-primary);
 }
-.tm-author b { display: block; font-size: 0.86rem; font-weight: 600; color: var(--text-primary); }
-.tm-author small { font-size: 0.75rem; color: var(--text-tertiary); }
+.rev-card span { display: block; margin-top: 0.6rem; font-size: 0.78rem; color: var(--text-tertiary); }
 
-/* CTA hidden until the card is revealed (hover/focus on desktop, .is-open tap on mobile) */
-.tm-cta {
-  align-self: flex-start; margin-top: 0.25rem;
-  max-height: 0; opacity: 0; overflow: hidden; padding: 0 0.9rem;
-  border: 1.5px solid var(--gold-dark); border-radius: var(--r-md);
-  background: var(--gold-wash); color: var(--gold-dark);
-  font-family: var(--font); font-size: 0.82rem; font-weight: 600; cursor: pointer;
-  transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
+.rev-nav { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }
+.rev-arrow {
+  all: unset; cursor: pointer; width: 40px; height: 40px; display: grid; place-items: center;
+  border: 1px solid var(--border); border-radius: var(--r-pill); color: var(--text-secondary);
+  transition: border-color 0.25s ease, color 0.25s ease;
 }
-.tm-card:hover .tm-quote, .tm-card:focus-within .tm-quote, .tm-card.is-open .tm-quote { -webkit-line-clamp: 6; }
-.tm-card:hover .tm-cta, .tm-card:focus-within .tm-cta, .tm-card.is-open .tm-cta {
-  max-height: 44px; opacity: 1; padding: 0.5rem 0.9rem;
-}
+.rev-arrow:hover, .rev-arrow:focus-visible { border-color: var(--gold); color: var(--gold-dark); }
 
-/* Marquee motion; pause on hover so a card can be revealed/clicked */
-.marquee { overflow: hidden; }
-.marquee-track { display: flex; width: max-content; animation: tm-scroll 42s linear infinite; }
-.marquee-track.ltr { animation-direction: reverse; }
-.marquee:hover .marquee-track { animation-play-state: paused; }
-@keyframes tm-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; flex-wrap: wrap; width: 100%; }
-  .tm-card:hover .tm-cta, .tm-card.is-open .tm-cta { transition: none; }
+@media (min-width: 640px) {
+  .rev-card { flex-basis: clamp(240px, 23%, 320px); }
 }
 
 /* ---- Reveal animation ----

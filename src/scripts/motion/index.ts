@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { parseCount, parseParallaxDepth, parseReveal, splitLines } from './contract';
 import { applyEditionsPins } from './editions';
+import { startReviewDrift, watchReviewTrack, wireReviewArrows } from './mobile-lite';
 import { applyPins } from './pin';
 import { FULL_TIER_MIN_WIDTH } from './tiers';
 
@@ -106,6 +107,32 @@ function applyCounts(root: ParentNode): void {
 }
 
 /**
+ * รีวิว slider: auto-drift + ลูกศร (mockups/pinned-editions.html "reviews
+ * slider: auto-drift"). Drift ผูกกับ `.rev-slider-wrap` ที่พบใน `root` — เกท
+ * ด้วย NOT_REDUCED_MOTION เท่านั้น (ไม่ใช่ pin จึงไม่ผูก breakpoint) ส่วนลูกศร
+ * เดินอิสระจาก drift เพราะต้องใช้งานได้แม้ตอน prefers-reduced-motion: reduce
+ * ที่ module นี้ไม่ถูกลงทะเบียนเลยก็ตาม (ดู mobile-lite.ts)
+ */
+function applyReviewDrift(root: ParentNode): (() => void)[] {
+  return Array.from(root.querySelectorAll<HTMLElement>('.rev-slider-wrap')).map((wrap) =>
+    watchReviewTrack(wrap, (track) => {
+      const drift = startReviewDrift(track);
+      const stopArrows = wireReviewArrows(track, drift);
+      return () => {
+        drift.stop();
+        stopArrows();
+      };
+    })
+  );
+}
+
+function applyReviewArrowsOnly(root: ParentNode): (() => void)[] {
+  return Array.from(root.querySelectorAll<HTMLElement>('.rev-slider-wrap')).map((wrap) =>
+    watchReviewTrack(wrap, (track) => wireReviewArrows(track))
+  );
+}
+
+/**
  * สลับภาษาทำให้ความยาวข้อความเปลี่ยน ตำแหน่งที่ ScrollTrigger คำนวณไว้จึงเก่า
  * i18n ไม่ได้ยิง event ออกมา จึงเฝ้า attribute lang บน <html> แทน
  */
@@ -142,7 +169,16 @@ export function initMotion(root: ParentNode = document): void {
     splitTargets.forEach(({ el, inners }) => applySplitReveal(inners, el));
     applyReveals(root);
     applyCounts(root);
+    const stopReviewDrift = applyReviewDrift(root);
+    return () => stopReviewDrift.forEach((stop) => stop());
   });
+
+  // reduced-motion: mobile-lite (drift) ไม่ถูกลงทะเบียนเลย แต่ลูกศร + scroll
+  // มือต้องยังใช้งานได้ — เช็คตรงแบบเดียวกับ hero-depth/tiers (ไม่ผูกกับ
+  // gsap.matchMedia เพราะนี่ไม่ใช่ tween ที่ reduced-motion ต้องปิด)
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    applyReviewArrowsOnly(root);
+  }
 
   // legacy .reveal bridge lives in ./legacy-reveal (final-review Fix 1) and is
   // booted separately from Base.astro so it doesn't wait on this GSAP chunk
