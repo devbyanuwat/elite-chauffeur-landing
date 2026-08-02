@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { parseCount, parseParallaxDepth, parseReveal, splitLines } from './contract';
 import { applyEditionsPins } from './editions';
-import { startReviewDrift, watchReviewTrack, wireReviewArrows } from './mobile-lite';
+import { applyMobileLite, initStickyCta, startReviewDrift, watchReviewTrack, wireReviewArrows } from './mobile-lite';
 import { applyPins } from './pin';
 import { FULL_TIER_MIN_WIDTH } from './tiers';
 
@@ -34,6 +34,13 @@ const NOT_REDUCED_MOTION = 'not all and (prefers-reduced-motion: reduce)';
 // composable, parenthesized condition parses and evaluates correctly. Use
 // this form when composing with `and` after another feature test.
 const NOT_REDUCED_MOTION_COMPOSABLE = '(not (prefers-reduced-motion: reduce))';
+// T7: the mobile-only motion tier — `(max-width: …)` leading, `and` joining a
+// parenthesized `(not (...))` feature test. Unlike NOT_REDUCED_MOTION_COMPOSABLE's
+// sibling comment above, this is NOT the "leading not negates the whole query"
+// trap: `not` here sits *inside* its own parens as one feature test among two,
+// not as a whole-query prefix, so `and`-joining it with the width test parses
+// and evaluates correctly (confirmed via window.matchMedia the same way).
+const MOBILE_TIER_QUERY = '(max-width: 1023px) and (not (prefers-reduced-motion: reduce))';
 
 function applyParallax(root: ParentNode): void {
   root.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
@@ -123,6 +130,12 @@ function reviewContainerOf(wrap: HTMLElement): ParentNode & Node {
   return wrap.parentElement ?? document.body;
 }
 
+/** Looks up `#sticky-cta` (StickyCta.astro, T1) under `root` and wires it, if present. */
+function initStickyCtaOf(root: ParentNode): void {
+  const cta = root.querySelector<HTMLElement>('#sticky-cta');
+  if (cta) initStickyCta(cta);
+}
+
 function applyReviewDrift(root: ParentNode): (() => void)[] {
   return Array.from(root.querySelectorAll<HTMLElement>('.rev-slider-wrap')).map((wrap) =>
     watchReviewTrack(reviewContainerOf(wrap), (track) => {
@@ -169,10 +182,20 @@ export function initMotion(root: ParentNode = document): void {
     applyParallax(root);
     const cleanupPins = applyPins(root);
     const cleanupEditions = applyEditionsPins(root);
+    initStickyCtaOf(root);
     return () => {
       cleanupPins();
       cleanupEditions();
     };
+  });
+
+  // T7: mobile's own lively motion tier (drift + bouncy reveals + .hm-step
+  // in/out timelines) — see mobile-lite.ts's applyMobileLite. Sticky CTA also
+  // registers here (not just the full tier above) so it works at every width
+  // motion is allowed, mobile included.
+  mm.add(MOBILE_TIER_QUERY, () => {
+    applyMobileLite(root);
+    initStickyCtaOf(root);
   });
 
   mm.add(NOT_REDUCED_MOTION, () => {

@@ -8,7 +8,16 @@
  *
  * startReviewDrift stays pure and DOM-only (no gsap) so it is cheaply testable
  * with jsdom + a fake requestAnimationFrame — see tests/motion/mobile-lite.test.ts.
+ *
+ * applyMobileLite/initStickyCta below (T7) are NOT DOM-only — they build the
+ * mockup's "mobile motion tier" and "sticky CTA" gsap/ScrollTrigger timelines,
+ * so this file now also depends on gsap. That's fine: those two exports are
+ * tested with a mocked gsap/ScrollTrigger (see tests/motion/mobile-lite.test.ts),
+ * same pattern as pin.ts/index.ts's own tests.
  */
+
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const DRIFT_SPEED_PX = 0.45;
 const ARROW_PAUSE_MS = 1600;
@@ -196,4 +205,136 @@ export function watchReviewTrack(
     observer.disconnect();
     cleanup?.();
   };
+}
+
+const REVEAL_SELECTOR = '.svc,.route-card,.rev-card,.blog-card,.fleet-meta,.ch-head,.faq-item';
+
+/**
+ * Mobile's own lively motion tier — ports mockups/pinned-editions.html's
+ * "mobile motion tier" IIFE (`!DESKTOP && !reduced-motion` block) verbatim,
+ * adapted to this codebase's real mobile markup:
+ *
+ * - image drift: any `[data-drift-img]` element (T7 adds the attribute to
+ *   IntroStory's intro photo — amt 10, How's `.hm-media img` — amt 12, and
+ *   BlogTeaser's cover img — amt 8) gets `scale:1.15` plus a scrub'd
+ *   `yPercent -amt → amt` against its nearest `section` (mirrors the
+ *   mockup's `img.closest('section')||img.parentNode`). An invalid or
+ *   missing attribute value is skipped — never a guess at a default amt.
+ * - bouncy reveals: `.svc,.route-card,.rev-card,.blog-card,.fleet-meta,
+ *   .ch-head,.faq-item` fade/scale/lift in once, `.svc .n` pops in with a
+ *   punchier ease.
+ * - `.hm-step` blocks: a paused timeline (media slide+rotate, numeral
+ *   elastic pop, body stagger) that plays forward on enter (either
+ *   direction) and reverses on leave (either direction) — so scrolling back
+ *   up un-animates a step exactly like the mockup, instead of leaving it
+ *   stuck mid-reveal.
+ *
+ * Gated entirely by ./index's mm.add `(max-width: 1023px) and
+ * (not (prefers-reduced-motion: reduce))` block — this function itself does
+ * no width/reduced-motion checks, same convention as applyParallax/applyReveals.
+ */
+export function applyMobileLite(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLElement>('[data-drift-img]').forEach((img) => {
+    const raw = img.getAttribute('data-drift-img');
+    const amt = raw === null || raw === '' ? Number.NaN : Number.parseFloat(raw);
+    if (!Number.isFinite(amt)) return;
+
+    const trigger = img.closest('section') ?? img.parentElement ?? img;
+
+    gsap.set(img, { scale: 1.15 });
+    gsap.fromTo(
+      img,
+      { yPercent: -amt },
+      {
+        yPercent: amt,
+        ease: 'none',
+        scrollTrigger: { trigger, start: 'top bottom', end: 'bottom top', scrub: true },
+      }
+    );
+  });
+
+  root.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach((el) => {
+    gsap.from(el, {
+      y: 30,
+      opacity: 0,
+      scale: 0.97,
+      duration: 0.65,
+      ease: 'back.out(1.8)',
+      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+    });
+  });
+
+  root.querySelectorAll<HTMLElement>('.svc .n').forEach((n) => {
+    gsap.from(n, {
+      scale: 0.2,
+      opacity: 0,
+      duration: 0.6,
+      ease: 'back.out(3)',
+      scrollTrigger: { trigger: n, start: 'top 92%', once: true },
+    });
+  });
+
+  root.querySelectorAll<HTMLElement>('.hm-step').forEach((el) => {
+    const img = el.querySelector<HTMLElement>('.hm-media');
+    const n = el.querySelector<HTMLElement>('.hm-n');
+    const bits = Array.from(el.querySelectorAll<HTMLElement>('.hm-body > *'));
+    if (!img || !n || bits.length === 0) return;
+
+    const tl = gsap
+      .timeline({ paused: true })
+      .fromTo(
+        img,
+        { x: 44, opacity: 0, rotate: 1.2 },
+        { x: 0, opacity: 1, rotate: 0, duration: 0.6, ease: 'power3.out' }
+      )
+      .fromTo(
+        n,
+        { scale: 0.3, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.7, ease: 'elastic.out(1,0.45)' },
+        '<0.15'
+      )
+      .fromTo(
+        bits,
+        { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, stagger: 0.09, ease: 'back.out(2.2)' },
+        '<0.05'
+      );
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 86%',
+      end: 'bottom 10%',
+      onEnter: () => tl.play(),
+      onEnterBack: () => tl.play(),
+      onLeave: () => tl.reverse(),
+      onLeaveBack: () => tl.reverse(),
+    });
+  });
+}
+
+/**
+ * Sticky CTA visibility — ports mockups/pinned-editions.html's "sticky CTA"
+ * IIFE. `cta` is the `#sticky-cta` element from StickyCta.astro (T1); its
+ * `.show` class is the only thing this touches (opacity/transform/
+ * pointer-events all live in that component's CSS, gated on `.show`).
+ *
+ * Trigger is `#services` (IntroStory's chapter id) rather than `#intro` (the
+ * mockup's id) — this codebase kept `#services` so Nav.astro's existing
+ * `/#services` anchor still lands on the intro chapter (see IntroStory.astro).
+ * endTrigger is `#booking` (Booking.astro's section id), matching the
+ * mockup's `bookend`.
+ *
+ * Registered from BOTH ./index's full-tier and mobile-lite mm.add blocks —
+ * the CTA should show/hide on every width motion is allowed, not just mobile.
+ */
+export function initStickyCta(cta: HTMLElement): void {
+  ScrollTrigger.create({
+    trigger: '#services',
+    start: 'top -30%',
+    endTrigger: '#booking',
+    end: 'top 70%',
+    onToggle(self) {
+      cta.classList.toggle('show', self.isActive);
+    },
+  });
 }

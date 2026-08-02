@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { fromTo, to, registerPlugin, matchMediaAdd, refresh, timeline, set } = vi.hoisted(() => {
+const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerCreate, timeline, set } = vi.hoisted(() => {
   const chainable = { to: vi.fn(), fromTo: vi.fn() };
   chainable.to.mockReturnValue(chainable);
   chainable.fromTo.mockReturnValue(chainable);
@@ -8,9 +8,11 @@ const { fromTo, to, registerPlugin, matchMediaAdd, refresh, timeline, set } = vi
   return {
     fromTo: vi.fn(),
     to: vi.fn(),
+    from: vi.fn(),
     registerPlugin: vi.fn(),
     matchMediaAdd: vi.fn((_query: string, callback: () => void) => callback()),
     refresh: vi.fn(),
+    scrollTriggerCreate: vi.fn(),
     timeline: vi.fn(() => chainable),
     set: vi.fn(),
   };
@@ -21,6 +23,7 @@ vi.mock('gsap', () => ({
     registerPlugin,
     fromTo,
     to,
+    from,
     timeline,
     set,
     matchMedia: () => ({ add: matchMediaAdd }),
@@ -28,7 +31,7 @@ vi.mock('gsap', () => ({
 }));
 
 vi.mock('gsap/ScrollTrigger', () => ({
-  ScrollTrigger: { refresh },
+  ScrollTrigger: { refresh, create: scrollTriggerCreate },
 }));
 
 import { initMotion } from '../../src/scripts/motion/index';
@@ -106,7 +109,7 @@ describe('initMotion', () => {
     initMotion();
 
     const queries = matchMediaAdd.mock.calls.map((call) => call[0] as string);
-    expect(queries).toHaveLength(2);
+    expect(queries).toHaveLength(3);
     expect(queries[0]).toContain(`min-width: ${FULL_TIER_MIN_WIDTH}px`);
     queries.forEach((query) => {
       // final-review Fix 4: no-preference/reduce ไม่ใช่คู่ตรงข้าม สลับมาใช้
@@ -144,9 +147,11 @@ describe('initMotion', () => {
     const skipIfReducedMotionQuery = (query: string, callback: () => void) => {
       if (!query.includes('prefers-reduced-motion: reduce')) callback();
     };
-    // initMotion เรียก mm.add ทั้งหมด 2 ครั้ง (parallax context, split/reveal/count context)
-    // — ใช้ mockImplementationOnce สองครั้งแทน mockImplementation ถาวร เพื่อไม่ต้อง restore เอง
+    // initMotion เรียก mm.add ทั้งหมด 3 ครั้ง (parallax context, split/reveal/count
+    // context, mobile-lite context) — ใช้ mockImplementationOnce สามครั้งแทน
+    // mockImplementation ถาวร เพื่อไม่ต้อง restore เอง
     matchMediaAdd
+      .mockImplementationOnce(skipIfReducedMotionQuery)
       .mockImplementationOnce(skipIfReducedMotionQuery)
       .mockImplementationOnce(skipIfReducedMotionQuery);
 
@@ -159,6 +164,7 @@ describe('initMotion', () => {
 
     expect(fromTo).not.toHaveBeenCalled();
     expect(to).not.toHaveBeenCalled();
+    expect(from).not.toHaveBeenCalled();
   });
 
   it('นับเลขขึ้นด้วย gsap.to และเขียนค่าพร้อม suffix ลง element', () => {
@@ -198,9 +204,11 @@ describe('initMotion', () => {
     document.body.innerHTML = `
       <section data-pin="fleet"><div data-stage="0"></div><div data-stage="1"></div></section>
     `;
-    // initMotion เรียก mm.add สองครั้ง (full tier ก่อน แล้วค่อย NOT_REDUCED_MOTION เดี่ยว ๆ)
-    // — ใช้ mockImplementationOnce สองครั้งแทน mockImplementation ถาวร เพื่อไม่ต้อง restore เอง
+    // initMotion เรียก mm.add สามครั้ง (full tier, NOT_REDUCED_MOTION เดี่ยว ๆ,
+    // mobile-lite tier) — ใช้ mockImplementationOnce สามครั้งแทน mockImplementation
+    // ถาวร เพื่อไม่ต้อง restore เอง
     matchMediaAdd
+      .mockImplementationOnce(onlyIfFullTier)
       .mockImplementationOnce(onlyIfFullTier)
       .mockImplementationOnce(onlyIfFullTier);
     initMotion();
@@ -212,6 +220,7 @@ describe('initMotion', () => {
       <section data-pin="fleet"><div data-stage="0"></div><div data-stage="1"></div></section>
     `;
     matchMediaAdd
+      .mockImplementationOnce(onlyIfNotFullTier)
       .mockImplementationOnce(onlyIfNotFullTier)
       .mockImplementationOnce(onlyIfNotFullTier);
     initMotion();

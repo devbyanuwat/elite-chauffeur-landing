@@ -1,6 +1,39 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { startReviewDrift, watchReviewTrack, wireReviewArrows } from '../../src/scripts/motion/mobile-lite';
+const { gsapSet, gsapFromTo, gsapFrom, gsapTimeline, timelineChain, scrollTriggerCreate } = vi.hoisted(() => {
+  const chain = { fromTo: vi.fn(), to: vi.fn() };
+  chain.fromTo.mockReturnValue(chain);
+  chain.to.mockReturnValue(chain);
+  return {
+    gsapSet: vi.fn(),
+    gsapFromTo: vi.fn(),
+    gsapFrom: vi.fn(),
+    gsapTimeline: vi.fn(() => chain),
+    timelineChain: chain,
+    scrollTriggerCreate: vi.fn(),
+  };
+});
+
+vi.mock('gsap', () => ({
+  gsap: {
+    set: gsapSet,
+    fromTo: gsapFromTo,
+    from: gsapFrom,
+    timeline: gsapTimeline,
+  },
+}));
+
+vi.mock('gsap/ScrollTrigger', () => ({
+  ScrollTrigger: { create: scrollTriggerCreate },
+}));
+
+import {
+  applyMobileLite,
+  initStickyCta,
+  startReviewDrift,
+  watchReviewTrack,
+  wireReviewArrows,
+} from '../../src/scripts/motion/mobile-lite';
 
 function makeTrack(cardCount: number): HTMLElement {
   const track = document.createElement('div');
@@ -319,5 +352,130 @@ describe('watchReviewTrack', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(cleanup).toHaveBeenCalledTimes(1); // จาก stop() เท่านั้น ไม่ใช่จาก mount รอบใหม่
+  });
+});
+
+function makeHmStep(): string {
+  return `
+    <div class="hm-step">
+      <div class="hm-media"><img alt="" /><span class="hm-n">1</span></div>
+      <div class="hm-body"><div class="k">k</div><h3>t</h3><p>d</p></div>
+    </div>
+  `;
+}
+
+describe('applyMobileLite', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    vi.clearAllMocks();
+  });
+
+  it('สร้าง ScrollTrigger หนึ่งอันต่อ .hm-step (3 บล็อกใน fixture)', () => {
+    document.body.innerHTML = `${makeHmStep()}${makeHmStep()}${makeHmStep()}`;
+
+    applyMobileLite(document);
+
+    expect(scrollTriggerCreate).toHaveBeenCalledTimes(3);
+  });
+
+  it('.hm-step แต่ละอันได้ paused timeline ที่เล่นได้ทั้งสองทิศ (onEnter/onEnterBack เล่น, onLeave/onLeaveBack ย้อน)', () => {
+    document.body.innerHTML = makeHmStep();
+    (timelineChain as unknown as { play: () => void; reverse: () => void }).play = vi.fn();
+    (timelineChain as unknown as { play: () => void; reverse: () => void }).reverse = vi.fn();
+
+    applyMobileLite(document);
+
+    expect(gsapTimeline).toHaveBeenCalledWith({ paused: true });
+    const config = scrollTriggerCreate.mock.calls[0][0] as {
+      onEnter: () => void;
+      onEnterBack: () => void;
+      onLeave: () => void;
+      onLeaveBack: () => void;
+    };
+    const play = (timelineChain as unknown as { play: ReturnType<typeof vi.fn> }).play;
+    const reverse = (timelineChain as unknown as { reverse: ReturnType<typeof vi.fn> }).reverse;
+
+    config.onEnter();
+    config.onEnterBack();
+    config.onLeave();
+    config.onLeaveBack();
+
+    expect(play).toHaveBeenCalledTimes(2);
+    expect(reverse).toHaveBeenCalledTimes(2);
+  });
+
+  it('reveal targets ได้ once:true', () => {
+    document.body.innerHTML = '<div class="svc"><span class="n">01</span></div>';
+
+    applyMobileLite(document);
+
+    const revealCall = gsapFrom.mock.calls.find(
+      (call) => (call[0] as Element).classList.contains('svc')
+    );
+    expect(revealCall).toBeDefined();
+    const vars = revealCall![1] as { scrollTrigger: { once: boolean; start: string } };
+    expect(vars.scrollTrigger.once).toBe(true);
+    expect(vars.scrollTrigger.start).toBe('top 90%');
+
+    const numeralCall = gsapFrom.mock.calls.find(
+      (call) => (call[0] as Element).classList.contains('n')
+    );
+    expect(numeralCall).toBeDefined();
+    expect((numeralCall![1] as { ease: string }).ease).toBe('back.out(3)');
+  });
+
+  it('[data-drift-img] ที่ค่าไม่ถูกต้องหรือไม่มีค่าจะถูกข้าม', () => {
+    document.body.innerHTML = `
+      <section><img data-drift-img="10" id="valid" /></section>
+      <section><img data-drift-img="not-a-number" id="invalid" /></section>
+      <section><img data-drift-img="" id="empty" /></section>
+      <section><img id="missing" /></section>
+    `;
+
+    applyMobileLite(document);
+
+    const targets = gsapFromTo.mock.calls.map((call) => call[0] as HTMLElement);
+    expect(targets).toContain(document.getElementById('valid'));
+    expect(targets).not.toContain(document.getElementById('invalid'));
+    expect(targets).not.toContain(document.getElementById('empty'));
+    expect(targets).not.toContain(document.getElementById('missing'));
+
+    const validCall = gsapFromTo.mock.calls.find((call) => call[0] === document.getElementById('valid'))!;
+    expect(validCall[1]).toEqual({ yPercent: -10 });
+    expect((validCall[2] as { yPercent: number }).yPercent).toBe(10);
+    expect(gsapSet).toHaveBeenCalledWith(document.getElementById('valid'), { scale: 1.15 });
+  });
+});
+
+describe('initStickyCta', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    vi.clearAllMocks();
+  });
+
+  it('toggle .show ตาม onToggle callback ของ ScrollTrigger', () => {
+    document.body.innerHTML = '<a id="sticky-cta"></a>';
+    const cta = document.getElementById('sticky-cta') as HTMLElement;
+
+    initStickyCta(cta);
+
+    expect(scrollTriggerCreate).toHaveBeenCalledTimes(1);
+    const config = scrollTriggerCreate.mock.calls[0][0] as {
+      trigger: string;
+      endTrigger: string;
+      start: string;
+      end: string;
+      onToggle: (self: { isActive: boolean }) => void;
+    };
+    expect(config.trigger).toBe('#services');
+    expect(config.endTrigger).toBe('#booking');
+    expect(config.start).toBe('top -30%');
+    expect(config.end).toBe('top 70%');
+
+    config.onToggle({ isActive: true });
+    expect(cta.classList.contains('show')).toBe(true);
+
+    config.onToggle({ isActive: false });
+    expect(cta.classList.contains('show')).toBe(false);
   });
 });
