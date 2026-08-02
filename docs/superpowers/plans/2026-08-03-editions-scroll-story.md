@@ -14,12 +14,14 @@
 - Mockup wins conflicts: `mockups/pinned-editions.html` (on disk, gitignored — READ IT before each task; adapt paths `../public/images/…` → `/images/…`).
 - JS budget: all client chunks ≤ **240KB gzip** total, measured fresh from `npm run build` output (`gzip -c dist/client/_astro/*.js | wc -c` per chunk).
 - Banned assets: `parallax/service/business/*` (taxi sign), `service-rental.webp`, `service-airport.webp`, `service-business.webp`, `route-huahin.webp` (baked-in text). Allowed: `parallax/hero`, `parallax/airport`, `parallax/trust`, `parallax/service/rental`, `parallax/close`, `car1-4.webp`, `service-van-hero.webp`, `service-charter-hero.webp`, `review-*.webp`, `hero-bg.travelv1-baseline.webp`.
+- Retiring markup: T3-T5 replace the sections' `data-pin`/`data-stage` attributes with `data-chapter` — `applyPins` (pin.ts) then finds zero targets and no-ops, which is safe: all pin.ts tests use their own fixtures (verified `tests/motion/index.test.ts:199,212`), and pin.ts stays as dead-but-tested code per the repo's existing convention. Do not delete pin.ts or its tests.
+- mobile-lite registration: review drift is NOT width-gated — register it under the standalone `NOT_REDUCED_MOTION` query already defined in `src/scripts/motion/index.ts` (the `'not all and (prefers-reduced-motion: reduce)'` standalone form, verified present); `applyMobileLite` alone goes in the new `(max-width: 1023px) and (not (prefers-reduced-motion: reduce))` block.
 - Do NOT touch: `src/components/Hero.astro`, `src/components/BookingForm.astro` internals, JSON-LD/meta in `Base.astro`/`index.astro` heads, `src/scripts/motion/hero-depth.ts`.
 - Desktop tier gate: `(min-width: 1024px) and (not (prefers-reduced-motion: reduce))` — NEVER the broken `… and not all and (…)` form (regression-tested).
 - Mobile tier gate: `(max-width: 1023px) and (not (prefers-reduced-motion: reduce))`.
 - Reduced motion / JS disabled: full static layout, zero hidden elements.
 - Every new user-facing string: Thai first, EN key in `src/i18n/en.json`, wired via `data-i18n`. Before each commit run the thai-natural-copy check: `grep -nE "หมู่คณะ|ยานพาหนะ|ทำการ[จชสด]|ดำเนินการ|เริ่มต้นการใช้งาน|ตอบโจทย์|โซลูชั่น|เหนือระดับ" <changed files>` → must be empty.
-- All 72 existing vitest tests stay green after every task; new motion modules get unit tests in the same style as `src/scripts/motion/*.test.ts` files (see `npx vitest list` for naming).
+- All 72 existing vitest tests stay green after every task; new motion modules get unit tests under `tests/motion/*.test.ts` (verified location — NOT next to the source), same style as `tests/motion/pin.test.ts`.
 - Commits per task with the message given in the task; trailer `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
 - Preview for measurement: `npm run build && npm run preview` serves :4321 (output lands in `dist/client/`).
 
@@ -50,7 +52,7 @@
 
 **Interfaces:**
 - Produces: main order `Hero, IntroStoryPlaceholder(Services for now), Fleet, How, Routes, Reviews, Faq, Booking, BlogTeaser, Cta` — T2 swaps Services→IntroStory. StickyCta markup `<a id="sticky-cta" class="sticky-cta" href="#booking">`; JS visibility comes in T7 (until then CSS `.sticky-cta{}` hidden by default is acceptable only if a no-JS fallback keeps it hidden — it starts `opacity:0;pointer-events:none` per mockup, which satisfies that).
-- Consumes: `src/lib/blog-api.ts` — read it first; use its existing fetch/list function for the 3 latest posts at build/render time following how `src/pages/blog/index.astro` does it, incl. its error fallback pattern. Cover image field: whatever the blog index page uses; fallback when absent = `<div class="cover cover-fallback"><span class="tag">{category}</span></div>` with `background:var(--bg-secondary)`.
+- Consumes: `src/lib/blog-api.ts` — read it first; use `getArticles(): Promise<ArticleSummary[]>` (verified export) for the 3 latest posts at build/render time following how `src/pages/blog/index.astro` does it, incl. its error fallback pattern. Cover image field: whatever the blog index page uses; fallback when absent = `<div class="cover cover-fallback"><span class="tag">{category}</span></div>` with `background:var(--bg-secondary)`.
 
 - [ ] Step 1: Reorder `index.astro` main to: `<Hero/> <Stats/> <Services/> <Routes/> <Fleet/> <How/> <Why/> [reviews section] <Faq/> <Booking/> <BlogTeaser/> <Cta/> <StickyCta/>` — i.e. Booking moves from position 2 to after Faq; BlogTeaser new after Booking. (Chapter reordering to spec order Services→Fleet→How→Routes happens naturally since those are already adjacent; put them in spec order now: `Services, Fleet, How, Routes`.)
 - [ ] Step 2: Create `StickyCta.astro` — port `.sticky-cta` markup+CSS from the mockup verbatim (scoped `<style>`), text `ขอใบเสนอราคา` with `data-i18n="sticky.cta"`.
@@ -63,7 +65,7 @@
 
 **Files:**
 - Create: `src/components/sections/IntroStory.astro`
-- Create: `src/scripts/motion/editions.ts` + Test: `src/scripts/motion/editions.test.ts`
+- Create: `src/scripts/motion/editions.ts` + Test: `tests/motion/editions.test.ts`
 - Modify: `src/scripts/motion/index.ts` (register inside the full-tier mm.add block)
 - Modify: `src/pages/index.astro` (swap `<Services/>` → `<IntroStory/>`; remove Services import)
 - Modify: `src/i18n/{th,en}.json` (`intro.*` keys)
@@ -73,7 +75,7 @@
 - Consumes: mockup section `#intro` (markup/CSS) and its JS block "chapter 0 · hero → services transform" (phase A compress + phase B service stages) — port into `editions.ts` as `buildIntroChapter(section)`.
 
 - [ ] Step 1: Write failing test `editions.test.ts`: `collectChapters(doc)` returns `[{name:'intro', len:420, el}]` for a fixture DOM with the section above; invalid/missing `data-chapter-len` falls back to 300 and clamps to [100,600]. (Mirror the parse/clamp test style of `pin.ts` tests.)
-- [ ] Step 2: Run `npx vitest run src/scripts/motion/editions.test.ts` — FAIL (module missing).
+- [ ] Step 2: Run `npx vitest run tests/motion/editions.test.ts` — FAIL (module missing).
 - [ ] Step 3: Implement `editions.ts`: `collectChapters` + `applyEditionsPins` + `buildIntroChapter` (port mockup JS; images swap via `.svc-img` opacity/scale tweens; stage index from `st.progress` exactly as mockup). No `Date.now`, no timers — scrub-driven only, plus the discrete stage timeline pattern already used (mockup `fleetStage` style is allowed: tweens fired from `onUpdate` stage changes).
 - [ ] Step 4: Component markup/CSS ported from mockup `#intro` + the mobile `<1024` overrides (photo band 46svh, copy anchored `top:46svh; transform:translateY(calc(-100% - 1.1rem))` — the fixed version, see mockup), all copy via `data-i18n="intro.*"`, service items link to `/airport-transfer/suvarnabhumi-bkk/`, `/charter/`, `/van/`, `#booking` respectively (real pages from the segment work).
 - [ ] Step 5: Register in `index.ts` full tier; confirm no-JS: section renders photo + all four services visible (CSS default state must NOT hide anything without `.js-motion`).
@@ -88,7 +90,7 @@
 - Modify: `src/i18n/{th,en}.json`
 
 **Interfaces:**
-- Produces: section root `<section class="chapter fleet-chapter" id="fleet" data-chapter="fleet" data-chapter-len="380">`. Car data stays in the Astro component as a `const CARS` array (name, ghost word, price, chips, img, vtype for booking prefill — vtypes must match `BookingForm.astro:301` map values).
+- Produces: section root `<section class="chapter fleet-chapter" id="fleet" data-chapter="fleet" data-chapter-len="380">`. Car data stays in the Astro component as a `const CARS` array (name, ghost word, price, chips, img, vtype for booking prefill — MUST be a key of the verified `VT_API` map in BookingForm.astro: `'sedan' | 'suv' | 'premium' | 'any'` (Alphard→premium, Fortuner/Xpander→suv, Altis→sedan)).
 - Consumes: mockup `#fleet` markup/CSS/JS (ghost layer, car layer, meta layer, rail, counter, directional stage swap) + mobile tabs variant (`.fleet-tabs`, tap to swap).
 
 - [ ] Step 1: Port markup/CSS (desktop layers + rail + counter; mobile single card + numbered tabs). Static default = stage 0 fully rendered, others swapped by JS only — no-JS shows Alphard card complete.
@@ -134,12 +136,12 @@
 
 **Files:**
 - Modify: `src/components/sections/Reviews.astro` and `StaticReviews.astro` (same card/track classes so the server:defer fallback shares CSS)
-- Create: `src/scripts/motion/mobile-lite.ts` (starts here with `startReviewDrift(track)`; T7 adds the rest) + Test: `src/scripts/motion/mobile-lite.test.ts`
+- Create: `src/scripts/motion/mobile-lite.ts` (starts here with `startReviewDrift(track)`; T7 adds the rest) + Test: `tests/motion/mobile-lite.test.ts`
 - Modify: `src/scripts/motion/index.ts` (drift runs on ALL widths — it is not a pin; gate only on `(not (prefers-reduced-motion: reduce))`)
 
 **Interfaces:**
 - Produces: `.rev-track` with cloned card set for seamless loop; `startReviewDrift(track)` — rAF drift 0.45px/frame, `scrollLeft -= scrollWidth/2` wrap, pause on `pointerenter/touchstart/focusin`, resume on the mirror events; arrows `.rev-arrow[data-dir]` scroll by one card. MUST call `ScrollTrigger.refresh()` is NOT needed (no pin), but the `server:defer` island swap re-runs cloning — listen for Astro's island hydration (`astro:after-swap` is view-transitions-only; instead run init from a `MutationObserver` on the reviews container or re-init after the island replaces the fallback — read how `Reviews.astro` server:defer currently signals readiness and hook there; the existing STATE doc notes `ScrollTrigger.refresh()` on island load was already needed once — same hook point).
-- Consumes: real reviews from the existing `Reviews.astro` data source (`src/lib/reviews-api.ts`); card layout from mockup `.rev-card` (photo + quote + name·occasion). Mockup quotes are placeholders — NEVER ship them; render API fields.
+- Consumes: real reviews via `getReviews(): Promise<Review[]>` from `src/lib/reviews-api.ts` (verified export), rendered the way `Reviews.astro` already does; card layout from mockup `.rev-card` (photo + quote + name·occasion). Mockup quotes are placeholders — NEVER ship them; render API fields.
 
 - [ ] Step 1: Test `mobile-lite.test.ts`: `startReviewDrift` pauses on pointerenter and resumes on pointerleave (jsdom + fake rAF, style matching existing motion tests); wrap math: given scrollWidth 1000/clientWidth 400, scrollLeft 501 wraps to 1.
 - [ ] Step 2: Run test — FAIL. Implement. PASS.
