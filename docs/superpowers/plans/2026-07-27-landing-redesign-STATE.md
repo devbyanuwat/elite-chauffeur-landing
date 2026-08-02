@@ -166,7 +166,16 @@ spec `docs/superpowers/specs/2026-07-28-hero-three-second-design.md` (`3087b8f`)
 - การ์ด Plane SABUY: "Segment pages /van/ + /charter/" id `e939779f-8256-4ec7-9c3f-266867fa1e4c` (labels landing+step-1, high, In Progress)
 - DataForSEO ไม่ได้ตั้งค่าในเครื่อง (ไม่มี server entry/credentials) — demand ใช้ pytrends แทน · segment ต่างชาติต้องวัด geo US/UK/SG ก่อนลงแรง
 
+## Segment pages /van/ + /charter/ — เสร็จ 2026-08-03 (Ready to merge)
+
+commits `535c2c0` (collection+YAML) → `fed4c41` (แก้ plan เอง) → `f56bc62` (fix วลีต้องห้าม+reframe one-way) → `b961919` (template) → `710b617` (fix faq.desc) → `84fd04b` (sitemap) · การ์ด Plane `e939779f`
+
+- review ต่อ task จับได้: (1) plan เขียนวลีต้องห้าม "เหมารถพร้อมคนขับ" ใส่ charter เองทั้งที่ตัวเองแบน + เอาราคา one-way แปะป้าย day-trip — แก้ที่ตัว plan ก่อนแล้วค่อย fix เนื้อหา (2) template ใส่ `data-i18n="faq.desc"` โดยไม่มี key — EN toggle ค้างไทย
+- final review (fable, รันเอง+เบราว์เซอร์จริง): spec fidelity ครบ, JSON-LD ครบ 3 ชนิด van ไม่มี offers / charter AggregateOffer 1200-4000, ราคา charter ตรง source ทั้ง 13 แถว, EN toggle กด จริง 0 element ค้างไทย, overflow 0 ทุกจอ, homepage ไม่ถูกแตะ — **Ready**
+- หมายเหตุ: build output อยู่ `dist/client/` ไม่ใช่ `dist/` (node standalone adapter)
+
+**deferred minors (ไม่ block merge)**: van.yaml `related.desc` มีวลี "เหมารถพร้อมคนขับ" (ไม่ใช่ lead — reword เป็น "เหมารถรายวันกับคนขับ" เมื่อสะดวก) · `<th/>` แรกของ price table ว่าง screen reader อ่าน header เปล่า (pattern เดียวกับ routes ที่ ship แล้ว) · glyph ✓ ใน `.hero-points li::before` ไม่มี alt-text syntax
+
 ## ขั้นถัดไป
 
-1. execute plan segment pages (subagent-driven ต่อ task) — การ์ด Plane เปิดแล้ว
-2. แล้วจึง `superpowers:finishing-a-development-branch` ซึ่งจะถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ
+`superpowers:finishing-a-development-branch` — ถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ (ครอบทั้ง pin+hero+segment pages)
