@@ -112,10 +112,20 @@ function applyCounts(root: ParentNode): void {
  * ด้วย NOT_REDUCED_MOTION เท่านั้น (ไม่ใช่ pin จึงไม่ผูก breakpoint) ส่วนลูกศร
  * เดินอิสระจาก drift เพราะต้องใช้งานได้แม้ตอน prefers-reduced-motion: reduce
  * ที่ module นี้ไม่ถูกลงทะเบียนเลยก็ตาม (ดู mobile-lite.ts)
+ *
+ * fix round 1: ต้องหา "ancestor ที่นิ่ง" ให้ watchReviewTrack ก่อน — Astro
+ * แทนที่ `.rev-slider-wrap` ทั้งก้อนตอน server:defer island สลับเนื้อหาจริง
+ * เข้ามา (ไม่ใช่แค่แก้ children ข้างใน) MutationObserver ที่ผูกกับตัว
+ * `.rev-slider-wrap` เองจึงไม่มีวันเห็นเหตุการณ์นั้น ต้องผูกกับ parentElement
+ * (คือ `<section id="reviews">` ใน index.astro) ซึ่งไม่ถูกแทนที่เลย
  */
+function reviewContainerOf(wrap: HTMLElement): ParentNode & Node {
+  return wrap.parentElement ?? document.body;
+}
+
 function applyReviewDrift(root: ParentNode): (() => void)[] {
   return Array.from(root.querySelectorAll<HTMLElement>('.rev-slider-wrap')).map((wrap) =>
-    watchReviewTrack(wrap, (track) => {
+    watchReviewTrack(reviewContainerOf(wrap), (track) => {
       const drift = startReviewDrift(track);
       const stopArrows = wireReviewArrows(track, drift);
       return () => {
@@ -128,7 +138,7 @@ function applyReviewDrift(root: ParentNode): (() => void)[] {
 
 function applyReviewArrowsOnly(root: ParentNode): (() => void)[] {
   return Array.from(root.querySelectorAll<HTMLElement>('.rev-slider-wrap')).map((wrap) =>
-    watchReviewTrack(wrap, (track) => wireReviewArrows(track))
+    watchReviewTrack(reviewContainerOf(wrap), (track) => wireReviewArrows(track))
   );
 }
 

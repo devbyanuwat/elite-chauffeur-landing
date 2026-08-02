@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { startReviewDrift, wireReviewArrows } from '../../src/scripts/motion/mobile-lite';
+import { startReviewDrift, watchReviewTrack, wireReviewArrows } from '../../src/scripts/motion/mobile-lite';
 
 function makeTrack(cardCount: number): HTMLElement {
   const track = document.createElement('div');
@@ -142,6 +142,24 @@ describe('startReviewDrift', () => {
     expect(scroll.get()).toBeCloseTo(1);
   });
 
+  it('คืนค่า scroll-snap-type เดิมตอน pause แล้วปิดใหม่ตอน resume (ไม่ใช่ปิดครั้งเดียวตอน start แล้วปล่อยตลอด)', () => {
+    const track = makeTrack(2);
+    stubScroll(track, 2000, 400, 0);
+    track.style.scrollSnapType = 'x mandatory';
+
+    const handle = startReviewDrift(track);
+    expect(track.style.scrollSnapType).toBe('none'); // ปิดระหว่าง drift ทำงาน
+
+    track.dispatchEvent(new Event('pointerenter'));
+    expect(track.style.scrollSnapType).toBe('x mandatory'); // คืนค่าตอน pause ให้ swipe มือ snap ได้
+
+    track.dispatchEvent(new Event('pointerleave'));
+    expect(track.style.scrollSnapType).toBe('none'); // ปิดใหม่ตอน resume ก่อน rAF จะเขียน scrollLeft ต่อ
+
+    handle.stop();
+    expect(track.style.scrollSnapType).toBe('x mandatory'); // คืนค่าสุดท้ายตอน stop
+  });
+
   it('ยกเลิก rAF และถอด listener ทั้งหมดเมื่อเรียก stop()', () => {
     const track = makeTrack(2);
     const scroll = stubScroll(track, 2000, 400, 0);
@@ -221,5 +239,85 @@ describe('wireReviewArrows', () => {
 
     vi.advanceTimersByTime(1600);
     expect(resume).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('watchReviewTrack', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  function makeWrap(id: string): HTMLElement {
+    const wrap = document.createElement('div');
+    wrap.className = 'rev-slider-wrap';
+    wrap.id = id;
+    const track = makeTrack(2);
+    wrap.appendChild(track);
+    return wrap;
+  }
+
+  it('mount ครั้งแรกด้วย track ที่มีอยู่แล้วใน container ตอนเรียก', () => {
+    const container = document.createElement('section');
+    container.appendChild(makeWrap('a'));
+    document.body.appendChild(container);
+
+    const mount = vi.fn(() => undefined);
+    watchReviewTrack(container, mount);
+
+    expect(mount).toHaveBeenCalledTimes(1);
+  });
+
+  it('mount ใหม่เมื่อ .rev-slider-wrap ทั้งก้อนถูกแทนที่ (ไม่ใช่แค่ children ข้างในเปลี่ยน) — จำลอง Astro server:defer island swap ที่ลบ/แทรก node ทั้งก้อนแทนที่ fallback', async () => {
+    // Astro's replaceServerIsland removes the fallback's `.rev-slider-wrap`
+    // wholesale and inserts a brand-new one as a sibling — it never merely
+    // edits its children. A MutationObserver bound to `.rev-slider-wrap`
+    // itself would never see this (observers only report a target's
+    // descendant mutations, never the target's own removal); `container`
+    // must be a stable ancestor for the swap to be observable at all.
+    const container = document.createElement('section');
+    const oldWrap = makeWrap('old');
+    container.appendChild(oldWrap);
+    document.body.appendChild(container);
+
+    const cleanupOld = vi.fn();
+    const mount = vi.fn((track: HTMLElement) => {
+      void track;
+      return cleanupOld;
+    });
+    watchReviewTrack(container, mount);
+    expect(mount).toHaveBeenCalledTimes(1);
+    const firstTrack = mount.mock.calls[0][0];
+
+    // simulate the island swap: whole wrap removed, a new one with a fresh
+    // track (and fresh clone-free child count) inserted in its place
+    oldWrap.remove();
+    const newWrap = makeWrap('new');
+    container.appendChild(newWrap);
+
+    // MutationObserver callbacks are microtask-scheduled
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(cleanupOld).toHaveBeenCalledTimes(1);
+    expect(mount).toHaveBeenCalledTimes(2);
+    const secondTrack = mount.mock.calls[1][0];
+    expect(secondTrack).not.toBe(firstTrack);
+    expect(container.contains(secondTrack)).toBe(true);
+  });
+
+  it('stop() ที่คืนมาจะ disconnect observer และเรียก cleanup ล่าสุด', async () => {
+    const container = document.createElement('section');
+    container.appendChild(makeWrap('a'));
+    document.body.appendChild(container);
+
+    const cleanup = vi.fn();
+    const stop = watchReviewTrack(container, () => cleanup);
+
+    stop();
+
+    const wrap = makeWrap('b');
+    container.appendChild(wrap);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(cleanup).toHaveBeenCalledTimes(1); // จาก stop() เท่านั้น ไม่ใช่จาก mount รอบใหม่
   });
 });

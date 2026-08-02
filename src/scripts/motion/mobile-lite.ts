@@ -74,12 +74,23 @@ export function startReviewDrift(track: HTMLElement): ReviewDriftHandle {
     rafId = requestAnimationFrame(tick);
   }
 
-  const pause = (): void => { paused = true; };
+  const pause = (): void => {
+    paused = true;
+    // Restore real snapping while paused so a manual swipe/drag during the
+    // pause (hover, touch, focus) settles on a card edge like any other
+    // snap-carousel — snap is only a problem for the continuous sub-pixel
+    // writes the drift loop does, not for the user's own scroll gesture.
+    track.style.scrollSnapType = previousSnapType;
+  };
   const resume = (): void => {
     // Resync from the live scrollLeft in case the user dragged/scrolled the
     // track manually while drift was paused — otherwise the next tick would
     // snap back to our stale accumulator and undo their scroll.
     position = track.scrollLeft;
+    // Suspend snapping again before the rAF loop resumes writing scrollLeft
+    // (see the note above `previousSnapType` — mandatory snap rejects any
+    // off-snap-point write outright).
+    track.style.scrollSnapType = 'none';
     paused = false;
   };
 
@@ -145,31 +156,41 @@ export function wireReviewArrows(
 }
 
 /**
- * Re-runs `mount` whenever the `.rev-track` inside `wrap` is replaced —
- * the hook the `server:defer` Reviews island needs (see ./index STATE note:
- * `ScrollTrigger.refresh()` on island load was already needed once for the
- * same reason). Astro's server-island client runtime does no custom event;
- * it just removes the fallback nodes and inserts the live HTML in place
- * (astro/dist/runtime/server/render/server-islands.js), so a MutationObserver
- * on the container is the only reliable signal.
+ * Re-runs `mount` whenever the `.rev-track` found under `container` is
+ * replaced — the hook the `server:defer` Reviews island needs (see ./index
+ * STATE note: `ScrollTrigger.refresh()` on island load was already needed
+ * once for the same reason). Astro's server-island client runtime does no
+ * custom event; it just removes the fallback nodes and inserts the live HTML
+ * in place (astro/dist/runtime/server/render/server-islands.js) — and it
+ * replaces the ENTIRE `.rev-slider-wrap` the fallback rendered, not just its
+ * children. A MutationObserver only reports mutations to its *target's*
+ * descendants, never the target node's own removal, so observing
+ * `.rev-slider-wrap` itself never fires when Astro swaps it out wholesale
+ * (confirmed by forcing a delayed island response and watching the observer
+ * never re-run). `container` must therefore be a stable ancestor that
+ * survives the swap — the `<section>` Reviews/StaticReviews render into, or
+ * `document` — and every run re-queries `.rev-track` fresh from `container`
+ * rather than closing over any specific node from a previous run.
  */
 export function watchReviewTrack(
-  wrap: HTMLElement,
+  container: ParentNode & Node,
   mount: (track: HTMLElement) => (() => void) | void
 ): () => void {
   let cleanup: (() => void) | void;
+  let mountedTrack: HTMLElement | null = null;
 
   function run(): void {
-    const track = wrap.querySelector<HTMLElement>('.rev-track');
-    if (!track) return;
+    const track = container.querySelector<HTMLElement>('.rev-track');
+    if (!track || track === mountedTrack) return;
     cleanup?.();
+    mountedTrack = track;
     cleanup = mount(track);
   }
 
   run();
 
   const observer = new MutationObserver(run);
-  observer.observe(wrap, { childList: true, subtree: true });
+  observer.observe(container, { childList: true, subtree: true });
 
   return () => {
     observer.disconnect();

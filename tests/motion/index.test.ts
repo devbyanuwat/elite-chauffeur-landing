@@ -221,4 +221,96 @@ describe('initMotion', () => {
   // legacy .reveal bridge tests moved to tests/motion/legacy-reveal.test.ts —
   // the bridge itself moved to src/scripts/motion/legacy-reveal.ts and is no
   // longer wired through initMotion (final-review Fix 1)
+
+  describe('reviews slider survives the server:defer island swap', () => {
+    function makeReviewsMarkup(id: string): string {
+      return `
+        <div class="rev-slider-wrap" id="${id}">
+          <div class="rev-track">
+            <figure class="rev-card">a</figure>
+            <figure class="rev-card">b</figure>
+          </div>
+          <div class="rev-nav">
+            <button class="rev-arrow" data-dir="-1"></button>
+            <button class="rev-arrow" data-dir="1"></button>
+          </div>
+        </div>
+      `;
+    }
+
+    beforeEach(() => {
+      vi.stubGlobal('requestAnimationFrame', vi.fn(() => 0));
+      vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    });
+
+    // fix round 1 (reviewer-forced repro): the reviewer delayed the real
+    // /_server-islands/Reviews/ response by ~1200ms and found the NEW track
+    // (inserted once the fetch resolved) never got data-drift/clones/working
+    // arrows — because watchReviewTrack was bound to `.rev-slider-wrap`
+    // itself, and Astro's server-island runtime replaces that entire node
+    // rather than editing its children, which a MutationObserver on the
+    // node's own target never reports. This test reproduces the same shape
+    // without a network delay: mount against the *fallback* wrap first (as
+    // initMotion always does — the fallback renders before any island can
+    // resolve), then swap the whole wrap out for a fresh one, exactly like
+    // Astro's replaceServerIsland does.
+    it('re-mounts drift + arrows on the NEW track after the whole .rev-slider-wrap is replaced', async () => {
+      document.body.innerHTML = `<section id="reviews">${makeReviewsMarkup('fallback')}</section>`;
+
+      initMotion();
+
+      const section = document.getElementById('reviews')!;
+      const fallbackTrack = section.querySelector('.rev-track')!;
+      expect(fallbackTrack.getAttribute('data-drift')).toBe('on');
+      expect(fallbackTrack.children).toHaveLength(4); // 2 cards cloned once
+
+      // simulate Astro's replaceServerIsland: the whole `.rev-slider-wrap`
+      // fallback node is removed and a brand-new one (live island content)
+      // is inserted in its place — never just its children mutated in place.
+      section.querySelector('.rev-slider-wrap')!.remove();
+      section.insertAdjacentHTML('beforeend', makeReviewsMarkup('live'));
+
+      // MutationObserver callbacks run as microtasks
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const liveTrack = section.querySelector('.rev-track')!;
+      expect(liveTrack).not.toBe(fallbackTrack);
+      expect(liveTrack.getAttribute('data-drift')).toBe('on');
+      expect(liveTrack.children).toHaveLength(4);
+
+      const nextArrow = section.querySelector('.rev-arrow[data-dir="1"]') as HTMLButtonElement;
+      const scrollBy = vi.fn();
+      (liveTrack as HTMLElement).scrollBy = scrollBy;
+      nextArrow.click();
+      expect(scrollBy).toHaveBeenCalledTimes(1);
+    });
+
+    it('ลูกศรยังทำงานหลัง island swap แม้ prefers-reduced-motion: reduce (ไม่มี drift ให้ mount เลย)', async () => {
+      vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
+        matches: query.includes('prefers-reduced-motion: reduce'),
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })));
+      matchMediaAdd.mockImplementation(() => {}); // ไม่มี context ไหน match เลยตอน reduced motion
+
+      document.body.innerHTML = `<section id="reviews">${makeReviewsMarkup('fallback')}</section>`;
+      initMotion();
+
+      const section = document.getElementById('reviews')!;
+      section.querySelector('.rev-slider-wrap')!.remove();
+      section.insertAdjacentHTML('beforeend', makeReviewsMarkup('live'));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const liveTrack = section.querySelector('.rev-track')!;
+      expect(liveTrack.getAttribute('data-drift')).toBeNull();
+      expect(liveTrack.children).toHaveLength(2); // ไม่ clone เพราะไม่มี drift
+
+      const nextArrow = section.querySelector('.rev-arrow[data-dir="1"]') as HTMLButtonElement;
+      const scrollBy = vi.fn();
+      (liveTrack as HTMLElement).scrollBy = scrollBy;
+      nextArrow.click();
+      expect(scrollBy).toHaveBeenCalledTimes(1);
+    });
+  });
 });
