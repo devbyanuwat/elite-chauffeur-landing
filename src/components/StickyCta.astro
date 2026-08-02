@@ -1,0 +1,41 @@
+---
+---
+
+<a id="sticky-cta" class="sticky-cta" href="#booking" data-i18n="sticky.cta">ขอใบเสนอราคา</a>
+
+<style>
+  /* Ported verbatim from mockups/pinned-editions.html .sticky-cta — visibility
+     (the .show toggle) is wired in Task 7. Until then it must stay hidden via
+     opacity:0 + pointer-events:none, which this resting state already satisfies. */
+  .sticky-cta {
+    position: fixed;
+    right: 20px;
+    bottom: 78px;
+    z-index: 50;
+    background: var(--gold-dark);
+    color: oklch(97% 0.01 80);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.85rem 1.4rem;
+    border-radius: 99px;
+    box-shadow: 0 12px 28px oklch(24% 0.02 60 / 0.28);
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    transition: 0.35s;
+  }
+
+  .sticky-cta.show {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  @media (max-width: 1023px) {
+    .sticky-cta {
+      bottom: 70px;
+      right: 14px;
+    }
+  }
+</style>

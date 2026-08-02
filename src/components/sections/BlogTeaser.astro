@@ -1,0 +1,164 @@
+---
+import { getArticles } from '../../lib/blog-api';
+
+const all = await getArticles();
+const articles = [...all]
+  .sort((a, b) => {
+    const at = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+    const bt = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+    return bt - at;
+  })
+  .slice(0, 3);
+---
+
+{articles.length > 0 && (
+  <section class="block blog-teaser" id="blog-teaser">
+    <div class="wrap">
+      <div class="blog-head reveal">
+        <div>
+          <span class="eyebrow" data-i18n="blogteaser.eyebrow">บทความ</span>
+          <h2 data-i18n="blogteaser.title">วางแผนทริปให้ง่ายขึ้น</h2>
+        </div>
+        <a class="blog-head-all" href="/blog/" data-i18n="blogteaser.all">ดูทั้งหมด →</a>
+      </div>
+      <div class="blog-grid">
+        {articles.map((a) => {
+          const date = a.publishedAt
+            ? new Date(a.publishedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short' })
+            : null;
+          const tag = a.tags[0] ?? '';
+          return (
+            <a class="blog-card reveal" href={`/blog/${a.slug}/`}>
+              {a.coverImageUrl ? (
+                <span class="cover">
+                  <img src={a.coverImageUrl} alt="" width="800" height="450" loading="lazy" />
+                </span>
+              ) : (
+                <div class="cover cover-fallback">
+                  <span class="tag">{tag}</span>
+                </div>
+              )}
+              <div class="bc-body">
+                {a.coverImageUrl && tag && <span class="tag">{tag}</span>}
+                <h3>{a.title}</h3>
+                {date && <span class="date">{date}</span>}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  /* Ported from mockups/pinned-editions.html .blog / .blog-grid / .blog-card,
+     adapted to this site's tokens (--gold-dark, --border, --bg-card, --r-lg). */
+  .blog-teaser {
+    background: var(--bg-secondary);
+  }
+
+  .blog-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .blog-head-all {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .blog-head-all:hover {
+    text-decoration: underline;
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  }
+
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .blog-card .cover {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .blog-card .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .blog-card:hover .cover img {
+    transform: scale(1.04);
+  }
+
+  .blog-card .cover-fallback {
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    background: var(--bg-secondary);
+  }
+
+  .blog-card .bc-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1.2rem 1.3rem 1.3rem;
+    flex: 1;
+  }
+
+  .blog-card .tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+  }
+
+  .blog-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.45;
+    flex: 1;
+  }
+
+  .blog-card .date {
+    font-size: 0.74rem;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 1023px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

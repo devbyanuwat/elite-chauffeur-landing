@@ -12,6 +12,8 @@ import Reviews from '../components/sections/Reviews.astro';
 import StaticReviews from '../components/sections/StaticReviews.astro';
 import Faq from '../components/sections/Faq.astro';
 import Cta from '../components/sections/Cta.astro';
+import BlogTeaser from '../components/sections/BlogTeaser.astro';
+import StickyCta from '../components/StickyCta.astro';
 import {
   limousineServiceSchema,
   websiteSchema,
@@ -41,12 +43,11 @@ const ogDescription =
 >
   <main id="main">
     <Hero />
-    <Booking />
     <Stats />
     <Services />
-    <Routes />
     <Fleet />
     <How />
+    <Routes />
     <Why />
     <section class="block tm-section" id="reviews">
       <div class="wrap">
@@ -61,7 +62,10 @@ const ogDescription =
       </Reviews>
     </section>
     <Faq />
+    <Booking />
+    <BlogTeaser />
     <Cta />
+    <StickyCta />
   </main>
 </Base>
 
