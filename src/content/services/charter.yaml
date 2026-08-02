@@ -108,6 +108,7 @@ bodyI18n:
   inc.support.t: "Support throughout"
   inc.support.d: "Reach our team on LINE for the whole trip"
   faq.h2: "Frequently asked questions"
+  faq.desc: "Questions about pricing or the service? Answers below"
   faq.q1: "How is a car with driver priced?"
   faq.a1: "Priced by route and duration. The table above shows minimum one-way prices for popular destinations; for full-day or round-trip charters our team quotes an all-in price before you confirm — no on-the-day extras."
   faq.q2: "Can we stop along the way?"

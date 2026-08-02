@@ -87,6 +87,7 @@ bodyI18n:
   inc.support.t: "Support throughout"
   inc.support.d: "Reach our team on LINE for the whole trip"
   faq.h2: "Frequently asked questions"
+  faq.desc: "Questions about pricing or the service? Answers below"
   faq.q1: "How much does a van with driver cost?"
   faq.a1: "It depends on the route, distance, and number of days. We quote an all-in price (van, driver, fuel) before you confirm — no on-the-day extras. Ask via the form or LINE; we reply within 15 minutes."
   faq.q2: "Are fuel and tolls included?"
