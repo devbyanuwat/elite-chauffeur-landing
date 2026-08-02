@@ -119,6 +119,10 @@ const ICONS: Record<string, string> = {
       </div>
     </section>
 
+    <figure class="hero-photo">
+      <img src={d.heroImage} alt={d.heroImageAlt} width="1600" height="900" loading="eager" fetchpriority="high" />
+    </figure>
+
     <section class="section section-alt block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
@@ -271,6 +275,21 @@ const ICONS: Record<string, string> = {
     color: var(--text-secondary);
     margin-bottom: 2rem;
     max-width: 540px;
+  }
+
+  /* photo band under the hero — full-bleed, cropped to a wide strip so the
+     page keeps its text-first rhythm (r-frame 0: sharp frame corners) */
+  .hero-photo {
+    margin: 0;
+    max-height: clamp(260px, 44vh, 460px);
+    overflow: hidden;
+  }
+  .hero-photo img {
+    display: block;
+    width: 100%;
+    height: clamp(260px, 44vh, 460px);
+    object-fit: cover;
+    object-position: center 60%;
   }
 
   .hero-points {

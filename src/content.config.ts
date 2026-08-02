@@ -207,6 +207,8 @@ const services = defineCollection({
     heroHeadingHtml: z.string(),
     heroSub: z.string(),
     heroPoints: z.array(z.string()).length(3), // pillar bullets under the sub
+    heroImage: z.string(),    // photo band under the hero, path under /images/
+    heroImageAlt: z.string(),
     priceHeading: z.string(),
     priceDesc: z.string(),
     priceCols: z.array(z.string()).length(3), // column headings
