@@ -1,0 +1,559 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import BookingForm from '../components/BookingForm.astro';
+
+/**
+ * Shared template for the 2 service segment pages (van, charter).
+ * Task 2 (segment-pages-van-charter) — sibling to routes/[slug].astro and
+ * airport-transfer/[slug].astro. Everything that differs between /van/ and
+ * /charter/ lives in src/content/services/*.yaml (see src/content.config.ts
+ * for the schema); everything byte-identical between them (nav, footer,
+ * price-table/included-grid/FAQ/related-strip/cta-footer structure, reveal/
+ * i18n plumbing) lives once, right here.
+ */
+
+export async function getStaticPaths() {
+  const entries = await getCollection('services');
+  return entries.map((entry) => ({ params: { service: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'services'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+
+const serviceSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: d.serviceType,
+  name: d.serviceName,
+  description: d.serviceDescription,
+  provider: {
+    '@type': 'LocalBusiness',
+    name: 'SABUYGO',
+    url: 'https://sabuygo.com',
+    telephone: '+66623879159',
+  },
+  areaServed: d.areaServed.map((name) => ({ '@type': 'City', name })),
+  url: d.canonical,
+  // offers only when real prices exist — a priceless AggregateOffer is invalid
+  ...(d.priceLow && d.priceHigh
+    ? {
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'THB',
+          lowPrice: d.priceLow,
+          highPrice: d.priceHigh,
+        },
+      }
+    : {}),
+};
+
+const breadcrumbSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'หน้าแรก', item: 'https://sabuygo.com/' },
+    { '@type': 'ListItem', position: 2, name: d.breadcrumbName, item: d.canonical },
+  ],
+};
+
+const faqSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: d.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+
+const ICONS: Record<string, string> = {
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  lines: '<path d="M3 12h18M3 6h18M3 18h18"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 010 20"/>',
+  clock: '<path d="M12 2v10l4 2"/><circle cx="12" cy="12" r="10"/>',
+  chat: '<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>',
+  water: '<path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-0.5-9-5-9-10V6l9-4z"/>',
+  check: '<circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/>',
+};
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  canonical={d.canonical}
+  ogTitle={d.ogTitle}
+  ogDescription={d.ogDescription}
+  keywords={d.keywords}
+  jsonLd={[serviceSchema, breadcrumbSchema, faqSchema]}
+  navBrandHref="/"
+  navCtaHref="#bookingForm"
+  pageI18n={d.bodyI18n}
+>
+  <main id="main">
+    <section class="hero block">
+      <div class="wrap hero-inner">
+        <div class="hero-text">
+          <div class="breadcrumb">
+            <a href="/" data-i18n="crumb.home">หน้าแรก</a>
+            <span> / </span>
+            <span data-i18n="crumb.current">{d.breadcrumbName}</span>
+          </div>
+          <h1 data-i18n="hero.h1" set:html={d.heroHeadingHtml} />
+          <p class="sub" data-i18n="hero.sub">{d.heroSub}</p>
+          <ul class="hero-points">
+            {
+              d.heroPoints.map((point, i) => (
+                <li data-i18n={'hero.p' + (i + 1)}>{point}</li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="hero-form reveal">
+          <BookingForm />
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt block">
+      <div class="wrap section-inner">
+        <div class="section-head reveal">
+          <span class="eyebrow">Fixed Rates</span>
+          <h2 data-i18n="price.h2">{d.priceHeading}</h2>
+          <p data-i18n="price.desc">{d.priceDesc}</p>
+        </div>
+
+        <table class="price-table reveal">
+          <thead>
+            <tr>
+              <th />
+              {
+                d.priceCols.map((col, i) => (
+                  <th data-i18n={d.priceColKeys[i]}>{col}</th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              d.rateRows.map((row) => (
+                <tr>
+                  <td data-label="">
+                    <span class="veh-name">{row.label}</span>
+                    {row.sub && <span class="veh-type">{row.sub}</span>}
+                  </td>
+                  {
+                    row.cols.map((cell, i) => (
+                      <td data-label={d.priceCols[i]}>
+                        {cell === null ? (
+                          <span class="price-unavailable" data-i18n="price.ask">สอบถาม</span>
+                        ) : (
+                          <>
+                            <span class="price-currency">฿</span>
+                            <span class="price">{cell.toLocaleString()}</span>
+                          </>
+                        )}
+                      </td>
+                    ))
+                  }
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p class="price-note" data-i18n="price.footnote">{d.priceFootnote}</p>
+      </div>
+    </section>
+
+    <section class="section block">
+      <div class="wrap section-inner">
+        <div class="section-head reveal">
+          <span class="eyebrow">Service Scope</span>
+          <h2 data-i18n="inc.h2">ทุกการจองรวม</h2>
+          <p data-i18n="inc.desc">{d.includedDesc}</p>
+        </div>
+
+        <div class="included-grid reveal">
+          {
+            d.included.map((item) => (
+              <div class="included-item">
+                <svg viewBox="0 0 24 24" set:html={ICONS[item.icon]} />
+                <h4 data-i18n={`${item.i18nKey}.t`}>{item.title}</h4>
+                <p data-i18n={`${item.i18nKey}.d`}>{item.desc}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="related-strip">
+      <div class="wrap related-inner">
+        <div>
+          <h3 data-i18n="rel.label">{d.related.heading}</h3>
+          <p data-i18n="rel.desc">{d.related.desc}</p>
+        </div>
+        <a href={d.related.href} data-i18n="rel.cta">{d.related.cta}</a>
+      </div>
+    </section>
+
+    <section class="section block">
+      <div class="wrap section-inner faq-inner">
+        <div class="section-head center reveal">
+          <span class="eyebrow">FAQ</span>
+          <h2 data-i18n="faq.h2">คำถามที่พบบ่อย</h2>
+          <p data-i18n="faq.desc">สงสัยเรื่องราคาหรือบริการ? ดูคำตอบด้านล่าง</p>
+        </div>
+
+        <div class="faq-list reveal">
+          {
+            d.faq.map((f, i) => (
+              <details class="faq-item">
+                <summary data-i18n={`faq.q${i + 1}`}>{f.question}</summary>
+                <div class="faq-answer" data-i18n={`faq.a${i + 1}`}>{f.answer}</div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-footer">
+      <h2>พร้อมออกเดินทาง?<br />เลือกบริการที่ใช่</h2>
+      <p data-i18n="cta.desc">กรอกฟอร์มด้านบนหรือ LINE หาเรา — ทีมงานตอบกลับใน 15 นาที</p>
+      <div class="actions">
+        <a href="#bookingForm" class="btn btn-primary btn-lg" data-i18n="cta.book">กรอกฟอร์มจอง</a>
+        <a href="https://line.me/R/ti/p/@031cvnva" class="btn btn-line btn-lg" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  /* ==================== HERO ==================== */
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .breadcrumb {
+    font-size: 0.74rem;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .breadcrumb a {
+    color: var(--text-secondary);
+  }
+  .breadcrumb a:hover {
+    color: var(--gold-dark);
+  }
+
+  .hero-text h1 {
+    font-size: clamp(1.85rem, 4.2vw, 3.1rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-text .sub {
+    font-size: clamp(1rem, 1.35vw, 1.1rem);
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 540px;
+  }
+
+  .hero-points {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    display: grid;
+    gap: 0.55rem;
+  }
+  .hero-points li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+  }
+  .hero-points li::before {
+    content: '✓';
+    color: var(--gold-dark);
+    font-weight: 600;
+  }
+
+  .hero-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ==================== PRICE TABLE ==================== */
+  .price-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    font-size: 0.9rem;
+  }
+  .price-table thead th {
+    background: var(--bg-secondary);
+    padding: 0.95rem 1rem;
+    text-align: left;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border);
+  }
+  .price-table thead th .desc {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    letter-spacing: 0;
+    text-transform: none;
+    margin-top: 0.2rem;
+  }
+  .price-table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .price-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .price-table .veh-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+  }
+  .price-table .veh-type {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    margin-top: 0.15rem;
+    font-weight: 400;
+  }
+  .price-table .price {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .price-table .price-currency {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+  }
+  .price-table .price-unavailable {
+    color: var(--text-tertiary);
+    font-size: 0.86rem;
+  }
+  .price-note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+  }
+  @media (max-width: 700px) {
+    .price-table thead {
+      display: none;
+    }
+    .price-table tbody tr {
+      display: block;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .price-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .price-table tbody td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border: none;
+    }
+    .price-table tbody td::before {
+      content: attr(data-label);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide);
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+  }
+
+  /* ==================== INCLUDED GRID ==================== */
+  .included-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+  }
+  .included-item {
+    padding-left: 1.5rem;
+    position: relative;
+    border-left: 1px solid var(--border);
+  }
+  .included-item svg {
+    position: absolute;
+    left: -12px;
+    top: 4px;
+    width: 22px;
+    height: 22px;
+    background: var(--bg-primary);
+    padding: 2px;
+    stroke: var(--gold-dark);
+    fill: none;
+    stroke-width: 1.5;
+  }
+  .section-alt .included-item svg {
+    background: var(--bg-secondary);
+  }
+  .included-item h4 {
+    font-family: var(--font);
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin: 0 0 0.4rem;
+  }
+  .included-item p {
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+  }
+
+  /* ==================== RELATED STRIP ==================== */
+  .related-strip {
+    background: var(--bg-secondary);
+    padding: 2.5rem clamp(1.25rem, 5vw, 2.5rem);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .related-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .related-inner h3 {
+    font-family: var(--font);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.35rem;
+  }
+  .related-inner p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+  .related-inner a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: var(--r-sm);
+    transition: background 0.3s, color 0.3s;
+  }
+  .related-inner a:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+  }
+
+  /* ==================== FAQ ==================== */
+  .faq-inner {
+    max-width: 880px;
+  }
+  .faq-list {
+    display: grid;
+    gap: 0;
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+  .faq-item:first-child {
+    border-top: 1px solid var(--border);
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 1.35rem 2.5rem 1.35rem 0.25rem;
+    font-weight: 500;
+    font-size: 1rem;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary::after {
+    content: '+';
+    position: absolute;
+    right: 0.5rem;
+    top: 1.35rem;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--text-tertiary);
+  }
+  .faq-item[open] summary::after {
+    content: '−';
+    color: var(--gold-dark);
+  }
+  .faq-item[open] summary {
+    color: var(--text-primary);
+  }
+  .faq-item summary:hover {
+    color: var(--gold-dark);
+  }
+  .faq-answer {
+    padding: 0 2.5rem 1.5rem 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    max-width: 720px;
+  }
+
+  /* ==================== CTA FOOTER ==================== */
+  .cta-footer {
+    padding: var(--section-spacing) clamp(1.25rem, 5vw, 3rem);
+    background: var(--bg-dark);
+    color: var(--bg-primary);
+    text-align: center;
+  }
+  .cta-footer h2 {
+    color: #fff;
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    margin-bottom: 0.9rem;
+  }
+  .cta-footer p {
+    color: oklch(78% 0.008 85);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-footer .actions {
+    display: inline-flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>
