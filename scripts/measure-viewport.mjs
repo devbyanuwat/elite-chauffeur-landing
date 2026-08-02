@@ -7,10 +7,26 @@
 //
 // ใช้: node scripts/measure-viewport.mjs <width> <height> <mobile|desktop> <screenshot|none> '<js expression>'
 import { spawn } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readdirSync, existsSync } from 'node:fs';
 
-const CHROME = process.env.CHROME_BIN
-  ?? `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
+// playwright ลบ chromium เวอร์ชันเก่าทิ้งเวลาอัปเดต — path ที่ปักเลขเวอร์ชันไว้
+// จะตายเงียบ ๆ (ENOENT) จึงต้องกวาดหาเวอร์ชันล่าสุดที่มีจริงแทน
+const findChrome = () => {
+  const cache = `${process.env.HOME}/Library/Caches/ms-playwright`;
+  const dirs = existsSync(cache)
+    ? readdirSync(cache).filter((d) => /^chromium-\d+$/.test(d)).sort()
+    : [];
+  for (const d of dirs.reverse()) {
+    const bin = `${cache}/${d}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
+    if (existsSync(bin)) return bin;
+  }
+  return null;
+};
+const CHROME = process.env.CHROME_BIN ?? findChrome();
+if (!CHROME || !existsSync(CHROME)) {
+  console.error('ไม่พบ Chrome for Testing — ตั้ง CHROME_BIN หรือ npx playwright install chromium');
+  process.exit(1);
+}
 const URL_UNDER_TEST = process.env.MEASURE_URL ?? 'http://localhost:4321/';
 const PORT = 9339;
 
@@ -23,8 +39,20 @@ const chrome = spawn(CHROME, [
   `--user-data-dir=${process.env.TMPDIR ?? '/tmp'}/measure-viewport`, 'about:blank',
 ], { stdio: 'ignore' });
 
-await sleep(1500);
-const targets = await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json();
+// Chrome เครื่องเย็น ๆ เปิดช้ากว่า 1.5s ได้ — poll จนพอร์ต debug ตอบจริง
+let targets = null;
+for (let i = 0; i < 20; i++) {
+  await sleep(500);
+  try {
+    targets = await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json();
+    if (targets.length > 0) break;
+  } catch { /* ยังไม่ขึ้น ลองใหม่ */ }
+}
+if (!targets?.length) {
+  console.error(`Chrome ไม่ตอบที่พอร์ต ${PORT} ภายใน 10s — เช็คว่าพอร์ตว่างและ binary รันได้`);
+  chrome.kill();
+  process.exit(1);
+}
 const ws = new WebSocket(targets[0].webSocketDebuggerUrl);
 let id = 0;
 const pending = new Map();

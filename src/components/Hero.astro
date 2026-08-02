@@ -117,6 +117,14 @@
     margin-bottom: 1.4rem;
   }
 
+  /* Each span is one phrase; lines may only break between phrases. Without this,
+     Thai dictionary line-breaking splits inside a phrase (seen at 1440px:
+     "กับคนขับ" broke as กับคน/ขับ). Longest EN phrase "professional driver"
+     still fits the narrowest supported viewport at the mobile h1 size. */
+  .hero h1 span {
+    white-space: nowrap;
+  }
+
   .hero h1 .accent {
     font-style: italic;
     color: var(--gold-dark);
