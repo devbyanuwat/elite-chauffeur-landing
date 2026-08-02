@@ -137,11 +137,13 @@ spec `docs/superpowers/specs/2026-07-28-hero-three-second-design.md` (`3087b8f`)
 
 **ผลวัดที่ controller ยืนยันเอง** (ไม่ใช่แค่คำอ้างของ agent): 1440×900 = **5 ก้อน 10 คำ** · 390×844 = **4 ก้อน 10 คำ** `bgShareOfHero` 0.558 `veilDisplay` none · `h1Opacity` 1 ทั้งสองจอ · contrast 15.57:1 · เห็นด้วยตาจากภาพหน้าจอ: เดสก์ท็อปเจดีย์กลับมาเห็นเป็นเจดีย์ มือถือหน้าเธอเห็นครบไม่มีอะไรทับ
 
-**ค้างของ SABUY-62**
-1. **task review ของ Task 5** — ยังไม่ได้ดิสแพตช์ (มี review package `review-b903b2b..c3f0956.diff` เตรียมไว้แล้ว)
-2. **final whole-branch review** รอบใหม่ ครอบทั้ง pin + hero
-3. **finding ของ controller จากการดูภาพเอง**: H1 เดสก์ท็อป 1440px **ตัดคำกลางคำ** "กับคนขับ" หักเป็น `กับคน` / `ขับ` — ไม่มีเกณฑ์ตัวเลขไหนจับได้ ต้องใช้ตา ยังไม่แก้
+**ค้างของ SABUY-62 — ปิดครบเมื่อ 2026-08-03**
+1. task review ของ Task 5 = **PASS** (4 🟡 minor: error handling ของ measure script + trap fix อยู่ในรูป prose) — 🟡 สองข้อแรกปิดที่ `3f1a2a0` (หา chromium ล่าสุดเอง + poll พอร์ตแทน sleep 1.5s — path 1228 เดิมตายเพราะ playwright อัปเดต)
+2. final whole-branch review รอบใหม่ (fable, วัดจริงทั้งหมด) = **Ready ไม่มี Critical/Important** · งบ JS วัดสด: motion 46,427 + three 188,381 = ~229.3 KiB รวมทุก chunk ~236.3 KiB ใต้เพดาน 240 · ปิด JS ซ่อน 0 element ที่เป็นของ branch (16 ตัวที่เจอคือ `.tm-cta` hover-reveal มีตั้งแต่ base) · SEO ไม่ regress (JSON-LD/OG/robots/sitemap ไม่ถูกแตะจาก bde5808)
+3. H1 ตัดคำกลางคำ — **แก้แล้ว `3f1a2a0`**: `.hero h1 span { white-space: nowrap }` ต่อวลี วัดยืนยัน TH+EN ที่ 1440/390 ทุกวลี line box เดียว overflow 0 (reviewer ทวนซ้ำอิสระ ผ่าน)
 4. agent เจอบั๊กในสคริปต์ของ plan เอง 2 จุดแล้วแก้: สคริปต์ contrast สมมติ `rgb()` แต่ Chrome คืน `oklch()` ได้ ratio ปลอม 1.03 · สคริปต์เช็ค anchor อ่าน `scrollY` ก่อน smooth scroll จบ
+
+**minor ที่ review ทิ้งไว้ (ไม่ block)**: comment ใน `motion.css` quote query ผิดรูป (แก้แล้วรอบ 2026-08-03) · doc ค้างเรื่อง H1 (แก้แล้ว) · h1 nowrap ล้นเมื่อจอแคบกว่า ~312px (Galaxy Fold cover — ต่ำกว่า viewport ที่รองรับ) · measure script sort lexicographic + พอร์ต 9339 ชนกันถ้ารันซ้อน — สองข้อหลัง defer
 
 ## Serena (ตั้งค่าเมื่อ 2026-07-29)
 
@@ -157,6 +159,14 @@ spec `docs/superpowers/specs/2026-07-28-hero-three-second-design.md` (`3087b8f`)
 
 `.serena/cache/` กับ `.serena/project.local.yml` ใส่ `.gitignore` แล้วทั้งสอง repo เพราะ hook `PreCompact` รัน `git add -A && git commit` บน BOS ถ้าไม่กันจะได้ commit 18 MB · `project.yml` track ไว้ให้ทีมใช้ร่วม
 
+## งานการตลาด segment (2026-08-02/03)
+
+- spec กลุ่มเป้าหมาย `docs/superpowers/specs/2026-08-02-target-segments-positioning-design.md` (`65801de`) — 4 segment occasion-led + เสา differentiation 3 ต้น อิง Google Trends (รถตู้เหมา 71.5 / เหมารถ 78.3 / สนามบิน 15.1)
+- plan หน้า `/van/` + `/charter/` `docs/superpowers/plans/2026-08-03-segment-pages-van-charter.md` (`d29dad0`) — 3 tasks, collection `services` + template `[service].astro` ตามแบบ routes · รถตู้ยังไม่มีเรต ใช้ "สอบถาม" (คุณอนุวัชรเลือก 2026-08-03) · ราคา charter ลอกจาก extraRatesTable ของ bangkok-to-pattaya.yaml เท่านั้น
+- การ์ด Plane SABUY: "Segment pages /van/ + /charter/" id `e939779f-8256-4ec7-9c3f-266867fa1e4c` (labels landing+step-1, high, In Progress)
+- DataForSEO ไม่ได้ตั้งค่าในเครื่อง (ไม่มี server entry/credentials) — demand ใช้ pytrends แทน · segment ต่างชาติต้องวัด geo US/UK/SG ก่อนลงแรง
+
 ## ขั้นถัดไป
 
-ปิด 3 ข้อค้างของ SABUY-62 ข้างบน แล้วจึง `superpowers:finishing-a-development-branch` ซึ่งจะถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ
+1. execute plan segment pages (subagent-driven ต่อ task) — การ์ด Plane เปิดแล้ว
+2. แล้วจึง `superpowers:finishing-a-development-branch` ซึ่งจะถาม base branch (`main` หรือ `dev`) ที่ยังไม่ได้ตอบ
