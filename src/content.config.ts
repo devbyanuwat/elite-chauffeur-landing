@@ -179,4 +179,46 @@ const routes = defineCollection({
   }),
 });
 
-export const collections = { airports, routes };
+// ==================== SERVICES (segment landing pages: /van/, /charter/) ====================
+
+const servicesIncludedItem = z.object({
+  icon: z.enum(['shield', 'lines', 'globe', 'clock', 'chat', 'water', 'check']),
+  title: z.string(),
+  desc: z.string(),
+  i18nKey: z.string(),
+});
+
+const servicesRateRow = z.object({
+  label: z.string(), // row label, e.g. vehicle category or destination
+  sub: z.string().optional(), // small line under the label
+  cols: z.array(z.number().nullable()).length(3), // null renders as "สอบถาม"
+});
+
+const services = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/services' }),
+  schema: seoMeta.extend({
+    serviceName: z.string(),
+    serviceDescription: z.string(),
+    serviceType: z.string(), // JSON-LD Service.serviceType
+    areaServed: z.array(z.string()),
+    priceLow: z.string().nullable(), // null → omit offers block entirely
+    priceHigh: z.string().nullable(),
+    breadcrumbName: z.string(),
+    heroHeadingHtml: z.string(),
+    heroSub: z.string(),
+    heroPoints: z.array(z.string()).length(3), // pillar bullets under the sub
+    priceHeading: z.string(),
+    priceDesc: z.string(),
+    priceCols: z.array(z.string()).length(3), // column headings
+    priceColKeys: z.array(z.string()).length(3), // data-i18n keys, same order
+    rateRows: z.array(servicesRateRow),
+    priceFootnote: z.string(),
+    includedDesc: z.string(),
+    included: z.array(servicesIncludedItem),
+    faq: z.array(faqItem),
+    related: relatedLink,
+    bodyI18n,
+  }),
+});
+
+export const collections = { airports, routes, services };

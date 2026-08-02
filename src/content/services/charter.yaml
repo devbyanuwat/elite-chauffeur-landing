@@ -1,0 +1,123 @@
+title: "เหมารถพร้อมคนขับ รายวัน เที่ยวต่างจังหวัด ราคาชัดเจน | SABUYGO"
+description: "เหมารถเก๋ง SUV พร้อมคนขับมืออาชีพ เที่ยวต่างจังหวัดหรือเหมาวันในเมือง รถมีประกัน ราคาแจ้งชัดก่อนจอง ไม่มี surge ไม่มีบวกหน้างาน"
+canonical: "https://sabuygo.com/charter/"
+keywords: "เหมารถ, รถเช่าพร้อมคนขับ, เหมารถเที่ยว, เหมารถรายวัน, เหมารถไปต่างจังหวัด"
+ogTitle: "เหมารถพร้อมคนขับ — เที่ยวสบาย ราคาชัดตั้งแต่จอง"
+ogDescription: "เหมารถรายวันกับคนขับมืออาชีพ รถมีประกัน แจ้งราคาก่อนจองทุกครั้ง"
+serviceName: "เหมารถพร้อมคนขับรายวัน (Daily Car Charter)"
+serviceDescription: "บริการเหมารถเก๋งและ SUV พร้อมคนขับมืออาชีพ รายวันและรายเที่ยว กรุงเทพฯ และต่างจังหวัด"
+serviceType: "Daily Car Charter with Driver"
+areaServed: ["Bangkok", "Pattaya", "Hua Hin", "Khao Yai", "Kanchanaburi", "Ayutthaya"]
+priceLow: "1200"
+priceHigh: "4000"
+breadcrumbName: "เหมารถพร้อมคนขับ"
+heroHeadingHtml: "เหมารถพร้อมคนขับ<br>เที่ยวสบาย ราคาชัดตั้งแต่จอง"
+heroSub: "อยากเที่ยวโดยไม่ต้องขับเอง — คนขับมืออาชีพชำนาญเส้นทาง รถมีประกันครบ ราคาเหมารวมแจ้งก่อนจอง แวะได้ตามแผนของคุณ"
+heroPoints:
+  - "คนขับคัดกรองประวัติ ชำนาญเส้นทางท่องเที่ยว"
+  - "รถมีประกันภัยชั้นหนึ่ง ตรวจสภาพก่อนออกงาน"
+  - "ราคาแจ้งชัดก่อนจอง มีระบบจองและใบเสร็จ"
+priceHeading: "ราคาเหมาวันตามปลายทางยอดนิยม"
+priceDesc: "ตัวอย่างราคา day-trip ปลายทางยอดนิยม — เส้นทางอื่นสอบถามได้ ทีมงานยืนยันราคาก่อนจองทุกครั้ง"
+priceCols: ["Sedan · 3 ที่นั่ง", "SUV / MPV · 6 ที่นั่ง", "VAN · 6 ที่นั่ง"]
+priceColKeys: ["price.col.sedan", "price.col.suv", "price.col.van"]
+rateRows:
+  - label: "สุวรรณภูมิ ↔ พัทยา"
+    cols: [1200, 1500, 2000]
+  - label: "ดอนเมือง ↔ พัทยา"
+    cols: [1500, 1800, 2500]
+  - label: "บางบัวทอง ↔ พัทยา"
+    cols: [2000, 2300, 3000]
+  - label: "ดอนเมือง ↔ สัตหีบ"
+    cols: [2000, 2300, null]
+  - label: "สุวรรณภูมิ ↔ สัตหีบ"
+    cols: [1500, 1800, null]
+  - label: "สุวรรณภูมิ ↔ บ้านเพ"
+    cols: [1800, 2100, 2800]
+  - label: "ดอนเมือง ↔ บ้านเพ"
+    cols: [2200, 2500, null]
+  - label: "พัทยา → ปทุมธานี"
+    sub: "ราคาเริ่มต้น · หลายโซน"
+    cols: [1800, 2100, null]
+  - label: "สุวรรณภูมิ ↔ ปลวกแดง"
+    cols: [1800, 2100, null]
+  - label: "สุขุมวิท ↔ ปลวกแดง"
+    cols: [2000, 2300, null]
+  - label: "ดอนเมือง ↔ ปลวกแดง"
+    cols: [2200, 2500, null]
+  - label: "พัทยา ↔ หัวหิน"
+    cols: [3200, 3500, 4000]
+  - label: "พัทยา ↔ รังสิต"
+    cols: [1700, 2000, null]
+priceFootnote: "ราคา day-trip รวมรถ คนขับ และน้ำมัน ค่าทางด่วนตามจริง — เส้นทางอื่นหรือค้างคืนหลายวัน สอบถามได้ ตอบกลับใน 15 นาที"
+includedDesc: "ทุกการเหมารถรวมสิ่งเหล่านี้ ไม่มีบวกเพิ่มภายหลัง"
+included:
+  - icon: shield
+    title: "ประกันภัยครอบคลุมผู้โดยสาร"
+    desc: "รถทุกคันมีประกันภัยชั้นหนึ่งและ พ.ร.บ. ครบถ้วน"
+    i18nKey: "inc.insure"
+  - icon: check
+    title: "คนขับผ่านการคัดกรอง"
+    desc: "ตรวจประวัติ ใบขับขี่สาธารณะ และประเมินการขับจริง"
+    i18nKey: "inc.driver"
+  - icon: clock
+    title: "ตรงเวลา ยืดหยุ่นตามแผนทริป"
+    desc: "ปรับจุดแวะได้ตามตกลง ไม่นับเป็นค่าใช้จ่ายแอบแฝง"
+    i18nKey: "inc.time"
+  - icon: chat
+    title: "ประสานงานตลอดทริป"
+    desc: "ทีมงานติดต่อได้ทาง LINE ตลอดการเดินทาง"
+    i18nKey: "inc.support"
+faq:
+  - question: "เหมารถพร้อมคนขับ คิดราคายังไง?"
+    answer: "คิดตามเส้นทางและระยะเวลา ตารางด้านบนคือราคา day-trip ปลายทางยอดนิยม เส้นทางอื่นทีมงานแจ้งราคารวมทุกอย่างให้ก่อนยืนยันจอง ไม่มีบวกเพิ่มหน้างาน"
+  - question: "แวะระหว่างทางได้ไหม?"
+    answer: "ได้ ทริปเหมาวันแวะจุดท่องเที่ยว ร้านอาหาร หรือจุดถ่ายรูปได้ตามแผนของคุณ ตกลงเส้นทางคร่าว ๆ กับทีมงานตอนจองเพื่อให้ราคาที่แจ้งครอบคลุมครบ"
+  - question: "คนขับพูดภาษาอังกฤษได้ไหม?"
+    answer: "ระบุตอนจองได้ว่าต้องการคนขับที่สื่อสารภาษาอังกฤษ ทีมงานจะจัดคนขับให้ตรงกับความต้องการ"
+  - question: "จองล่วงหน้ากี่วัน?"
+    answer: "แนะนำล่วงหน้าอย่างน้อย 2–3 วัน ช่วงเทศกาลควรจองเร็วขึ้น หากเร่งด่วนทัก LINE เพื่อเช็กคิวรถได้ทันที"
+related:
+  heading: "เดินทางหมู่คณะ?"
+  desc: "กลุ่มใหญ่ 9 คนขึ้นไป ดูบริการเหมารถตู้พร้อมคนขับ"
+  href: "/van/"
+  cta: "ดูบริการรถตู้"
+bodyI18n:
+  crumb.home: "Home"
+  crumb.current: "Car Charter"
+  hero.h1: "Private car with driver<br>travel easy, clear price before you book"
+  hero.sub: "Want to see the sights without driving yourself — professional drivers who know the routes, fully insured cars, and an all-in charter price confirmed before you book. Stop wherever your plan takes you."
+  hero.p1: "Vetted drivers who know the tourist routes"
+  hero.p2: "First-class insurance, pre-trip inspection"
+  hero.p3: "Clear quote, booking system, and receipt"
+  price.h2: "Day-charter rates for popular destinations"
+  price.desc: "Sample day-trip rates for popular destinations — ask about other routes, our team confirms the exact price before you book"
+  price.col.sedan: "Sedan · 3 seats"
+  price.col.suv: "SUV / MPV · 6 seats"
+  price.col.van: "VAN · 6 seats"
+  price.ask: "Ask us"
+  price.footnote: "Day-trip prices include car, driver, and fuel; tolls at cost — ask about other routes or multi-day trips, reply within 15 minutes."
+  inc.h2: "Every car charter includes"
+  inc.desc: "All of this is included — nothing added later"
+  inc.insure.t: "Passenger insurance"
+  inc.insure.d: "Every car carries first-class insurance and compulsory cover"
+  inc.driver.t: "Vetted drivers"
+  inc.driver.d: "Background check, public licence, and a real driving assessment"
+  inc.time.t: "On time, flexible"
+  inc.time.d: "Adjust stops as agreed — never a hidden charge"
+  inc.support.t: "Support throughout"
+  inc.support.d: "Reach our team on LINE for the whole trip"
+  faq.h2: "Frequently asked questions"
+  faq.q1: "How is a car charter priced?"
+  faq.a1: "Priced by route and duration. The table above shows day-trip rates for popular destinations; for other routes our team quotes an all-in price before you confirm — no on-the-day extras."
+  faq.q2: "Can we stop along the way?"
+  faq.a2: "Yes — day charters can stop at sights, restaurants, or photo spots on your plan. Agree the rough route when booking so the quoted price covers everything."
+  faq.q3: "Does the driver speak English?"
+  faq.a3: "Let us know when booking if you need an English-speaking driver and our team will match you with one."
+  faq.q4: "How far in advance should I book?"
+  faq.a4: "At least 2–3 days; earlier during holidays. For urgent trips, message us on LINE to check availability."
+  rel.label: "Travelling as a group?"
+  rel.desc: "9 or more people — see our van with driver service"
+  rel.cta: "View van charter"
+  cta.desc: "Fill in the form above or message us on LINE — reply within 15 minutes"
+  cta.book: "Book via form"
