@@ -426,7 +426,8 @@ const first = CARS[0];
 
     .fleet-chapter.pin-ready .fleet-viewport {
       height: 100%;
-      padding: clamp(16px, 3vh, 40px) clamp(20px, 4vw, 64px);
+      /* nav ลอย fixed สูง 72px — บทที่ pin เต็มจอต้องเผื่อหัว ไม่งั้นชื่อบทมุดใต้ nav */
+      padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px) clamp(16px, 3vh, 40px);
     }
 
     .fleet-chapter.pin-ready .fleet-stagewrap {
@@ -448,6 +449,8 @@ const first = CARS[0];
       align-items: flex-end;
       justify-content: space-between;
       gap: 2rem;
+      /* กันราคาชนปุ่มลอยมุมขวาล่าง (sticky CTA + LINE) */
+      padding-right: 220px;
     }
 
     .fleet-chapter.pin-ready .price {
