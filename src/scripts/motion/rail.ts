@@ -28,24 +28,38 @@ export function initRail(root: ParentNode): () => void {
   const dots = Array.from(rail.querySelectorAll<HTMLElement>('[data-rail-dot]'));
   const label = rail.querySelector<HTMLElement>('[data-rail-label]');
 
-  const triggers = stops.map((stop, index) =>
-    ScrollTrigger.create({
-      trigger: `#${stop.id}`,
-      start: 'top center',
-      end: 'bottom center',
-      onToggle: (self) => {
-        if (!self.isActive) return;
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('on', i === index);
-          // Colour alone (the .on class) isn't enough for screen readers —
-          // aria-current names the active chapter's link explicitly.
-          if (i === index) dot.setAttribute('aria-current', 'true');
-          else dot.removeAttribute('aria-current');
-        });
-        if (label) label.textContent = dots[index]?.dataset.railName ?? '';
-      },
+  // fix round 1: `stops` is document order (from collectChapters), `dots` is
+  // the component's own markup order (src/components/ChapterRail.astro) —
+  // these are NOT the same order (the page renders Stats before Fleet/How/
+  // Routes, the rail lists Fleet/How/Routes/Stats). Indexing `dots[index]`
+  // with `stops`' index silently mismatched 5 of 6 chapters to the wrong dot.
+  // Match by id instead so reordering sections in index.astro can never
+  // desync the rail again; a stop with no matching dot degrades quietly (no
+  // ScrollTrigger created for it) rather than mis-highlighting.
+  const triggers = stops
+    .map((stop) => {
+      const dot = dots.find((candidate) => candidate.getAttribute('href') === `#${stop.id}`);
+      if (!dot) return null;
+
+      return ScrollTrigger.create({
+        trigger: `#${stop.id}`,
+        start: 'top center',
+        end: 'bottom center',
+        onToggle: (self) => {
+          if (!self.isActive) return;
+          dots.forEach((candidate) => {
+            const isActive = candidate === dot;
+            candidate.classList.toggle('on', isActive);
+            // Colour alone (the .on class) isn't enough for screen readers —
+            // aria-current names the active chapter's link explicitly.
+            if (isActive) candidate.setAttribute('aria-current', 'true');
+            else candidate.removeAttribute('aria-current');
+          });
+          if (label) label.textContent = dot.dataset.railName ?? '';
+        },
+      });
     })
-  );
+    .filter((trigger): trigger is ScrollTrigger => trigger !== null);
 
   rail.classList.add('rail-ready');
 
