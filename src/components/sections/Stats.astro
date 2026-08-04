@@ -2,14 +2,15 @@
 import TripStat from './TripStat.astro';
 ---
 
-<section class="stats">
+<section class="stats chapter stats-chapter" id="stats" data-chapter="stats" data-chapter-len="160">
   <div class="wrap wrap-wide">
     <div class="stats-inner">
-      <div class="stat reveal"><b>24/7</b><span data-i18n="stat.1">บริการทุกวัน ไม่มีวันหยุด</span></div>
-      <div class="stat reveal"><b><TripStat server:defer><Fragment slot="fallback">500+</Fragment></TripStat></b><span data-i18n="stat.2">เที่ยวเดินทางปลอดภัย</span></div>
-      <div class="stat reveal"><b>4.9 / 5</b><span data-i18n="stat.3">คะแนนจากลูกค้า</span></div>
-      <div class="stat reveal"><b>100%</b><span data-i18n="stat.4">รถมีประกัน + พ.ร.บ.</span></div>
+      <div class="stat"><b>24/7</b><span data-i18n="stat.1">บริการทุกวัน ไม่มีวันหยุด</span></div>
+      <div class="stat"><b><TripStat server:defer><Fragment slot="fallback">500+</Fragment></TripStat></b><span data-i18n="stat.2">เที่ยวเดินทางปลอดภัย</span></div>
+      <div class="stat"><b>4.9 / 5</b><span data-i18n="stat.3">คะแนนจากลูกค้า</span></div>
+      <div class="stat"><b>100%</b><span data-i18n="stat.4">รถมีประกัน + พ.ร.บ.</span></div>
     </div>
+    <span class="stats-line" aria-hidden="true"></span>
   </div>
 </section>
 
@@ -51,5 +52,28 @@ import TripStat from './TripStat.astro';
       grid-template-columns: repeat(2, 1fr);
       gap: 1.8rem 1rem;
     }
+  }
+
+  .stats-line {
+    display: block;
+    height: 1px;
+    background: var(--gold-dark);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .stats-chapter.pin-ready {
+    height: 100svh;
+    display: grid;
+    align-content: center;
+  }
+
+  .stats-chapter.pin-ready .stat {
+    opacity: 0;
+    transition: none;
+  }
+
+  .stats-chapter.pin-ready .stat.on {
+    opacity: 1;
   }
 </style>

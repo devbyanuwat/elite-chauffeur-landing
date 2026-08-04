@@ -10,6 +10,7 @@ import { buildFleetChapter } from './chapters/fleet';
 import { buildHowChapter } from './chapters/how';
 import { buildIntroChapter } from './chapters/intro';
 import { buildRoutesChapter } from './chapters/routes';
+import { buildStatsChapter } from './chapters/stats';
 
 export interface Chapter {
   name: string;
@@ -51,6 +52,7 @@ const BUILDERS: Record<string, (section: HTMLElement, len: number) => () => void
   fleet: buildFleetChapter,
   how: buildHowChapter,
   routes: buildRoutesChapter,
+  stats: buildStatsChapter,
 };
 
 export function applyEditionsPins(root: ParentNode): () => void {

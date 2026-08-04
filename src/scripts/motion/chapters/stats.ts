@@ -1,0 +1,120 @@
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import { PIN_READY_CLASS } from './shared';
+
+export interface StatsCountTarget {
+  value: number;
+  decimals: number;
+  suffix: string;
+}
+
+export function statsStageForProgress(progress: number, count: number): number {
+  if (count <= 0) return 0;
+  return Math.min(count - 1, Math.floor(progress * count));
+}
+
+/**
+ * ตัวเลขที่นับขึ้นได้ต้องเป็น "ตัวเลขหนึ่งชุดแล้วจบ" เท่านั้น — `24/7` มีตัวเลข
+ * สองชุดคั่นด้วย `/` ถ้านับจะเห็น `0/7` ระหว่างทางซึ่งอ่านเป็นข้อมูลผิด
+ * กรณีแบบนั้นคืน null เพื่อให้ buildStatsChapter ใช้ mask เปิดแทนการนับ
+ */
+export function statsCountTarget(text: string): StatsCountTarget | null {
+  const match = /^(\d+(?:\.\d+)?)(.*)$/.exec(text.trim());
+  if (match === null) return null;
+
+  const [, digits, rest] = match;
+  if (/\d/.test(rest.replace(/\s*\/\s*\d+$/, '')) ) return null;
+  if (/^\s*\/\s*\d+$/.test(rest) && !digits.includes('.')) return null;
+
+  const decimals = digits.includes('.') ? digits.split('.')[1].length : 0;
+
+  return { value: Number.parseFloat(digits), decimals, suffix: rest };
+}
+
+const STAT_SELECTOR = '.stat';
+
+/**
+ * บท stats — pin แล้วปล่อยสถิติเข้าทีละตัวตาม progress ตัวที่นับได้จะวิ่งเลข
+ * ตัวที่นับไม่ได้ (เช่น 24/7) เปิดด้วย mask แทน เส้นทองใต้แถวยาวตาม progress ดิบ
+ *
+ * ค่าเป้าหมายอ่านจาก DOM ตอน ScrollTrigger ยิงครั้งแรก ไม่ใช่ตอนสร้าง timeline
+ * เพราะ TripStat เป็น island server:defer — ตอนสร้าง timeline ตัวเลขในหน้ายัง
+ * เป็น fallback `500+` อยู่ ถ้าอ่านตอนนั้นจะนับไปหาค่าที่ไม่ใช่ของจริงตลอดไป
+ */
+export function buildStatsChapter(section: HTMLElement, len: number): () => void {
+  const stats = Array.from(section.querySelectorAll<HTMLElement>(STAT_SELECTOR));
+  const line = section.querySelector<HTMLElement>('.stats-line');
+  if (stats.length === 0) return () => {};
+
+  const targets = new Map<HTMLElement, StatsCountTarget | null>();
+  let resolved = false;
+  let cur = -1;
+
+  const ctx = gsap.context(() => {}, section);
+
+  const resolveTargets = ctx.add('resolveTargets', () => {
+    if (resolved) return;
+    resolved = true;
+    stats.forEach((stat) => {
+      const b = stat.querySelector<HTMLElement>('b');
+      targets.set(stat, b ? statsCountTarget(b.textContent ?? '') : null);
+    });
+  }) as () => void;
+
+  const showStat = ctx.add('showStat', (stat: HTMLElement) => {
+    const b = stat.querySelector<HTMLElement>('b');
+    const label = stat.querySelector<HTMLElement>('span');
+    const target = targets.get(stat) ?? null;
+
+    stat.classList.add('on');
+    if (label) gsap.fromTo(label, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
+
+    if (!b) return;
+
+    if (target === null) {
+      gsap.fromTo(b, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 0.6, ease: 'power3.out' });
+      return;
+    }
+
+    const state = { value: 0 };
+    gsap.to(state, {
+      value: target.value,
+      duration: 0.9,
+      ease: 'power2.out',
+      onUpdate: () => {
+        b.textContent = state.value.toFixed(target.decimals) + target.suffix;
+      },
+    });
+  }) as (stat: HTMLElement) => void;
+
+  const onUpdate = ctx.add('onUpdate', (st: ScrollTrigger) => {
+    resolveTargets();
+    const stage = statsStageForProgress(st.progress, stats.length);
+    if (stage > cur) {
+      for (let i = cur + 1; i <= stage; i += 1) showStat(stats[i]);
+      cur = stage;
+    }
+    if (line) gsap.set(line, { scaleX: st.progress });
+  }) as (st: ScrollTrigger) => void;
+
+  const trigger = ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: `+=${len}%`,
+    pin: section,
+    pinSpacing: true,
+    anticipatePin: 1,
+    scrub: true,
+    invalidateOnRefresh: true,
+    onUpdate,
+  });
+
+  section.classList.add(PIN_READY_CLASS);
+
+  return () => {
+    trigger.kill();
+    ctx.revert();
+    section.classList.remove(PIN_READY_CLASS);
+  };
+}
