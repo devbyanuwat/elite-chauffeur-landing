@@ -1,29 +1,29 @@
 ---
 ---
 
-<section class="block why" id="why">
+<section class="block why chapter why-chapter" id="why" data-chapter="why" data-chapter-len="240">
   <div class="wrap">
-    <div class="section-head reveal">
+    <div class="section-head">
       <span class="eyebrow" data-i18n="wy.eyebrow">ทำไมต้อง SABUYGO</span>
       <h2 data-i18n="wy.title">ความสบายใจ คือสิ่งที่เราส่งมอบ</h2>
       <p data-i18n="wy.sub">ทุกการเดินทางผ่านมาตรฐานเดียวกัน เพื่อให้คุณวางใจได้ทุกครั้ง</p>
     </div>
     <div class="why-grid">
-      <div class="why-item reveal">
+      <div class="why-item">
         <div class="why-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <h3 data-i18n="wy.1.t">ประกันเต็มทุกคัน</h3>
         <p data-i18n="wy.1.d">รถทุกคันในเครือต้องมีประกันชั้นหนึ่งและ พ.ร.บ. คุ้มครองผู้โดยสารและทรัพย์สิน เป็นเงื่อนไขบังคับก่อนเข้าร่วม</p>
       </div>
-      <div class="why-item reveal">
+      <div class="why-item">
         <div class="why-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         </div>
         <h3 data-i18n="wy.2.t">คนขับมืออาชีพ</h3>
         <p data-i18n="wy.2.d">คัดกรองประวัติ สุภาพ ตรงเวลา ชำนาญเส้นทาง ดูแลคุณเหมือนคนสำคัญในทุกการเดินทาง</p>
       </div>
-      <div class="why-item reveal">
+      <div class="why-item">
         <div class="why-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
@@ -95,5 +95,24 @@
     .why-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  .why-chapter.pin-ready {
+    height: 100svh;
+    display: grid;
+    align-content: center;
+  }
+
+  .why-chapter.pin-ready .why-item {
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .why-chapter.pin-ready .why-item.entered {
+    opacity: 0.45;
+  }
+
+  .why-chapter.pin-ready .why-item.current {
+    opacity: 1;
   }
 </style>
