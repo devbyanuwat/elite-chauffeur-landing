@@ -15,11 +15,12 @@ export function whyStageForProgress(progress: number, cardCount: number): number
 }
 
 /**
- * บท why — หัวเรื่อง mask ขึ้นก่อน แล้วการ์ดเข้าทีละใบ ใบที่ผ่านไปแล้วหรี่ลง
- * เหลือ 0.45 เพื่อให้ใบปัจจุบันเป็นจุดสนใจเดียว โดยยังอ่านใบก่อนหน้าได้
+ * บท why — การ์ดเข้าทีละใบ ใบที่ผ่านไปแล้วหรี่ลงเหลือ 0.45 เพื่อให้ใบปัจจุบัน
+ * เป็นจุดสนใจเดียว โดยยังอ่านใบก่อนหน้าได้ opacity เป็นของ CSS (`.entered` /
+ * `.current` ใน Why.astro) ล้วน ๆ — gsap แตะแค่ `y` เพื่อไม่ให้ inline style
+ * ทับ rule ของ CSS ปล่อยให้สอง system แย่งกันคุม opacity เดียวกัน (fix-review R1)
  */
 export function buildWhyChapter(section: HTMLElement, len: number): () => void {
-  const head = section.querySelector<HTMLElement>('.section-head');
   const cards = Array.from(section.querySelectorAll<HTMLElement>('.why-item'));
   if (cards.length === 0) return () => {};
 
@@ -31,8 +32,6 @@ export function buildWhyChapter(section: HTMLElement, len: number): () => void {
     if (stage === cur) return;
     cur = stage;
 
-    if (head) head.classList.toggle('on', stage >= 0);
-
     cards.forEach((card, index) => {
       const entered = index < stage;
       card.classList.toggle('entered', entered);
@@ -43,8 +42,8 @@ export function buildWhyChapter(section: HTMLElement, len: number): () => void {
     if (justEntered) {
       gsap.fromTo(
         justEntered,
-        { opacity: 0, y: 28 },
-        { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out', overwrite: 'auto' }
+        { y: 28 },
+        { y: 0, duration: 0.55, ease: 'power3.out', overwrite: 'auto' }
       );
     }
   }) as (stage: number) => void;

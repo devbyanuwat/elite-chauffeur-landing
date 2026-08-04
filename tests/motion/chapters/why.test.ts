@@ -1,6 +1,33 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { whyStageForProgress } from '../../../src/scripts/motion/chapters/why';
+// fix-review round 1 (CRITICAL): gsap.fromTo used to write an inline
+// `opacity` style that the CSS `.entered`/`.current` rules in Why.astro
+// could never win against, so previously-current cards never dimmed back
+// to 0.45. Mocked the same way tests/motion/editions.test.ts mocks
+// gsap/ScrollTrigger — real ScrollTrigger.create needs live layout
+// measurement jsdom can't provide — so buildWhyChapter can be exercised
+// here and its DOM class state asserted directly, forward and backward.
+const { context, contextRevert, scrollTriggerCreate, gsapFromTo } = vi.hoisted(() => {
+  const contextAdd = vi.fn((_name: string, func: (...args: unknown[]) => unknown) => func);
+  const contextRevert = vi.fn();
+  const context = vi.fn(() => ({ add: contextAdd, revert: contextRevert }));
+  const scrollTriggerCreate = vi.fn();
+  const gsapFromTo = vi.fn();
+  return { context, contextAdd, contextRevert, scrollTriggerCreate, gsapFromTo };
+});
+
+vi.mock('gsap', () => ({
+  gsap: {
+    context,
+    fromTo: gsapFromTo,
+  },
+}));
+
+vi.mock('gsap/ScrollTrigger', () => ({
+  ScrollTrigger: { create: scrollTriggerCreate },
+}));
+
+import { buildWhyChapter, whyStageForProgress } from '../../../src/scripts/motion/chapters/why';
 
 describe('whyStageForProgress', () => {
   it('ต้นบทเห็นเฉพาะหัวเรื่อง', () => {
@@ -16,5 +43,100 @@ describe('whyStageForProgress', () => {
 
   it('ท้ายบทค้างที่ใบสุดท้าย ไม่ล้น', () => {
     expect(whyStageForProgress(1, 3)).toBe(3);
+  });
+});
+
+describe('buildWhyChapter · fix-review R1 (opacity owned by CSS classes only)', () => {
+  function root(): HTMLElement {
+    const section = document.createElement('section');
+    section.innerHTML = `
+      <div class="section-head"></div>
+      <div class="why-grid">
+        <div class="why-item"></div>
+        <div class="why-item"></div>
+        <div class="why-item"></div>
+      </div>
+    `;
+    document.body.appendChild(section);
+    return section;
+  }
+
+  function stubTrigger() {
+    scrollTriggerCreate.mockReturnValue({ kill: vi.fn(), progress: 0 });
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
+
+  it('gsap.fromTo ไม่แตะ opacity เลย — ป้องกัน inline style ทับ rule ของ CSS', () => {
+    const section = root();
+    stubTrigger();
+    buildWhyChapter(section, 240);
+
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+    onUpdate({ progress: 0.3 });
+
+    expect(gsapFromTo).toHaveBeenCalledTimes(1);
+    const [, fromVars, toVars] = gsapFromTo.mock.calls[0];
+    expect(fromVars).not.toHaveProperty('opacity');
+    expect(toVars).not.toHaveProperty('opacity');
+  });
+
+  it('เดินหน้า: การ์ดที่ผ่านไปแล้วได้ class entered (ไม่มี current) การ์ดปัจจุบันได้ current', () => {
+    const section = root();
+    stubTrigger();
+    buildWhyChapter(section, 240);
+    const cards = Array.from(section.querySelectorAll('.why-item'));
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+    onUpdate({ progress: 0.3 }); // stage 1
+    expect(cards[0].classList.contains('current')).toBe(true);
+    expect(cards[0].classList.contains('entered')).toBe(true);
+    expect(cards[1].classList.contains('entered')).toBe(false);
+    expect(cards[1].classList.contains('current')).toBe(false);
+
+    onUpdate({ progress: 0.55 }); // stage 2
+    expect(cards[0].classList.contains('entered')).toBe(true);
+    expect(cards[0].classList.contains('current')).toBe(false);
+    expect(cards[1].classList.contains('entered')).toBe(true);
+    expect(cards[1].classList.contains('current')).toBe(true);
+    expect(cards[2].classList.contains('entered')).toBe(false);
+  });
+
+  it('ถอยหลัง: เมื่อ progress ลดลง class ของการ์ดที่เกินสถานะใหม่ต้องถูกล้าง ไม่ใช่ค้างที่ current/opacity เดิม', () => {
+    const section = root();
+    stubTrigger();
+    buildWhyChapter(section, 240);
+    const cards = Array.from(section.querySelectorAll('.why-item'));
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+    onUpdate({ progress: 0.8 }); // stage 3 — all entered, card[2] current
+    expect(cards[2].classList.contains('current')).toBe(true);
+
+    onUpdate({ progress: 0.3 }); // scroll back up to stage 1
+    expect(cards[0].classList.contains('current')).toBe(true);
+    expect(cards[0].classList.contains('entered')).toBe(true);
+    // stage 2/3 cards must drop both classes going backward — this is what
+    // used to stay stuck at inline opacity:1 forever under the old bug.
+    expect(cards[1].classList.contains('entered')).toBe(false);
+    expect(cards[1].classList.contains('current')).toBe(false);
+    expect(cards[2].classList.contains('entered')).toBe(false);
+    expect(cards[2].classList.contains('current')).toBe(false);
+  });
+
+  it('cleanup: kill trigger, revert context, ลบ pin-ready', () => {
+    const section = root();
+    const kill = vi.fn();
+    scrollTriggerCreate.mockReturnValue({ kill, progress: 0 });
+
+    const cleanup = buildWhyChapter(section, 240);
+    expect(section.classList.contains('pin-ready')).toBe(true);
+
+    cleanup();
+    expect(kill).toHaveBeenCalledTimes(1);
+    expect(contextRevert).toHaveBeenCalledTimes(1);
+    expect(section.classList.contains('pin-ready')).toBe(false);
   });
 });
