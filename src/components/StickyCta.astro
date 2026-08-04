@@ -38,4 +38,13 @@
       right: 14px;
     }
   }
+
+  /* reduced-motion ยังได้เห็นปุ่ม (index.ts เรียก initStickyCta ในสาขานั้นด้วย)
+     แค่ไม่ต้องเห็นมันเลื่อนขึ้นมา */
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-cta {
+      transform: none;
+      transition: none;
+    }
+  }
 </style>

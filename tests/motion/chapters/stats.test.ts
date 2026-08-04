@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { statsCountTarget, statsStageForProgress } from '../../../src/scripts/motion/chapters/stats';
+import { statDisplayText, statsCountTarget, statsStageForProgress } from '../../../src/scripts/motion/chapters/stats';
 
 describe('statsStageForProgress', () => {
   it('แบ่ง progress เป็นช่วงเท่า ๆ กันตามจำนวนสถิติ', () => {
@@ -30,5 +30,25 @@ describe('statsCountTarget', () => {
 
   it('เปอร์เซ็นต์นับได้', () => {
     expect(statsCountTarget('100%')).toEqual({ value: 100, decimals: 0, suffix: '%' });
+  });
+});
+
+describe('statDisplayText', () => {
+  // T9 verification: TripStat เป็น island server:defer — ก่อนถูกแทนที่ <b> มี
+  // ทั้ง fallback และ <script> ของ Astro อยู่ด้วยกัน textContent ดิบจึงพ่วง
+  // source ของสคริปต์มาทำให้ statsCountTarget อ่านไม่ออกและตัวเลขไม่เคยวิ่ง
+  it('ไม่นับข้อความใน <script> ที่ island ยังไม่ได้ถูกแทนที่ทิ้งไว้', () => {
+    const b = document.createElement('b');
+    b.innerHTML = '<script data-island-id="x">async function replaceServerIsland() {}<\/script>500+';
+
+    expect(b.textContent).toContain('replaceServerIsland');
+    expect(statDisplayText(b).trim()).toBe('500+');
+  });
+
+  it('อ่านค่าจริงหลัง island สลับเข้ามาแล้ว', () => {
+    const b = document.createElement('b');
+    b.textContent = '1,284';
+
+    expect(statDisplayText(b)).toBe('1,284');
   });
 });

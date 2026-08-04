@@ -265,6 +265,14 @@ export function initMotion(root: ParentNode = document): void {
   // gsap.matchMedia เพราะนี่ไม่ใช่ tween ที่ reduced-motion ต้องปิด)
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     applyReviewArrowsOnly(root);
+    // T9 verification finding: `initStickyCtaOf` only ran inside the two
+    // motion tiers above, both of which are gated on NOT reduced-motion. A
+    // reduced-motion visitor therefore never got the `.show` class, and
+    // StickyCta.astro's resting state is `opacity: 0; pointer-events: none` —
+    // the booking CTA was permanently invisible for them. This is a class
+    // toggle, not a tween, so it belongs on the same un-gated footing as the
+    // review arrows.
+    initStickyCtaOf(root);
   }
 
   // legacy .reveal bridge lives in ./legacy-reveal (final-review Fix 1) and is

@@ -398,4 +398,25 @@ describe('initMotion', () => {
       expect(scrollBy).toHaveBeenCalledTimes(1);
     });
   });
+
+  // T9 verification: reduced-motion เคยไม่ได้ปุ่ม sticky CTA เลย เพราะ
+  // initStickyCtaOf ถูกเรียกเฉพาะใน mm.add สองสาขาที่ปิดตอน reduce ทั้งคู่
+  // ผลคือปุ่มค้างที่ opacity:0 ตลอดกาล (วัดจริงที่ 1440x900 รอบ T9)
+  it('ต่อสาย sticky CTA ให้ reduced-motion ด้วย แม้ไม่มี motion context ไหน match', () => {
+    vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
+      matches: query.includes('prefers-reduced-motion: reduce'),
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    matchMediaAdd.mockImplementation(() => {});
+
+    document.body.innerHTML = '<a id="sticky-cta" href="#booking">จองรถ</a>';
+    initMotion();
+
+    const ctaTrigger = scrollTriggerCreate.mock.calls
+      .map((call) => call[0] as { trigger?: string; endTrigger?: string })
+      .find((config) => config.trigger === '#services' && config.endTrigger === '#booking');
+    expect(ctaTrigger).toBeDefined();
+  });
 });

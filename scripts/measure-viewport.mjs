@@ -71,6 +71,18 @@ await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', {
   width: Number(width), height: Number(height), deviceScaleFactor: 1, mobile: mode === 'mobile',
 });
+
+// MEASURE_MEDIA='[{"name":"prefers-reduced-motion","value":"reduce"}]' — วัด
+// สาขา reduced-motion ได้โดยไม่ต้องแก้ CSS ชั่วคราว
+if (process.env.MEASURE_MEDIA) {
+  await send('Emulation.setEmulatedMedia', { features: JSON.parse(process.env.MEASURE_MEDIA) });
+}
+// MEASURE_NO_JS=1 — ปิดสคริปต์ของหน้า (Runtime.evaluate ของ CDP ยังทำงาน) เพื่อ
+// พิสูจน์ว่าเนื้อหาอ่านได้ครบโดยไม่พึ่ง JavaScript
+if (process.env.MEASURE_NO_JS === '1') {
+  await send('Emulation.setScriptExecutionDisabled', { value: true });
+}
+
 await send('Page.navigate', { url: URL_UNDER_TEST });
 await sleep(4000);
 
