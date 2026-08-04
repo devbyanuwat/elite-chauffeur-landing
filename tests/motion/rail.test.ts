@@ -117,8 +117,19 @@ describe('initRail', () => {
   });
 
   it('ข้าม dot ที่ id ปลายทางไม่มีอยู่จริงในหน้า โดยไม่ throw', () => {
-    // เพจอื่นที่ยังไม่มี ChapterRail วันนี้ (ตามที่ยืนยันไว้) หรือเพจใน
-    // อนาคตที่มี rail แต่มี section ไม่ครบ ต้องไม่ throw และไม่ติด dot ผิด
+    // fix round 3 (coordinator finding): #booking having no data-chapter is
+    // NOT what this test is meant to prove — the old, chapter-driven
+    // initRail would also have skipped it, but for an unrelated reason (it
+    // was never in railStops()'s list), which would let this test pass
+    // even with the new querySelector(...) === null guard deleted. Assert
+    // the exact trigger count (1, #why only) so the assertion is
+    // unambiguous about *why* #booking was skipped: because initRail
+    // resolved its href against the live DOM and found nothing there, not
+    // because of the chapter list. Verified by hand: temporarily removing
+    // the `root.querySelector(...) === null` half of the guard in rail.ts
+    // makes this test fail (2 calls, #booking included) — restoring it
+    // brings it back to green. See task-8-report.md "Fix round 3" for the
+    // full before/after test output.
     document.body.innerHTML = `
       <section id="why" data-chapter="why"></section>
       <nav id="chapter-rail">
@@ -131,6 +142,10 @@ describe('initRail', () => {
 
     expect(() => initRail(document)).not.toThrow();
 
+    // exactly one ScrollTrigger — #why. If the null-target guard is
+    // deleted, initRail iterates both dots and this becomes 2.
+    expect(scrollTriggerCreate).toHaveBeenCalledTimes(1);
+
     const bookingCall = scrollTriggerCreate.mock.calls.find(
       (call) => (call[0] as { trigger: string }).trigger === '#booking'
     );
@@ -140,5 +155,11 @@ describe('initRail', () => {
       (call) => (call[0] as { trigger: string }).trigger === '#why'
     );
     expect(whyCall).toBeDefined();
+
+    // the booking dot itself is untouched — never marked active, never
+    // targeted, just quietly absent from the trigger set.
+    const bookingDot = document.querySelector<HTMLElement>('[href="#booking"]')!;
+    expect(bookingDot.classList.contains('on')).toBe(false);
+    expect(bookingDot.getAttribute('aria-current')).toBeNull();
   });
 });
