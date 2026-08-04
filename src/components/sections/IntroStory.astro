@@ -270,6 +270,30 @@
     opacity: 0;
   }
 
+  /* fix round 2 (review): at 70vw (round 1's fix for the text-clipping
+     finding) the panel's right edge (24px + 70vw) runs past
+     chapters/intro.ts's `left: e * 52 + '%'` photo edge on phones ≤~430px
+     wide — and .intro-veil's gradient is transparent across exactly that
+     overlap band (its own `transparent 0 42%` is relative to the PHOTO's
+     box, which starts at that same 52% line), so the service text would sit
+     directly on the raw, fully-unveiled photo with nothing behind it.
+     Rather than re-narrow the panel (that's what reintroduced round 1's
+     clipping bug) or retune intro.ts's photo-position numbers (desktop-
+     tuned, scrub-driven, riskier to touch), give the panel its own scrim
+     below 1024px so legibility no longer depends on where the photo's edge
+     happens to land at a given viewport width. `.intro-services` is already
+     `position: absolute`, so this ::before positions against it directly. */
+  @media (max-width: 1023px) {
+    .intro-chapter.pin-ready .intro-services::before {
+      content: '';
+      position: absolute;
+      inset: -14px -18px;
+      z-index: -1;
+      border-radius: var(--r-md);
+      background: linear-gradient(100deg, var(--bg-primary) 60%, oklch(98% 0.008 75 / 0.65) 100%);
+    }
+  }
+
   @media (min-width: 1024px) {
     .intro-chapter.pin-ready .intro-services {
       width: min(40vw, 480px);

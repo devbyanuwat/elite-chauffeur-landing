@@ -228,6 +228,12 @@ describe('buildFleetChapter · fix-review I1/I2/I3', () => {
         <button data-rail="2"></button>
         <button data-rail="3"></button>
       </div>
+      <div class="fleet-tabs">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+      </div>
     </section>
   `;
 
@@ -275,6 +281,52 @@ describe('buildFleetChapter · fix-review I1/I2/I3', () => {
     buttons[3].dispatchEvent(new MouseEvent('click', { bubbles: true }));
     // stage 3 target: 1000 + (3.5/4)*4000 = 4500
     expect(scrollTo).toHaveBeenCalledWith({ top: 4500, behavior: 'smooth' });
+  });
+
+  it('fix round 2 (CRITICAL regression): .fleet-tabs (มือถือ) index ตามตำแหน่งของตัวเอง ไม่ใช่ตำแหน่งรวมกับ .rail ใน document', () => {
+    // ก่อน fix round 2, `.rail button, .fleet-tabs button` ถูก query เป็น array
+    // เดียว — .fleet-tabs อยู่ index 4-7 ของ array นั้น (ต่อจาก .rail 4 ปุ่ม)
+    // แต่ FLEET_STAGE_COUNT = 4 และสูตร stage เป็น i/4 ดังนั้นปุ่ม tab ที่ควรเป็น
+    // stage 0-3 กลับกลายเป็น i=4-7 → ทั้ง .on toggle (j===i ไม่มีทาง match)
+    // และปลายทาง scroll (เกิน trigger.end ไปหมด) พังทั้งคู่ เทสต์นี้ยืนยันว่า
+    // ทั้งสองอย่างกลับมาถูกต้องเมื่อ index ตามตำแหน่งในกลุ่มของตัวเอง
+    document.body.innerHTML = FLEET_HTML;
+    const section = document.querySelector<HTMLElement>('.fleet-chapter')!;
+    const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+    const tabButtons = Array.from(section.querySelectorAll<HTMLElement>('.fleet-tabs button'));
+    stubTrigger(1000, 5000); // start=1000, end=5000 -> 1000 per stage (4 stages)
+
+    buildFleetChapter(section, 300);
+
+    const scrollTo = vi.fn();
+    vi.stubGlobal('scrollTo', scrollTo);
+
+    // คลิก tab ตัวที่ 3 (index 2, stage "car C") ต้องได้ตำแหน่ง scroll ที่อยู่
+    // ใน [trigger.start, trigger.end] เสมอ — ไม่ใช่แค่ "ไม่ throw" แต่ต้องตรงกับ
+    // สูตรเดียวกับที่ .rail ใช้ (start + (i+0.5)/4 * (end-start))
+    tabButtons[2].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    const target = scrollTo.mock.calls[0][0] as { top: number };
+    expect(target.top).toBeGreaterThanOrEqual(1000);
+    expect(target.top).toBeLessThanOrEqual(5000);
+    // stage 2 target: 1000 + (2.5/4)*4000 = 3500 — ถ้า index ยังเป็นแบบ flat
+    // (i=6 จากตำแหน่งรวมกับ .rail) นี่จะเป็น 1000 + (6.5/4)*4000 = 7500 ซึ่งเกิน
+    // trigger.end (5000) — เทสต์ข้างบนจะจับความเกินนั้นได้อยู่แล้วเช่นกัน
+    expect(target.top).toBe(3500);
+
+    // stage change (onUpdate จำลอง progress 0.6 -> stage 2) ต้องเปิด .on ให้ทั้ง
+    // .rail และ .fleet-tabs ที่ index 2 พร้อมกัน ไม่ใช่แค่กลุ่มใดกลุ่มหนึ่ง
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+    onUpdate({ progress: 0.6 });
+
+    expect(railButtons[2].classList.contains('on')).toBe(true);
+    expect(tabButtons[2].classList.contains('on')).toBe(true);
+    railButtons.forEach((b, j) => {
+      if (j !== 2) expect(b.classList.contains('on')).toBe(false);
+    });
+    tabButtons.forEach((b, j) => {
+      if (j !== 2) expect(b.classList.contains('on')).toBe(false);
+    });
   });
 
   it('ไม่มีข้อมูลรถ (fleet-data ว่าง/parse ไม่ได้) — ไม่สร้าง context/trigger เลย', () => {

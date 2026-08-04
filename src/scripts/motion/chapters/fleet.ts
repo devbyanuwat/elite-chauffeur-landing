@@ -55,12 +55,19 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   // chapter below 1024px too, so without adopting `.fleet-tabs` here a phone
   // user loses all keyboard/screen-reader access to cars 02–04 (the CSS
   // fix that used to hide `.fleet-tabs` under .pin-ready removed the only
-  // surviving control instead of merging into this one). Querying both
-  // together means renderStage's `.on` toggle and the click→scroll handler
-  // below drive whichever set is visible at the current width, and Fleet's
-  // own <script> tap-to-swap (still wired to `.fleet-tabs button` too) stays
-  // harmless — its applyStage() writes the exact same DOM this does.
-  const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button, .fleet-tabs button'));
+  // surviving control instead of merging into this one).
+  //
+  // fix round 2 (review, CRITICAL): a single flat
+  // `.rail button, .fleet-tabs button` query puts the 4 tab buttons at
+  // *document* indices 4–7, not stage indices 0–3 — every `j === i` /
+  // `i`-as-stage-index computation below then either never matches (the
+  // `.on` toggle) or scrolls past `trigger.end` entirely (the click
+  // handler). Two separate per-group arrays, both driven by the SAME stage
+  // index `i`, keep each group's own position meaningful instead of its
+  // position in a flattened document-order list.
+  const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+  const tabButtons = Array.from(section.querySelectorAll<HTMLElement>('.fleet-tabs button'));
+  const controlGroups = [railButtons, tabButtons];
 
   if (cars.length === 0 || !ghostSpanEl || !carImgEl || !nameElEl || !chipsElEl || !priceElEl) {
     return () => {};
@@ -85,7 +92,7 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   const renderStage = ctx.add('renderStage', (i: number, dir: 1 | -1, animate: boolean): void => {
     const car = cars[i];
 
-    railButtons.forEach((b, j) => b.classList.toggle('on', j === i));
+    controlGroups.forEach((buttons) => buttons.forEach((b, j) => b.classList.toggle('on', j === i)));
     if (countEl) countEl.textContent = `0${i + 1} / 0${cars.length}`;
 
     function applyContent(): void {
@@ -168,13 +175,22 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   // (start, end) range instead — those are absolute document-scroll values
   // that don't shift while pinned, so this works the same regardless of
   // current scroll position or direction.
-  const railHandlers = railButtons.map((btn, i) => {
-    const handler = () => {
-      const y = trigger.start + ((i + 0.5) / FLEET_STAGE_COUNT) * (trigger.end - trigger.start);
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    };
-    btn.addEventListener('click', handler);
-    return handler;
+  //
+  // fix round 2 (review): wired per-group (each button's `i` is its index
+  // within its OWN group — .rail or .fleet-tabs — not a flattened
+  // document-order index), same fix as the .on toggle above. Without this
+  // every mobile tab's target `y` used i ∈ [4,7] against FLEET_STAGE_COUNT
+  // (4), landing past `trigger.end` — outside the chapter entirely.
+  const clickHandlers: { btn: HTMLElement; handler: () => void }[] = [];
+  controlGroups.forEach((buttons) => {
+    buttons.forEach((btn, i) => {
+      const handler = () => {
+        const y = trigger.start + ((i + 0.5) / FLEET_STAGE_COUNT) * (trigger.end - trigger.start);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      };
+      btn.addEventListener('click', handler);
+      clickHandlers.push({ btn, handler });
+    });
   });
 
   section.classList.add(PIN_READY_CLASS);
@@ -182,11 +198,11 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   return () => {
     trigger.kill();
     ctx.revert();
-    // fix-review I3: remove the rail click listeners on cleanup — without
+    // fix-review I3: remove the rail/tab click listeners on cleanup — without
     // this, tearing down/rebuilding this chapter (matchMedia revert on a
     // breakpoint cross, or the mobile<->desktop tier flip) piled up duplicate
     // listeners on the same buttons every time.
-    railButtons.forEach((btn, i) => btn.removeEventListener('click', railHandlers[i]));
+    clickHandlers.forEach(({ btn, handler }) => btn.removeEventListener('click', handler));
     section.classList.remove(PIN_READY_CLASS);
   };
 }
