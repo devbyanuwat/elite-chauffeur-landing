@@ -22,3 +22,14 @@ export function pickTier(input: TierInput): MotionTier {
 export function canRunHeroDepth(tier: MotionTier, hasWebgl2: boolean): boolean {
   return tier === 'full' && hasWebgl2;
 }
+
+/** สัดส่วนที่ย่อความยาวบทลงบนมือถือ — ระยะปัดนิ้วต่อครั้งสั้นกว่าล้อเมาส์มาก */
+const LITE_LEN_SHARE = 0.55;
+/** ต่ำกว่าหนึ่งจอ การค้างจอจะสั้นจนอ่านไม่ทัน */
+const MIN_CHAPTER_LEN = 100;
+
+export function chapterLenFor(tier: MotionTier, baseLen: number): number {
+  if (tier === 'static') return 0;
+  if (tier === 'full') return baseLen;
+  return Math.max(MIN_CHAPTER_LEN, Math.round(baseLen * LITE_LEN_SHARE));
+}

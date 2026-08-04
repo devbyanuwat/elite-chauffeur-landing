@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { collectStages, parseCount, parseDepthField, parseParallaxDepth, parsePin, parseReveal, splitLines } from '../../src/scripts/motion/contract';
+import { collectStages, parseCount, parseDepthField, parseParallaxDepth, parsePin, parseReveal, parseRevealGroup, splitLines } from '../../src/scripts/motion/contract';
 
 function el(html: string): HTMLElement {
   const host = document.createElement('div');
@@ -211,5 +211,29 @@ describe('collectStages', () => {
   it('ข้ามลำดับที่อ่านเป็นตัวเลขไม่ได้', () => {
     const section = el('<section data-pin="a"><div data-stage="แรก"></div></section>');
     expect(collectStages(section)).toEqual([]);
+  });
+});
+
+describe('parseRevealGroup', () => {
+  it('อ่านระยะห่างเป็นมิลลิวินาที', () => {
+    const container = document.createElement('div');
+    container.setAttribute('data-reveal-group', '70');
+    expect(parseRevealGroup(container)).toBe(70);
+  });
+
+  it('ไม่มี attribute แปลว่าไม่ใช่กลุ่ม', () => {
+    expect(parseRevealGroup(document.createElement('div'))).toBeNull();
+  });
+
+  it('ค่าว่างหรือพังใช้ค่าเริ่มต้น 80', () => {
+    const container = document.createElement('div');
+    container.setAttribute('data-reveal-group', '');
+    expect(parseRevealGroup(container)).toBe(80);
+  });
+
+  it('กันค่าบ้าไม่ให้ทำหน้าค้าง', () => {
+    const container = document.createElement('div');
+    container.setAttribute('data-reveal-group', '9000');
+    expect(parseRevealGroup(container)).toBe(400);
   });
 });

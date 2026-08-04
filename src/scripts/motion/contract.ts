@@ -128,6 +128,25 @@ export function parsePin(el: Element): PinSpec | null {
   return { name, lengthVh };
 }
 
+/** ระยะห่างเริ่มต้นระหว่างลูกในกลุ่มเดียวกัน (ms) */
+const DEFAULT_GROUP_STAGGER = 80;
+/** เกินนี้ลูกใบท้าย ๆ จะเข้าช้าจนคนเลื่อนผ่านไปแล้ว */
+const MAX_GROUP_STAGGER = 400;
+
+/**
+ * อ่าน data-reveal-group ที่ element แม่ — ตัวเลขคือระยะห่างระหว่างลูกแต่ละตัว
+ * คืน null เมื่อไม่มี attribute (แปลว่าไม่ใช่กลุ่ม ไม่ใช่ "กลุ่มที่ระยะ 0")
+ */
+export function parseRevealGroup(el: Element): number | null {
+  const raw = el.getAttribute('data-reveal-group');
+  if (raw === null) return null;
+
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isFinite(value) || value <= 0) return DEFAULT_GROUP_STAGGER;
+
+  return Math.min(value, MAX_GROUP_STAGGER);
+}
+
 /**
  * รวบรวมท่อนเรื่องใน section ที่ pin หนึ่งอัน จัดกลุ่มตามเลขลำดับ
  * ข้าม element ที่อยู่ใน [data-pin] ซ้อนข้างใน เพราะเจ้าของคือ pin ตัวใน ไม่ใช่ตัวนอก
