@@ -39,15 +39,11 @@ vi.mock('gsap/ScrollTrigger', () => ({
   ScrollTrigger: { create: scrollTriggerCreate },
 }));
 
-import {
-  buildFleetChapter,
-  buildHowChapter,
-  buildIntroChapter,
-  buildRoutesChapter,
-  collectChapters,
-  fleetStageForProgress,
-  howStageForProgress,
-} from '../../src/scripts/motion/editions';
+import { collectChapters } from '../../src/scripts/motion/editions';
+import { buildFleetChapter, fleetStageForProgress } from '../../src/scripts/motion/chapters/fleet';
+import { buildHowChapter, howStageForProgress } from '../../src/scripts/motion/chapters/how';
+import { buildIntroChapter } from '../../src/scripts/motion/chapters/intro';
+import { buildRoutesChapter } from '../../src/scripts/motion/chapters/routes';
 
 function root(html: string): HTMLElement {
   const host = document.createElement('div');
