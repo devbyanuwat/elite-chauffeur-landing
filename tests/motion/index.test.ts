@@ -46,9 +46,35 @@ vi.mock('gsap/ScrollTrigger', () => ({
   ScrollTrigger: { refresh, create: scrollTriggerCreate, config: scrollTriggerConfig },
 }));
 
-import { initMotion } from '../../src/scripts/motion/index';
+import { applyRevealGroups, initMotion } from '../../src/scripts/motion/index';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FULL_TIER_MIN_WIDTH } from '../../src/scripts/motion/tiers';
+
+describe('applyRevealGroups', () => {
+  it('แจก data-reveal และ delay ให้ลูกตามลำดับ', () => {
+    document.body.innerHTML = `
+      <div data-reveal-group="70">
+        <p></p><p></p><p></p>
+      </div>`;
+
+    applyRevealGroups(document);
+
+    const kids = Array.from(document.querySelectorAll('p'));
+    expect(kids.map((k) => k.getAttribute('data-reveal'))).toEqual(['up', 'up', 'up']);
+    expect(kids.map((k) => k.getAttribute('data-reveal-stagger'))).toEqual([null, '70', '140']);
+  });
+
+  it('ไม่ทับค่าที่ markup ตั้งเองไว้แล้ว', () => {
+    document.body.innerHTML = `
+      <div data-reveal-group="70">
+        <p data-reveal="mask"></p>
+      </div>`;
+
+    applyRevealGroups(document);
+
+    expect(document.querySelector('p')?.getAttribute('data-reveal')).toBe('mask');
+  });
+});
 
 describe('initMotion', () => {
   beforeEach(() => {

@@ -5,7 +5,7 @@ import ServiceTabs from './ServiceTabs.astro';
 <form id="bookingForm" novalidate>
   <ServiceTabs />
 
-  <div class="field-row">
+  <div class="field-row" data-reveal-group="60">
     <div class="field full">
       <label class="field-label" for="b_pickup" data-i18n="book.pickup">จุดรับ <span class="req">*</span></label>
       <input type="text" id="b_pickup" name="pickup" placeholder="เช่น สนามบินสุวรรณภูมิ" required aria-describedby="b_pickup_err">
@@ -38,7 +38,7 @@ import ServiceTabs from './ServiceTabs.astro';
     </div>
   </div>
 
-  <div class="field-row">
+  <div class="field-row" data-reveal-group="60">
     <div class="field">
       <label class="field-label" for="b_name" data-i18n="book.name">ชื่อ-นามสกุล <span
           class="req">*</span></label>

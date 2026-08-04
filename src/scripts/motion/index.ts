@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { parseCount, parseParallaxDepth, parseReveal, splitLines } from './contract';
+import { parseCount, parseParallaxDepth, parseReveal, parseRevealGroup, splitLines } from './contract';
 import { applyEditionsPins } from './editions';
 import { applyMobileLite, initStickyCta, startReviewDrift, watchReviewTrack, wireReviewArrows } from './mobile-lite';
 import { applyPins } from './pin';
@@ -77,6 +77,24 @@ function applySplitReveal(inners: HTMLElement[], trigger: Element): void {
   });
 }
 
+/**
+ * แปลง data-reveal-group บน element แม่เป็น data-reveal + data-reveal-stagger
+ * บนลูกโดยตรง ต้องรันก่อน applyReveals เสมอ เพราะ applyReveals อ่านเฉพาะ
+ * element ที่มี data-reveal อยู่แล้ว
+ */
+export function applyRevealGroups(root: ParentNode): void {
+  root.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach((group) => {
+    const step = parseRevealGroup(group);
+    if (step === null) return;
+
+    Array.from(group.children).forEach((child, index) => {
+      if (child.hasAttribute('data-reveal')) return;
+      child.setAttribute('data-reveal', 'up');
+      if (index > 0) child.setAttribute('data-reveal-stagger', String(step * index));
+    });
+  });
+}
+
 function applyReveals(root: ParentNode): void {
   root.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
     const spec = parseReveal(el);
@@ -91,6 +109,23 @@ function applyReveals(root: ParentNode): void {
       : { opacity: 1, y: 0, duration: 0.9, ease: EASE, delay };
 
     gsap.fromTo(el, from, { ...to, scrollTrigger: { trigger: el, start: 'top 88%' } });
+  });
+}
+
+/**
+ * ท่าออกของ hero — ข้อความลอยขึ้นและจางระหว่างจอแรกถูกเลื่อนพ้นไป ทำให้บทแรก
+ * ที่ตามมารับช่วงต่อโดยไม่มีรอยสะดุด ไม่ pin จึงไม่กินความยาว scroll เพิ่ม
+ */
+function applyHeroExit(root: ParentNode): void {
+  const hero = root.querySelector<HTMLElement>('.hero');
+  const content = hero?.querySelector<HTMLElement>('.hero-content');
+  if (!hero || !content) return;
+
+  gsap.to(content, {
+    yPercent: -18,
+    opacity: 0,
+    ease: 'none',
+    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 40%', scrub: true },
   });
 }
 
@@ -209,7 +244,12 @@ export function initMotion(root: ParentNode = document): void {
 
   mm.add(NOT_REDUCED_MOTION, () => {
     splitTargets.forEach(({ el, inners }) => applySplitReveal(inners, el));
+    // ต้องมาก่อน applyReveals เสมอ — applyRevealGroups ใส่ data-reveal ให้ลูกที่
+    // ยังไม่มี แล้ว applyReveals ถึงจะอ่านเจอ สลับลำดับแล้วลูกกลุ่มจะไม่ถูก
+    // animate เลยเพราะ applyReveals อ่านเฉพาะ element ที่มี data-reveal อยู่แล้ว
+    applyRevealGroups(root);
     applyReveals(root);
+    applyHeroExit(root);
     applyCounts(root);
     const stopReviewDrift = applyReviewDrift(root);
     return () => stopReviewDrift.forEach((stop) => stop());
