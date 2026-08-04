@@ -1,9 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerCreate, scrollTriggerConfig, timeline, set } = vi.hoisted(() => {
+const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerCreate, scrollTriggerConfig, timeline, set, context } = vi.hoisted(() => {
   const chainable = { to: vi.fn(), fromTo: vi.fn() };
   chainable.to.mockReturnValue(chainable);
   chainable.fromTo.mockReturnValue(chainable);
+
+  // fix round 1: chapter builders (buildStatsChapter/buildWhyChapter/…) call
+  // gsap.context(...) directly — the mock previously had no `context`, so any
+  // test that actually mounts a real [data-chapter] section (needed to lock
+  // "pin-ready lands via the mobile-tier chapter path") would throw
+  // "gsap.context is not a function". `add` just runs the wrapped function
+  // immediately, same convention as tests/motion/editions.test.ts's own mock.
+  const contextAdd = vi.fn((_name: string, func: (...args: unknown[]) => unknown) => func);
+  const contextRevert = vi.fn();
 
   return {
     fromTo: vi.fn(),
@@ -16,6 +25,7 @@ const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerC
     scrollTriggerConfig: vi.fn(),
     timeline: vi.fn(() => chainable),
     set: vi.fn(),
+    context: vi.fn(() => ({ add: contextAdd, revert: contextRevert })),
   };
 });
 
@@ -27,6 +37,7 @@ vi.mock('gsap', () => ({
     from,
     timeline,
     set,
+    context,
     matchMedia: () => ({ add: matchMediaAdd }),
   },
 }));
@@ -52,6 +63,44 @@ describe('initMotion', () => {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
     })));
+  });
+
+  it('ตั้ง ScrollTrigger.config({ ignoreMobileResize: true }) ครั้งเดียวตอน initMotion (fix round 1)', () => {
+    // ล็อกไว้กันรีแฟกเตอร์ในอนาคตลบบรรทัดนี้ทิ้งแบบเงียบ ๆ — ไม่มีเทสต์ไหนจับ
+    // มาก่อน ทั้งที่ผลคือ pin ที่บทกระโดดกลางทางเวลามือถือยืด/หด address bar
+    initMotion();
+    expect(scrollTriggerConfig).toHaveBeenCalledTimes(1);
+    expect(scrollTriggerConfig).toHaveBeenCalledWith({ ignoreMobileResize: true });
+  });
+
+  it('มือถือ (mobile tier เท่านั้น): applyEditionsPins(root, \'lite\') ต่อสายจริง — pin-ready ปักและ len ถูกย่อ 0.55 (fix round 1)', () => {
+    // ล็อกพฤติกรรมหลักของ Task 6 กันรีแฟกเตอร์ในอนาคตลบ
+    // `applyEditionsPins(root, 'lite')` ออกจาก mobile-tier block แบบเงียบ ๆ
+    // แล้วเทสต์ทั้งชุดยังเขียวอยู่ — ก่อนหน้านี้ index.test.ts เช็คแค่ query
+    // string ของ 3 context เฉย ๆ ไม่เคยเรียก initMotion() ในสภาพที่ "เฉพาะ
+    // mobile-tier context ยิง" แล้วตรวจว่าบทจริงถูก build
+    const onlyIfMobileTier = (query: string, callback: () => void) => {
+      if (query.includes('max-width: 1023px')) callback();
+    };
+
+    // data-chapter-len="300" -> lite tier ต้องย่อเหลือ round(300*0.55)=165
+    // (chapterLenFor's LITE_LEN_SHARE) — ถ้า index.ts เปลี่ยนกลับไปส่ง 'full'
+    // หรือส่ง len ดิบ เทสต์นี้จะจับได้จาก end string ที่ไม่ตรง
+    document.body.innerHTML = `
+      <section class="stats" data-chapter="stats" data-chapter-len="300">
+        <div class="stat"><b>24/7</b><span>บริการทุกวัน</span></div>
+      </section>
+    `;
+    // initMotion เรียก mm.add สามครั้ง (full tier, mobile tier, NOT_REDUCED_MOTION)
+    matchMediaAdd
+      .mockImplementationOnce(onlyIfMobileTier)
+      .mockImplementationOnce(onlyIfMobileTier)
+      .mockImplementationOnce(onlyIfMobileTier);
+
+    initMotion();
+
+    expect(document.querySelector('section')!.classList.contains('pin-ready')).toBe(true);
+    expect(scrollTriggerCreate).toHaveBeenCalledWith(expect.objectContaining({ end: '+=165%' }));
   });
 
   it('ลงทะเบียน ScrollTrigger', () => {

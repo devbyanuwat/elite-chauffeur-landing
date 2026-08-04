@@ -256,11 +256,24 @@
     top: 50%;
     transform: translateY(-50%);
     z-index: 2;
-    width: min(40vw, 480px);
+    /* fix round 1 (review): 40vw is 156px on a 390px phone — four service
+       links (1.08rem titles) plus their descriptions have no room there and
+       .svc-p's `max-height: 4em` clips mid-sentence. Below 1024px this
+       widens to 70vw (still capped at 480px so it never grows past the
+       original ceiling); the media query below restores 40vw at >=1024px,
+       where the narrower panel is a deliberate "doesn't cover the whole
+       photo" desktop layout choice, not a fit constraint. */
+    width: min(70vw, 480px);
     padding: 0;
     /* opacity/x driven by gsap.set from progress .45 onward — this is just
        the resting value before the first onUpdate frame runs */
     opacity: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .intro-chapter.pin-ready .intro-services {
+      width: min(40vw, 480px);
+    }
   }
 
   .intro-chapter.pin-ready .svc {

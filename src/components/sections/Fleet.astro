@@ -439,29 +439,38 @@ const first = CARS[0];
     max-height: 52vh;
   }
 
+  /* fix round 1 (review): clamp's own min (6rem = 96px) already blows past a
+     390px phone's ~350px-wide, overflow:hidden .ghost box (17vw alone is
+     ~66px there, so the 6rem floor — not the vw term — was what clipped
+     "ALPHARD" on both sides). Below 1024px fall back to the base rule's own
+     3.6rem/30vh sizing (same clamp shape as .hugely span in How.astro) —
+     the >=1024px block below restores the desktop-sized numeral. */
   .fleet-chapter.pin-ready .ghost span {
-    font-size: clamp(6rem, 17vw, 15rem);
+    font-size: clamp(2.6rem, 13vw, 6rem);
   }
 
-  .fleet-chapter.pin-ready .fleet-meta {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2rem;
-    /* กันราคาชนปุ่มลอยมุมขวาล่าง (sticky CTA + LINE) */
-    padding-right: 220px;
-  }
+  @media (min-width: 1024px) {
+    .fleet-chapter.pin-ready .ghost span {
+      font-size: clamp(6rem, 17vw, 15rem);
+    }
 
-  .fleet-chapter.pin-ready .price {
-    text-align: right;
-  }
+    /* fix round 1 (review): row + the 220px CTA-clearance padding + right-
+       aligned price only make sense once there's enough width for name/price
+       to sit side by side — 220px alone leaves ~130px on a 390px phone for
+       two text blocks. Below 1024px .fleet-meta/.price keep the column
+       layout their unconditional base rules (above) already define. */
+    .fleet-chapter.pin-ready .fleet-meta {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      /* กันราคาชนปุ่มลอยมุมขวาล่าง (sticky CTA + LINE) */
+      padding-right: 220px;
+    }
 
-  /* fleet-tabs is the <1024px tap-to-swap fallback (own plain-JS below) —
-     once pin-ready lands (now true below 1024px too, Task 6) the rail +
-     buildFleetChapter own stage-switching, so the tap tabs must step aside
-     to avoid two independent controllers fighting over the same DOM */
-  .fleet-chapter.pin-ready .fleet-tabs {
-    display: none;
+    .fleet-chapter.pin-ready .price {
+      text-align: right;
+    }
   }
 </style>
 
@@ -470,11 +479,21 @@ const first = CARS[0];
     'use strict';
 
     /* ---------- Fleet mobile tabs -> stage swap (plain JS, no GSAP) ----------
-       buildFleetChapter() in editions.ts only ever attaches under the
-       (min-width: 1024px) and not-reduced-motion matchMedia gate (see
-       src/scripts/motion/index.ts), so <1024px needs its own, independent
-       tap-to-swap wiring — same data source (#fleet-data), same DOM targets,
-       just a plain crossfade via a CSS transition instead of a GSAP timeline. */
+       buildFleetChapter() in editions.ts now attaches under EITHER matchMedia
+       gate (full tier >=1024px, or lite tier <1024px — Task 6), and once it
+       does it adopts these same `.fleet-tabs button` elements into its own
+       click→scrollTo wiring (see chapters/fleet.ts's `railButtons` query).
+       Without a guard here both controllers would fire on the same click:
+       this fallback's instant DOM write AND the chapter's scroll (which
+       itself re-drives the DOM via onUpdate) — a redundant, flicker-prone
+       double-update, not a broken one, but the fix-round-1 review flagged
+       exactly this "two controllers" shape and asked for it resolved.
+       `.pin-ready` is this component's own contract for "buildFleetChapter
+       has attached" (see chapters/fleet.ts's `section.classList.add`), so
+       checking it here is the same signal every chapter's CSS already uses
+       — when it's present, defer entirely; when it's absent (no-JS,
+       reduced-motion, or the matchMedia gate simply hasn't fired yet), this
+       remains the only working control, same as before Task 6. */
     var section = document.getElementById('fleet');
     if (!section) return;
 
@@ -520,6 +539,7 @@ const first = CARS[0];
 
     tabButtons.forEach(function (btn, i) {
       btn.addEventListener('click', function () {
+        if (section!.classList.contains('pin-ready')) return;
         applyStage(i);
       });
     });

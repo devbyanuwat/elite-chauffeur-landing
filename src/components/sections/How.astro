@@ -407,6 +407,47 @@ const STEPS = [
     opacity: 1;
   }
 
+  /* fix round 1 (review): the desktop collage is a two-column layout
+     (grid-template-columns: 1.05fr 1fr, above) with a giant numeral
+     (.hugely span, clamp min 144px) and three simultaneously-visible steps
+     (44ch paragraphs) — none of that survives a 390px column (~165px each
+     side). Below 1024px, pin-ready now: stacks to one column, shrinks the
+     collage photo + numeral to mobile-appropriate sizes, and shows only the
+     active step (the desktop "dim the other two" treatment has no room on a
+     phone) so the whole thing fits inside the fixed 100svh pin box instead
+     of overflowing past `.how-chapter`'s `overflow: clip`. */
+  @media (max-width: 1023px) {
+    .how-chapter.pin-ready .how-grid {
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+    }
+
+    .how-chapter.pin-ready .hugely {
+      height: 28vh;
+    }
+
+    .how-chapter.pin-ready .hugely span {
+      font-size: clamp(3.2rem, 16vw, 6rem);
+    }
+
+    .how-chapter.pin-ready .how-steps {
+      min-height: 0;
+    }
+
+    .how-chapter.pin-ready .how-step {
+      display: none;
+    }
+
+    .how-chapter.pin-ready .how-step.on {
+      display: block;
+      opacity: 1;
+    }
+
+    .how-chapter.pin-ready .how-step.on .t {
+      opacity: 1;
+    }
+  }
+
   .how-chapter.pin-ready .how-mobile {
     display: none;
   }

@@ -49,7 +49,18 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   const priceElEl = section.querySelector<HTMLElement>('.fleet-meta .price b');
   const pickBtn = section.querySelector<HTMLElement>('.pick');
   const countEl = section.querySelector<HTMLElement>('.fleet-count');
-  const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+  // fix round 1 (review): `.rail` is desktop-only chrome (hidden <1024px by
+  // its own CSS) and `.fleet-tabs` is the <1024px numbered pills — both are
+  // "pick a car" controls for the same four stages. Task 6 now pins this
+  // chapter below 1024px too, so without adopting `.fleet-tabs` here a phone
+  // user loses all keyboard/screen-reader access to cars 02–04 (the CSS
+  // fix that used to hide `.fleet-tabs` under .pin-ready removed the only
+  // surviving control instead of merging into this one). Querying both
+  // together means renderStage's `.on` toggle and the click→scroll handler
+  // below drive whichever set is visible at the current width, and Fleet's
+  // own <script> tap-to-swap (still wired to `.fleet-tabs button` too) stays
+  // harmless — its applyStage() writes the exact same DOM this does.
+  const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button, .fleet-tabs button'));
 
   if (cars.length === 0 || !ghostSpanEl || !carImgEl || !nameElEl || !chipsElEl || !priceElEl) {
     return () => {};
