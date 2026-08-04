@@ -557,7 +557,6 @@ export function buildStatsChapter(section: HTMLElement, len: number): () => void
     pin: section,
     pinSpacing: true,
     anticipatePin: 1,
-    ignoreMobileResize: true,
     scrub: true,
     invalidateOnRefresh: true,
     onUpdate,
@@ -756,7 +755,6 @@ export function buildWhyChapter(section: HTMLElement, len: number): () => void {
     pin: section,
     pinSpacing: true,
     anticipatePin: 1,
-    ignoreMobileResize: true,
     scrub: true,
     invalidateOnRefresh: true,
     onUpdate,
@@ -852,7 +850,7 @@ it('มือถือได้บทเดียวกันแต่ควา�
 
   applyEditionsPins(document, 'lite');
 
-  expect(spy).toHaveBeenCalledWith(expect.objectContaining({ end: '+=132%', ignoreMobileResize: true }));
+  expect(spy).toHaveBeenCalledWith(expect.objectContaining({ end: '+=132%' }));
 });
 ```
 
@@ -879,7 +877,13 @@ export function applyEditionsPins(root: ParentNode, tier: MotionTier): () => voi
 }
 ```
 
-แล้วเพิ่ม `ignoreMobileResize: true` ลงใน `ScrollTrigger.create` ของบทเดิมทั้งสี่ (`chapters/intro.ts`, `fleet.ts`, `how.ts`, `routes.ts`) — บทใหม่สองบทมีอยู่แล้ว
+`ignoreMobileResize` เป็น **config ระดับ ScrollTrigger ทั้งระบบ** (`ScrollTrigger.ConfigVars`) ไม่ใช่ option ราย trigger — ใส่ราย trigger จะไม่มีผลและ `astro check` จะฟ้อง เรียกครั้งเดียวใน `initMotion` ของ `src/scripts/motion/index.ts` ถัดจาก `gsap.registerPlugin(ScrollTrigger)`:
+
+```ts
+  // มือถือยืด/หด address bar ระหว่างเลื่อน ถ้าปล่อยให้ refresh ทุกครั้งความสูง
+  // ของบทที่ pin จะกระโดดกลางทาง — ตัวนี้บอกให้ข้าม resize ที่มาจากแถบนั้น
+  ScrollTrigger.config({ ignoreMobileResize: true });
+```
 
 - [ ] **Step 4: ต่อสายใน `src/scripts/motion/index.ts`**
 

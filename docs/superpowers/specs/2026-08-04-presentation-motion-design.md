@@ -93,7 +93,7 @@ src/scripts/motion/
 - `chapterLenFor(tier, base)` — `lite` คูณ 0.55 เพราะระยะปัดนิ้วสั้นกว่าล้อเมาส์มาก
   ถ้าใช้ len เดสก์ท็อปบทจะรู้สึกติดหล่ม
 - CSS ของ pin ใช้ `100svh` ไม่ใช่ `100vh` กัน address bar ยืด/หดแล้วความสูง pin เพี้ยน
-- ScrollTrigger ทุกบทตั้ง `ignoreMobileResize: true`
+- เรียก `ScrollTrigger.config({ ignoreMobileResize: true })` ครั้งเดียวตอน init (เป็น config ระดับระบบ ไม่ใช่ option ราย trigger)
 - **ไม่ใช้ `ScrollTrigger.normalizeScroll`** — มันยึดการเลื่อนทั้งหน้าไปทำเอง ซึ่งรบกวน
   การโฟกัสช่อง input ของฟอร์มจองและการแตะปุ่ม LINE fab บน iOS แลกไม่คุ้ม
 - `canRunHeroDepth` ไม่แตะ — three.js ยังปิดต่ำกว่า 1024px
