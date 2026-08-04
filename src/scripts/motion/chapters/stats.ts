@@ -149,6 +149,14 @@ export function buildStatsChapter(section: HTMLElement, len: number): () => void
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
+    // final-review Fix 7: `.on` is a plain class write and survived teardown,
+    // so after a breakpoint cross the rebuilt chapter started at `cur = -1`
+    // (correct — it re-reveals from the first stat) but every stat was still
+    // wearing `.on` from the previous build, i.e. the whole row showed as
+    // already revealed before the visitor reached it. Strip it back to the
+    // markup's own resting state. The counted-up numbers are left as-is on
+    // purpose: they hold the stat's true final value, not a mid-count frame.
+    stats.forEach((stat) => stat.classList.remove('on'));
     trigger.kill();
     ctx.revert();
     section.classList.remove(PIN_READY_CLASS);

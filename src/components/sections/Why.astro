@@ -103,16 +103,35 @@
     align-content: center;
   }
 
+  /* final-review Fix 12: `.entered` used to sit at `opacity: .45`, which
+     composited this card's body text (oklch(76% .012 230) on the dark card)
+     down to roughly 2.2:1 — far under WCAG 1.4.3's 4.5:1 — and since Task 6
+     the chapter ships to mobile, i.e. to most of the traffic. The spotlight
+     stays, but it is now made of the emphasis this card already had available
+     (gold ring, lifted background, gold icon chip) instead of everyone else
+     fading. Text opacity is never touched: a card is either not yet revealed
+     (opacity 0, nothing to read) or fully readable.
+
+     Note for future edits: emphasis must not use `transform`. buildWhyChapter
+     tweens `y` on the entering card, and gsap writes that as an inline
+     transform which would silently win over any transform declared here. */
   .why-chapter.pin-ready .why-item {
     opacity: 0;
-    transition: opacity 0.4s;
+    transition: opacity 0.4s, border-color 0.4s, background-color 0.4s, box-shadow 0.4s;
   }
 
   .why-chapter.pin-ready .why-item.entered {
-    opacity: 0.45;
+    opacity: 1;
   }
 
   .why-chapter.pin-ready .why-item.current {
-    opacity: 1;
+    border-color: var(--gold-light);
+    background: oklch(64% 0.115 48 / 0.14);
+    box-shadow: 0 0 0 1px var(--gold-light), 0 18px 40px oklch(20% 0.02 230 / 0.45);
+  }
+
+  .why-chapter.pin-ready .why-item.current .why-icon {
+    background: var(--gold-light);
+    color: var(--bg-dark);
   }
 </style>

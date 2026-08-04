@@ -92,7 +92,16 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   const renderStage = ctx.add('renderStage', (i: number, dir: 1 | -1, animate: boolean): void => {
     const car = cars[i];
 
-    controlGroups.forEach((buttons) => buttons.forEach((b, j) => b.classList.toggle('on', j === i)));
+    // final-review Fix 2: `.on` is a colour-only signal. aria-pressed is the
+    // same fact in the accessibility tree — set on BOTH control groups (the
+    // >=1024px `.rail` and the mobile `.fleet-tabs`), from the same stage
+    // index, so whichever group the visitor is using reports the right car.
+    controlGroups.forEach((buttons) =>
+      buttons.forEach((b, j) => {
+        b.classList.toggle('on', j === i);
+        b.setAttribute('aria-pressed', j === i ? 'true' : 'false');
+      })
+    );
     if (countEl) countEl.textContent = `0${i + 1} / 0${cars.length}`;
 
     function applyContent(): void {
@@ -196,6 +205,16 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
+    // final-review Fix 7: killing the trigger and reverting the context undoes
+    // the *tweens*, but every class/text write above is a plain DOM write and
+    // survived teardown — so crossing 1024px (or any matchMedia revert) rebuilt
+    // this chapter with `cur = 0` while the page still showed car 04. The very
+    // next `fleetStage(0)` then early-returned on `i === cur` and the chapter
+    // stayed wrong until the visitor happened to scroll to a *different* stage.
+    // Put the DOM back on stage 0 — the state the Astro markup ships and the
+    // state a fresh build assumes. `animate: false` so this is a pure write with
+    // no timeline (and therefore nothing left for ctx.revert() below to chase).
+    fleetStage(0, false);
     trigger.kill();
     ctx.revert();
     // fix-review I3: remove the rail/tab click listeners on cleanup — without

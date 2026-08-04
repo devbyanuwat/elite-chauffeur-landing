@@ -9,19 +9,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // returned cleanup (I2), the fleet rail buttons' click listeners are removed
 // on cleanup (I3), and the rail's target scroll position is computed from
 // the ScrollTrigger instance's own start/end (I1) rather than current scroll.
-const { context, contextRevert, scrollTriggerCreate, gsapTo, gsapSet, gsapTimeline } = vi.hoisted(() => {
+const { context, contextRevert, scrollTriggerCreate, gsapTo, gsapSet, gsapFromTo, gsapTimeline } = vi.hoisted(() => {
   const contextAdd = vi.fn((_name: string, func: (...args: unknown[]) => unknown) => func);
   const contextRevert = vi.fn();
   const context = vi.fn(() => ({ add: contextAdd, revert: contextRevert }));
   const scrollTriggerCreate = vi.fn();
   const gsapTo = vi.fn();
   const gsapSet = vi.fn();
+  const gsapFromTo = vi.fn();
   const timelineChain: Record<string, ReturnType<typeof vi.fn>> = {};
   timelineChain.to = vi.fn(() => timelineChain);
   timelineChain.fromTo = vi.fn(() => timelineChain);
   timelineChain.add = vi.fn(() => timelineChain);
   const gsapTimeline = vi.fn(() => timelineChain);
-  return { context, contextAdd, contextRevert, scrollTriggerCreate, gsapTo, gsapSet, gsapTimeline };
+  return { context, contextAdd, contextRevert, scrollTriggerCreate, gsapTo, gsapSet, gsapFromTo, gsapTimeline };
 });
 
 vi.mock('gsap', () => ({
@@ -29,6 +30,7 @@ vi.mock('gsap', () => ({
     context,
     to: gsapTo,
     set: gsapSet,
+    fromTo: gsapFromTo,
     timeline: gsapTimeline,
     utils: { clamp: (min: number, max: number, v: number) => Math.min(max, Math.max(min, v)) },
     parseEase: () => (t: number) => t,
@@ -46,6 +48,7 @@ import { buildFleetChapter, fleetStageForProgress } from '../../src/scripts/moti
 import { buildHowChapter, howStageForProgress } from '../../src/scripts/motion/chapters/how';
 import { buildIntroChapter } from '../../src/scripts/motion/chapters/intro';
 import { buildRoutesChapter } from '../../src/scripts/motion/chapters/routes';
+import { buildStatsChapter } from '../../src/scripts/motion/chapters/stats';
 
 function root(html: string): HTMLElement {
   const host = document.createElement('div');
@@ -329,6 +332,55 @@ describe('buildFleetChapter · fix-review I1/I2/I3', () => {
     });
   });
 
+  it('final-review Fix 7: cleanup คืน DOM กลับ stage 0 — ข้าม breakpoint แล้ว build ใหม่ต้องไม่ค้างที่รถคัน 04', () => {
+    // ctx.revert() ถอนได้แค่ tween ส่วน class/text ที่เขียนไปเป็น DOM write ล้วน ๆ
+    // จึงอยู่ข้ามการ teardown — build รอบใหม่เริ่มที่ cur = 0 ขณะที่หน้ายังโชว์
+    // คัน 04 อยู่ แล้ว fleetStage(0) ก็ return ทันทีเพราะ i === cur หน้าจึงค้างผิด
+    document.body.innerHTML = FLEET_HTML;
+    const section = document.querySelector<HTMLElement>('.fleet-chapter')!;
+    stubTrigger(1000, 5000);
+
+    const cleanup = buildFleetChapter(section, 300);
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+    onUpdate({ progress: 0.99 }); // stage 3 — car D
+    expect(section.querySelector('.fleet-count')!.textContent).toBe('04 / 04');
+    // gsap ถูก mock ไว้ ตัว applyContent จึงถูกวางไว้ใน timeline ที่ไม่มีวันรัน
+    // เขียนสถานะ "หน้ายังค้างที่คัน 04" ลง DOM ตรง ๆ แทน — นี่คือสภาพจริงที่
+    // cleanup ต้องเจอ
+    section.querySelector('.ghost span')!.textContent = 'D';
+    section.querySelector('.fleet-meta .name')!.textContent = 'Car D';
+    section.querySelector('.fleet-meta .price b')!.textContent = '4000';
+
+    cleanup();
+
+    expect(section.querySelector('.ghost span')!.textContent).toBe('A');
+    expect(section.querySelector('.fleet-meta .name')!.textContent).toBe('Car A');
+    expect(section.querySelector('.fleet-meta .price b')!.textContent).toBe('1000');
+    expect(section.querySelector('.fleet-count')!.textContent).toBe('01 / 04');
+    Array.from(section.querySelectorAll<HTMLElement>('.rail button, .fleet-tabs button')).forEach(
+      (b, i) => expect(b.classList.contains('on')).toBe(i % 4 === 0)
+    );
+  });
+
+  it('final-review Fix 2: aria-pressed ตามสถานะ .on ของทั้งสองกลุ่มปุ่ม', () => {
+    document.body.innerHTML = FLEET_HTML;
+    const section = document.querySelector<HTMLElement>('.fleet-chapter')!;
+    stubTrigger(1000, 5000);
+
+    buildFleetChapter(section, 300);
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+    onUpdate({ progress: 0.6 }); // stage 2
+
+    const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+    const tabButtons = Array.from(section.querySelectorAll<HTMLElement>('.fleet-tabs button'));
+    [railButtons, tabButtons].forEach((group) =>
+      group.forEach((b, j) =>
+        expect(b.getAttribute('aria-pressed')).toBe(j === 2 ? 'true' : 'false')
+      )
+    );
+  });
+
   it('ไม่มีข้อมูลรถ (fleet-data ว่าง/parse ไม่ได้) — ไม่สร้าง context/trigger เลย', () => {
     document.body.innerHTML = `
       <section class="fleet-chapter">
@@ -376,6 +428,38 @@ describe('buildHowChapter · fix-review I2 (context revert on cleanup)', () => {
     expect(contextRevert).toHaveBeenCalledTimes(1);
     expect(section.classList.contains('pin-ready')).toBe(false);
   });
+
+  it('final-review Fix 7: cleanup คืน DOM กลับ stage 0 — .on/คำบรรยาย/ตัวเลขทองต้องไม่ค้างที่ขั้น 3', () => {
+    document.body.innerHTML = `
+      <section class="how-chapter">
+        <div class="hugely"><span>1</span></div>
+        <div class="line"></div>
+        <div class="how-cap"></div>
+        <div class="how-media"><img class="on"><img><img></div>
+        <div class="how-step on"><h3>ขั้นที่ 1</h3></div>
+        <div class="how-step"><h3>ขั้นที่ 2</h3></div>
+        <div class="how-step"><h3>ขั้นที่ 3</h3></div>
+      </section>
+    `;
+    const section = document.querySelector<HTMLElement>('.how-chapter')!;
+    stubTrigger();
+
+    const cleanup = buildHowChapter(section, 300);
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+    onUpdate({ progress: 0.99 }); // stage 2
+    const steps = Array.from(section.querySelectorAll('.how-step'));
+    expect(steps[2].classList.contains('on')).toBe(true);
+    expect(section.querySelector('.how-cap')!.textContent).toBe('ขั้นที่ 3');
+
+    cleanup();
+
+    expect(steps[0].classList.contains('on')).toBe(true);
+    expect(steps[1].classList.contains('on')).toBe(false);
+    expect(steps[2].classList.contains('on')).toBe(false);
+    expect(section.querySelector('.how-cap')!.textContent).toBe('ขั้นที่ 1');
+    expect(section.querySelector('.hugely span')!.textContent).toBe('1');
+  });
 });
 
 describe('buildRoutesChapter · fix-review I2 (context revert on cleanup)', () => {
@@ -403,5 +487,81 @@ describe('buildRoutesChapter · fix-review I2 (context revert on cleanup)', () =
     expect(kill).toHaveBeenCalledTimes(1);
     expect(contextRevert).toHaveBeenCalledTimes(1);
     expect(section.classList.contains('pin-ready')).toBe(false);
+  });
+
+  it('final-review Fix 3: โฟกัสการ์ดที่อยู่นอกกรอบต้องไม่ทิ้ง scrollLeft ค้างไว้ที่ .track-clip', () => {
+    // .track-clip เป็น overflow: hidden แต่ยัง scroll ด้วยโปรแกรมได้ เบราว์เซอร์
+    // จึงเลื่อน scrollLeft เองเมื่อโฟกัสตกที่การ์ดนอกกรอบ และไม่มีใครคืนค่าให้
+    // ทุกเฟรมของ scrub หลังจากนั้นจึงเพี้ยนไปเท่ากับ scrollLeft ที่ค้างอยู่
+    document.body.innerHTML = `
+      <section class="routes-chapter">
+        <div class="track-clip">
+          <div class="track">
+            <a class="route-card" href="/a"><img></a>
+            <a class="route-card" href="/b"><img></a>
+          </div>
+        </div>
+        <div class="rprog"><i></i></div>
+      </section>
+    `;
+    const section = document.querySelector<HTMLElement>('.routes-chapter')!;
+    const clip = section.querySelector<HTMLElement>('.track-clip')!;
+    stubTrigger(1000, 5000);
+
+    const cleanup = buildRoutesChapter(section, 300);
+
+    clip.scrollLeft = 240;
+    clip.dispatchEvent(new Event('scroll'));
+    expect(clip.scrollLeft).toBe(0);
+
+    // โฟกัสการ์ดใบที่สอง -> เลื่อน "หน้าต่าง" ไปยัง progress ที่พาการ์ดเข้ากรอบ
+    // แทนที่จะปล่อยให้เบราว์เซอร์เลื่อนกรอบเอง ตำแหน่งต้องอยู่ในช่วงของบทเสมอ
+    const scrollTo = vi.fn();
+    vi.stubGlobal('scrollTo', scrollTo);
+    section.querySelectorAll<HTMLElement>('.route-card')[1].dispatchEvent(
+      new FocusEvent('focusin', { bubbles: true })
+    );
+    if (scrollTo.mock.calls.length > 0) {
+      const top = (scrollTo.mock.calls[0][0] as { top: number }).top;
+      expect(top).toBeGreaterThanOrEqual(1000);
+      expect(top).toBeLessThanOrEqual(5000);
+    }
+
+    cleanup();
+
+    // ถอด listener แล้ว scroll ต่อไปต้องไม่ถูกบังคับเป็น 0 อีก (ไม่มี listener ค้าง)
+    clip.scrollLeft = 120;
+    clip.dispatchEvent(new Event('scroll'));
+    expect(clip.scrollLeft).toBe(120);
+  });
+});
+
+describe('buildStatsChapter · final-review Fix 7 (teardown resets DOM state)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
+
+  it('cleanup ถอด .on ออกจากทุกสถิติ — build ใหม่ต้องไม่เริ่มด้วยแถวที่เผยไปแล้วทั้งแถว', () => {
+    document.body.innerHTML = `
+      <section class="stats-chapter">
+        <div class="stat"><b>500+</b><span>a</span></div>
+        <div class="stat"><b>24/7</b><span>b</span></div>
+        <div class="stat"><b>4.9</b><span>c</span></div>
+        <div class="stats-line"></div>
+      </section>
+    `;
+    const section = document.querySelector<HTMLElement>('.stats-chapter')!;
+    stubTrigger();
+
+    const cleanup = buildStatsChapter(section, 300);
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+    onUpdate({ progress: 0.99 });
+    expect(Array.from(section.querySelectorAll('.stat')).every((s) => s.classList.contains('on'))).toBe(true);
+
+    cleanup();
+
+    expect(Array.from(section.querySelectorAll('.stat')).some((s) => s.classList.contains('on'))).toBe(false);
   });
 });

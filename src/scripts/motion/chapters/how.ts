@@ -42,10 +42,11 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
   // revert-able on cleanup.
   const ctx = gsap.context(() => {}, section);
 
-  const howStage = ctx.add('howStage', (i: number): void => {
-    if (i === cur) return;
-    cur = i;
-
+  /**
+   * ส่วนที่เป็นการเขียน DOM ล้วน ๆ ของ howStage (ไม่มี tween) — แยกออกมาเพื่อให้
+   * cleanup เรียกคืนสถานะ stage 0 ได้โดยไม่ต้องยิง timeline (final-review Fix 7)
+   */
+  function applyStage(i: number): void {
     steps.forEach((s, j) => s.classList.toggle('on', j === i));
     howImgs.forEach((im, j) => im.classList.toggle('on', j === i));
     // fix-review finding 1: HOW_CAPS was a Thai-only literal array, so the
@@ -54,6 +55,13 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
     // mutates [data-i18n] innerHTML in place, so h3 always holds the live
     // localized text, in whichever language is currently active.
     if (howCap) howCap.textContent = steps[i]?.querySelector('h3')?.textContent ?? '';
+  }
+
+  const howStage = ctx.add('howStage', (i: number): void => {
+    if (i === cur) return;
+    cur = i;
+
+    applyStage(i);
 
     gsap
       .timeline()
@@ -84,6 +92,13 @@ export function buildHowChapter(section: HTMLElement, len: number): () => void {
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
+    // final-review Fix 7: see buildFleetChapter's cleanup — the `.on` classes,
+    // the caption and the gold numeral are plain DOM writes that outlived
+    // teardown, so a rebuild started at `cur = 0` while the page still showed
+    // step 3 and howStage's own `i === cur` guard kept it there. Put the DOM
+    // back on stage 0 (the state the Astro markup ships) with no tween.
+    applyStage(0);
+    if (numeral) numeral.textContent = '1';
     trigger.kill();
     ctx.revert();
     section.classList.remove(PIN_READY_CLASS);

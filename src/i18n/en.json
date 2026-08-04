@@ -38,7 +38,7 @@
   "book.name": "Full name *",
   "book.phone": "Phone *",
   "book.submit": "Book now",
-  "book.note": "Free to request · our team replies within minutes",
+  "book.note": "Free to send · we confirm your price within minutes",
   "book.err": "Please fill in this field",
   "book.svc.airport": "Airport transfer",
   "book.svc.rental": "Car + driver",
@@ -146,5 +146,16 @@
   "nav.reviews": "Reviews",
   "tm.eyebrow": "Real customer reviews",
   "tm.title": "What our customers say",
-  "tm.sub": "A few voices from people who have travelled with us"
+  "tm.sub": "A few voices from people who have travelled with us",
+  "fl.rail": "Choose a car",
+  "rail.nav": "Chapters on this page",
+  "rail.stats": "By the numbers",
+  "rail.services": "Our story",
+  "rail.fleet": "Our fleet",
+  "rail.how": "How to book",
+  "rail.routes": "Routes",
+  "rail.why": "Why us",
+  "rail.reviews": "Reviews",
+  "rail.faq": "FAQ",
+  "rail.booking": "Booking"
 }

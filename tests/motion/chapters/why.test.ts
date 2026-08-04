@@ -118,12 +118,37 @@ describe('buildWhyChapter · fix-review R1 (opacity owned by CSS classes only)',
     onUpdate({ progress: 0.3 }); // scroll back up to stage 1
     expect(cards[0].classList.contains('current')).toBe(true);
     expect(cards[0].classList.contains('entered')).toBe(true);
-    // stage 2/3 cards must drop both classes going backward — this is what
-    // used to stay stuck at inline opacity:1 forever under the old bug.
+    // stage 2/3 cards must drop both classes going backward. Scope note
+    // (final-review Fix 9): this asserts the CLASS bookkeeping only. gsap is
+    // mocked in this file, so it cannot and does not catch the original
+    // inline-opacity bug (gsap writing `opacity` straight onto the card and
+    // out-specificity-ing the CSS) — that one is guarded by buildWhyChapter
+    // simply never tweening opacity, and is verified in the browser, not here.
     expect(cards[1].classList.contains('entered')).toBe(false);
     expect(cards[1].classList.contains('current')).toBe(false);
     expect(cards[2].classList.contains('entered')).toBe(false);
     expect(cards[2].classList.contains('current')).toBe(false);
+  });
+
+  it('final-review Fix 7: cleanup คืนการ์ดกลับ stage 0 — ไม่มีใบไหนค้าง entered/current', () => {
+    // class เหล่านี้เป็น DOM write ล้วน ๆ ctx.revert() ไม่แตะ ถ้าไม่รีเซ็ตตอน
+    // cleanup การ build ใหม่หลังข้าม breakpoint จะเริ่มที่ cur = -1 ขณะที่หน้า
+    // ยังโชว์ใบที่ 3 เป็น current อยู่
+    const section = root();
+    stubTrigger();
+    const cleanup = buildWhyChapter(section, 240);
+    const cards = Array.from(section.querySelectorAll('.why-item'));
+    const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+    onUpdate({ progress: 0.9 });
+    expect(cards[2].classList.contains('current')).toBe(true);
+
+    cleanup();
+
+    cards.forEach((card) => {
+      expect(card.classList.contains('entered')).toBe(false);
+      expect(card.classList.contains('current')).toBe(false);
+    });
   });
 
   it('cleanup: kill trigger, revert context, ลบ pin-ready', () => {

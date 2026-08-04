@@ -5,8 +5,9 @@
      id="services" kept so Nav.astro's existing /#services anchor still lands here.
      data-chapter / data-chapter-len is editions.ts's own contract (separate from
      pin.ts's data-pin/data-stage — this chapter's timeline is a single continuous
-     transform, not a stage-swap sequence). Default (no .pin-ready — no JS, <1024px,
-     or reduced motion) renders as a plain stacked layout with the photo, headline
+     transform, not a stage-swap sequence). Default (no .pin-ready — no JS or reduced
+     motion; NOT a width condition any more: Task 6 pins this chapter at every width)
+     renders as a plain stacked layout with the photo, headline
      and all 4 services fully visible; the absolute Editions-style overlay only
      exists once buildIntroChapter() has actually attached a working ScrollTrigger. -->
 <section class="chapter intro-chapter" id="services" data-chapter="intro" data-chapter-len="420">
@@ -300,13 +301,23 @@
     }
   }
 
+  /* final-review Fix 12: inactive rows used to sit at `opacity: .35`, which put
+     their heading and description far under WCAG 1.4.3 (worse than Why's own
+     .45 case) — and since Task 6 this chapter pins on phones too. Every row now
+     stays fully readable; the active one is marked by the gold rule down its
+     left edge plus a warm background wash, on top of the description that only
+     ever expands for the active row (`.svc-p` below). Nothing that carries type
+     is dimmed. */
   .intro-chapter.pin-ready .svc {
-    opacity: 0.35;
     cursor: default;
+    border-left: 2px solid transparent;
+    padding-left: 0.7rem;
+    transition: background-color 0.35s, border-left-color 0.35s;
   }
 
   .intro-chapter.pin-ready .svc.on {
-    opacity: 1;
+    border-left-color: var(--gold);
+    background: oklch(64% 0.115 48 / 0.1);
   }
 
   .intro-chapter.pin-ready .svc-p {

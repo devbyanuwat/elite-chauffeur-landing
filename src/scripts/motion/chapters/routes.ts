@@ -52,9 +52,54 @@ export function buildRoutesChapter(section: HTMLElement, len: number): () => voi
     onUpdate,
   });
 
+  /**
+   * final-review Fix 3 — the carousel is a `.track` that GSAP moves with
+   * `gsap.set(track, { x })` inside `.track-clip { overflow: hidden }`. The
+   * cards are real `<a href>`, so they are focusable even while parked outside
+   * the clip. An overflow-hidden box is still *programmatically* scrollable:
+   * when focus lands on an off-screen card the browser scrolls it into view by
+   * setting `trackClip.scrollLeft`, and nothing ever put that back — the clip
+   * stayed offset for the rest of the session, so every later scrub frame
+   * painted the track at (gsap x) + (that stale scrollLeft), i.e. wrong by a
+   * constant nobody could see in the DOM.
+   *
+   * Two halves, and both are needed:
+   *  1. force `scrollLeft` back to 0 on every scroll of the clip — the clip's
+   *     scroll offset is never a legitimate state here, x is the only
+   *     transport.
+   *  2. do the thing the browser was *trying* to do, correctly: scroll the
+   *     WINDOW to the chapter progress that brings the focused card into view.
+   *     Without this, half 1 alone would leave a keyboard user tabbing onto
+   *     cards that never appear.
+   */
+  const CARD_LEAD_PX = 24;
+
+  const onClipScroll = (): void => {
+    if (trackClip.scrollLeft !== 0) trackClip.scrollLeft = 0;
+  };
+
+  const onCardFocus = (event: FocusEvent): void => {
+    const target = event.target as HTMLElement | null;
+    const card = target?.closest?.<HTMLElement>('.route-card') ?? null;
+    if (card === null) return;
+
+    const max = track.scrollWidth - trackClip.clientWidth + 64;
+    if (max <= 0) return;
+
+    const offset = Math.min(Math.max(card.offsetLeft - CARD_LEAD_PX, 0), max);
+    const span = trigger.end - trigger.start;
+    window.scrollTo({ top: trigger.start + (offset / max) * span, behavior: 'auto' });
+  };
+
+  trackClip.addEventListener('scroll', onClipScroll);
+  trackClip.addEventListener('focusin', onCardFocus);
+
   section.classList.add(PIN_READY_CLASS);
 
   return () => {
+    trackClip.removeEventListener('scroll', onClipScroll);
+    trackClip.removeEventListener('focusin', onCardFocus);
+    trackClip.scrollLeft = 0;
     trigger.kill();
     ctx.revert();
     section.classList.remove(PIN_READY_CLASS);

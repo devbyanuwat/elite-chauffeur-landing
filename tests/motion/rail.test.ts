@@ -48,8 +48,8 @@ describe('initRail', () => {
       <nav id="chapter-rail">
         <span data-rail-label></span>
         <ul>
-          <li><a href="#services" data-rail-dot data-rail-name="เรื่องของเรา"></a></li>
-          <li><a href="#stats" data-rail-dot data-rail-name="ตัวเลข"></a></li>
+          <li><a href="#services" data-rail-dot><span class="sr-only" data-i18n="rail.services">เรื่องของเรา</span></a></li>
+          <li><a href="#stats" data-rail-dot><span class="sr-only" data-i18n="rail.stats">ตัวเลข</span></a></li>
         </ul>
       </nav>`;
 
@@ -89,8 +89,8 @@ describe('initRail', () => {
       <nav id="chapter-rail">
         <span data-rail-label></span>
         <ul>
-          <li><a href="#why" data-rail-dot data-rail-name="ทำไมต้องเรา"></a></li>
-          <li><a href="#reviews" data-rail-dot data-rail-name="รีวิว"></a></li>
+          <li><a href="#why" data-rail-dot><span class="sr-only" data-i18n="rail.why">ทำไมต้องเรา</span></a></li>
+          <li><a href="#reviews" data-rail-dot><span class="sr-only" data-i18n="rail.reviews">รีวิว</span></a></li>
         </ul>
       </nav>`;
 
@@ -116,6 +116,36 @@ describe('initRail', () => {
     cleanup();
   });
 
+  it('อ่านชื่อบทจาก textContent สด ๆ ของ dot — สลับภาษาแล้ว label ต้องตามไปด้วย', () => {
+    // final-review Fix 5: setLang (src/lib/i18n.ts) เขียนทับเฉพาะ innerHTML ของ
+    // [data-i18n] เท่านั้น ไม่แตะ dataset ใด ๆ การอ่าน label จาก dataset.railName
+    // (ของเดิม) จึงค้างเป็นไทยตลอดกาล จำลองการ toggle ด้วยการเขียน innerHTML ของ
+    // span ข้างในให้เป็น EN แล้ว onToggle รอบถัดไปต้องได้ข้อความ EN
+    document.body.innerHTML = `
+      <section id="why" data-chapter="why"></section>
+      <nav id="chapter-rail">
+        <span data-rail-label></span>
+        <ul>
+          <li><a href="#why" data-rail-dot><span class="sr-only" data-i18n="rail.why">ทำไมต้องเรา</span></a></li>
+        </ul>
+      </nav>`;
+
+    const cleanup = initRail(document);
+    const config = scrollTriggerCreate.mock.calls[0][0] as {
+      onToggle: (self: { isActive: boolean }) => void;
+    };
+    const label = document.querySelector<HTMLElement>('[data-rail-label]')!;
+
+    config.onToggle({ isActive: true });
+    expect(label.textContent).toBe('ทำไมต้องเรา');
+
+    document.querySelector<HTMLElement>('[data-i18n="rail.why"]')!.innerHTML = 'Why us';
+    config.onToggle({ isActive: true });
+    expect(label.textContent).toBe('Why us');
+
+    cleanup();
+  });
+
   it('ข้าม dot ที่ id ปลายทางไม่มีอยู่จริงในหน้า โดยไม่ throw', () => {
     // fix round 3 (coordinator finding): #booking having no data-chapter is
     // NOT what this test is meant to prove — the old, chapter-driven
@@ -135,8 +165,8 @@ describe('initRail', () => {
       <nav id="chapter-rail">
         <span data-rail-label></span>
         <ul>
-          <li><a href="#why" data-rail-dot data-rail-name="ทำไมต้องเรา"></a></li>
-          <li><a href="#booking" data-rail-dot data-rail-name="จองรถ"></a></li>
+          <li><a href="#why" data-rail-dot><span class="sr-only" data-i18n="rail.why">ทำไมต้องเรา</span></a></li>
+          <li><a href="#booking" data-rail-dot><span class="sr-only" data-i18n="rail.booking">จองรถ</span></a></li>
         </ul>
       </nav>`;
 

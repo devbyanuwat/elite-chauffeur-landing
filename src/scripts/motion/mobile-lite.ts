@@ -229,7 +229,7 @@ const REVEAL_SELECTOR = '.rev-card,.blog-card,.faq-item';
  *   builder (buildIntroChapter, buildHowChapter, …) owns that motion now.
  * - bouncy reveals: `.rev-card,.blog-card,.faq-item` fade/scale/lift in once.
  *
- * Gated entirely by ./index's mm.add `(max-width: 1023px) and
+ * Gated entirely by ./index's mm.add `(max-width: 1023.98px) and
  * (not (prefers-reduced-motion: reduce))` block — this function itself does
  * no width/reduced-motion checks, same convention as applyParallax/applyReveals.
  */

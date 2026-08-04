@@ -60,7 +60,14 @@ export function initRail(root: ParentNode): () => void {
             if (isActive) candidate.setAttribute('aria-current', 'true');
             else candidate.removeAttribute('aria-current');
           });
-          if (label) label.textContent = dot.dataset.railName ?? '';
+          // final-review Fix 5: the visible label used to be read from
+          // `dot.dataset.railName`, a build-time Thai literal that setLang
+          // (src/lib/i18n.ts) never touches — so an English visitor saw an
+          // English page with a Thai rail label. The dot's own `.sr-only`
+          // span carries `data-i18n="rail.<id>"`, so its live textContent is
+          // always in whichever language is currently active; reading that
+          // makes the label follow the toggle for free.
+          if (label) label.textContent = (dot.textContent ?? '').trim();
         },
       });
     })

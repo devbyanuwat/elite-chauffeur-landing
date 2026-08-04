@@ -41,7 +41,19 @@ const NOT_REDUCED_MOTION_COMPOSABLE = '(not (prefers-reduced-motion: reduce))';
 // trap: `not` here sits *inside* its own parens as one feature test among two,
 // not as a whole-query prefix, so `and`-joining it with the width test parses
 // and evaluates correctly (confirmed via window.matchMedia the same way).
-const MOBILE_TIER_QUERY = '(max-width: 1023px) and (not (prefers-reduced-motion: reduce))';
+//
+// final-review Fix 6: the upper bound is 1023.98px, NOT 1023px. The full tier
+// below starts at `(min-width: 1024px)`, so a `(max-width: 1023px)` lower tier
+// leaves a real gap: at 1023.5px — reachable through browser zoom, fractional
+// display scaling, or a split-screen/resizable window — NEITHER query matches.
+// No chapter pins, and `initStickyCtaOf` (registered only inside these two
+// tiers plus the reduced-motion branch) never runs, so #sticky-cta stays at its
+// resting `opacity: 0; pointer-events: none` — exactly the invisible-booking-CTA
+// bug T9 fixed for reduced-motion users, re-created for fractional widths.
+// Worse, `NOT_REDUCED_MOTION` DOES match there, so the chapter rail appears and
+// points at chapters that never pin. `(max-width: 1023.98px)` is the standard
+// complement of `(min-width: 1024px)` (Routes.astro:290 already uses that form).
+const MOBILE_TIER_QUERY = '(max-width: 1023.98px) and (not (prefers-reduced-motion: reduce))';
 
 function applyParallax(root: ParentNode): void {
   root.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {

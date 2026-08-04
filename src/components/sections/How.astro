@@ -2,13 +2,16 @@
 // chapter 2 · how (ports mockups/pinned-editions.html #how + its separate
 // .how-mobile block). data-chapter / data-chapter-len is editions.ts's own
 // contract — separate from pin.ts's data-pin/data-stage (old attributes
-// removed here). Default (no .pin-ready — no JS, <1024px, or reduced motion)
-// renders the collage grid with step 1 already active/readable and all three
-// steps' copy fully visible; the theatrical single-active-step dimming +
-// numeral swap only exists once buildHowChapter() has attached a working
-// ScrollTrigger, same convention as IntroStory/Fleet. Below 1024px the whole
-// collage is swapped for `.how-mobile` (3 static `.hm-step` blocks — T7 adds
-// their bouncy in/out timelines, this task ships them fully visible).
+// removed here). Default (no .pin-ready — no JS or reduced motion; NOT a width
+// condition any more: Task 6 pins this chapter at every width, so a phone with
+// JS and motion allowed gets .pin-ready too) renders the collage grid with
+// step 1 already active/readable and all three steps' copy fully visible; the
+// theatrical single-active-step emphasis + numeral swap only exists once
+// buildHowChapter() has attached a working ScrollTrigger, same convention as
+// IntroStory/Fleet. Below 1024px the whole collage is swapped for `.how-mobile`
+// (3 static `.hm-step` blocks, always fully visible — Task 6 deleted the
+// per-step bouncy in/out timelines T7 used to add here; the chapter's own
+// stage sequencing replaced them).
 const STEPS = [
   {
     k: 'how.1.k',

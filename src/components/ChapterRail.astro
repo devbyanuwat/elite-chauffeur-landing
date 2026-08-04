@@ -1,31 +1,47 @@
 ---
 const stops = [
+  // final-review Fix 1: `stats` used to sit fifth in this array while <Stats />
+  // is the SECOND section in src/pages/index.astro — the active dot started at
+  // position 5, jumped to 1, walked 2→3→4 and only then came back to 6, i.e. a
+  // progress rail that ran backwards. Order below now matches page order in
+  // src/pages/index.astro exactly:
+  //   Hero → Stats → IntroStory(#services) → Fleet → How → Routes → Why →
+  //   reviews → faq → booking
+  // (Hero carries no dot — the rail's first stop is the first section you can
+  // meaningfully jump back to.)
+  { id: 'stats', th: 'ตัวเลข', en: 'By the numbers' },
   { id: 'services', th: 'เรื่องของเรา', en: 'Our story' },
   { id: 'fleet', th: 'รถของเรา', en: 'Our fleet' },
   { id: 'how', th: 'วิธีจอง', en: 'How to book' },
   { id: 'routes', th: 'เส้นทาง', en: 'Routes' },
-  { id: 'stats', th: 'ตัวเลข', en: 'By the numbers' },
   { id: 'why', th: 'ทำไมต้องเรา', en: 'Why us' },
   // fix round 2: reviews/faq/booking carry no data-chapter (not pinned
   // chapters), so they're never in collectChapters()'s output — but the
   // visitor still scrolls through them, and aria-current was getting stuck
   // on `why` for the rest of the page. initRail now resolves stops from
   // these dots' href directly rather than from the chapter list, so listing
-  // them here is what makes them light up at all. Order matches page order
-  // in src/pages/index.astro (Why → Reviews → Faq → Booking).
+  // them here is what makes them light up at all.
   { id: 'reviews', th: 'รีวิว', en: 'Reviews' },
   { id: 'faq', th: 'คำถามบ่อย', en: 'FAQ' },
   { id: 'booking', th: 'จองรถ', en: 'Booking' },
 ];
 ---
 
-<nav id="chapter-rail" aria-label="บทของหน้านี้">
+{/* final-review Fix 5: the nav's accessible name and every dot's name used to
+    be hard-coded Thai with no data-i18n, so setLang (src/lib/i18n.ts, which
+    only ever rewrites [data-i18n] innerHTML) never touched them and an English
+    visitor got a Thai rail. aria-label cannot carry data-i18n — it's an
+    attribute, not innerHTML — so the nav is named through aria-labelledby
+    pointing at an .sr-only span that CAN. The `en` strings in the frontmatter
+    above are the source for the `rail.*` keys in src/i18n/en.json. */}
+<nav id="chapter-rail" aria-labelledby="chapter-rail-label">
+  <span id="chapter-rail-label" class="sr-only" data-i18n="rail.nav">บทของหน้านี้</span>
   <span data-rail-label aria-hidden="true"></span>
   <ul>
     {stops.map((stop) => (
       <li>
-        <a href={`#${stop.id}`} data-rail-dot data-rail-name={stop.th}>
-          <span class="sr-only">{stop.th}</span>
+        <a href={`#${stop.id}`} data-rail-dot>
+          <span class="sr-only" data-i18n={`rail.${stop.id}`}>{stop.th}</span>
         </a>
       </li>
     ))}
@@ -54,13 +70,31 @@ const stops = [
 
   #chapter-rail ul {
     display: grid;
-    gap: 0.55rem;
+    /* final-review Fix 4: each stop is now a 24×24 hit box (below), so the
+       list itself carries no gap — 24px box-to-box IS the WCAG 2.2 AA 2.5.8
+       target size, and adding a gap on top would only push the rail taller
+       for no visual gain (the visible dot is still 7px, drawn by ::before). */
+    gap: 0;
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
+  /* final-review Fix 4: the anchor used to BE the 7px dot — a 7px target with
+     ~15.8px centre-to-centre spacing, failing WCAG 2.2 AA 2.5.8 (24×24 CSS px)
+     on both counts, and a 2px :focus-visible ring on a 7px circle was almost
+     invisible. The anchor is now a 24×24 grid box (the target) and the dot is
+     ::before (the visual) — the rail reads identically and taps/focuses at
+     full size. */
   #chapter-rail a {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+  }
+
+  #chapter-rail a::before {
+    content: '';
     display: block;
     width: 7px;
     height: 7px;
@@ -70,7 +104,7 @@ const stops = [
     transition: opacity 0.3s, transform 0.3s;
   }
 
-  #chapter-rail a.on {
+  #chapter-rail a.on::before {
     background: var(--gold-dark);
     opacity: 1;
     transform: scale(1.5);
@@ -88,27 +122,24 @@ const stops = [
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    #chapter-rail a {
-      transition: none;
-    }
-  }
+  /* final-review Fix 11: a `@media (prefers-reduced-motion: reduce)` transition
+     override used to live here. It was dead code — initRail() only runs inside
+     initMotion's NOT_REDUCED_MOTION matchMedia context, so `.rail-ready` (and
+     therefore the rail itself, `display: none` until then) never appears for a
+     reduced-motion visitor at all. That is deliberate: nothing pins for them
+     either, so there are no chapters to navigate between and the page is a
+     plain top-to-bottom document. Leaving reduce-specific styling here implied
+     the rail was expected to show up under reduce, which it never does. */
 
-  /* fix round 2: nine dots at the default 0.55rem gap grow the rail by
-     roughly 40px over the six-dot baseline (7px dot + 0.55rem gap × 3 more
-     stops) that was measured against #sticky-cta / LineFab at 390×640 and
-     found 158px/210px clear — plenty of margin there. A short viewport
-     (landscape phones, embedded webviews) has far less headroom, and
-     max-height only caps overflow, it doesn't shrink the rail's actual
-     height. Tighten the gap directly below 480px tall so growth can't eat
-     into the CTA/fab corner. */
+  /* fix round 2 (kept, re-measured after Fix 4): the rail is nine 24px hit
+     boxes tall now, so its height is fixed by the box count and max-height can
+     only clip it, never shrink it. Short viewports (landscape phones, embedded
+     webviews) have the least headroom above #sticky-cta / the LINE fab, so the
+     cap is kept tight there — measured clearances for this build are recorded
+     in docs/superpowers/plans/2026-08-04-presentation-motion-VERIFY.md. */
   @media (max-height: 480px) {
     #chapter-rail.rail-ready {
-      max-height: min(45svh, 220px);
-    }
-
-    #chapter-rail ul {
-      gap: 0.3rem;
+      max-height: min(75svh, 240px);
     }
   }
 </style>

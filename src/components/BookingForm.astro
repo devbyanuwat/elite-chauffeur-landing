@@ -64,7 +64,13 @@ import ServiceTabs from './ServiceTabs.astro';
   <div class="booking-error" id="bookingError" role="alert"></div>
 
   <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="book.submit">จองรถ</button>
-  <p class="booking-note" data-i18n="book.note">ไม่มีค่าใช้จ่ายในการขอราคา · ทีมงานตอบกลับภายในไม่กี่นาที</p>
+  <!-- final-review Fix 8: the note used to say "Free to request", written back
+       when the button above was a quote CTA. Now that every CTA on the page is
+       จองรถ / "Book now", the word "request" had no antecedent left anywhere.
+       The promise (costs nothing, answer comes fast) is kept, but it now hangs
+       off *sending the form*, and it still says the price is CONFIRMED
+       afterwards — it is not shown instantly. -->
+  <p class="booking-note" data-i18n="book.note">ส่งข้อมูลฟรี · ทีมงานยืนยันราคาให้ภายในไม่กี่นาที</p>
   <div class="booking-success" id="bookingSuccess" role="status" aria-live="polite"></div>
 </form>
 

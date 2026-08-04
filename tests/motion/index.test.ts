@@ -106,7 +106,7 @@ describe('initMotion', () => {
     // string ของ 3 context เฉย ๆ ไม่เคยเรียก initMotion() ในสภาพที่ "เฉพาะ
     // mobile-tier context ยิง" แล้วตรวจว่าบทจริงถูก build
     const onlyIfMobileTier = (query: string, callback: () => void) => {
-      if (query.includes('max-width: 1023px')) callback();
+      if (query.includes('max-width: 1023.98px')) callback();
     };
 
     // data-chapter-len="300" -> lite tier ต้องย่อเหลือ round(300*0.55)=165
@@ -219,13 +219,29 @@ describe('initMotion', () => {
     });
   });
 
+  it('mobile tier กับ full tier ต้องต่อกันสนิท ไม่มีช่องว่างที่ความกว้างเศษส่วน (1023.5px)', () => {
+    // final-review Fix 6: `(max-width: 1023px)` คู่กับ `(min-width: 1024px)`
+    // ทิ้งช่องว่างจริงที่ 1023.5px (zoom / display scaling / split screen) —
+    // ไม่มี tier ไหน match เลย บทจึงไม่ pin และ initStickyCtaOf ไม่ถูกเรียก
+    // ปุ่มจองจึงค้างที่ opacity: 0 มองไม่เห็นตลอดกาล
+    document.body.innerHTML = '<div data-parallax="0.1"></div>';
+    initMotion();
+
+    const queries = matchMediaAdd.mock.calls.map((call) => call[0] as string);
+    const upperBound = queries.find((query) => query.includes('max-width'));
+    expect(upperBound).toContain(`max-width: ${FULL_TIER_MIN_WIDTH - 0.02}px`);
+  });
+
   it('ไม่สั่ง gsap เลยถ้า query ไม่ตรง (จำลอง reduced motion จริงผ่าน matchMedia)', () => {
     const skipIfReducedMotionQuery = (query: string, callback: () => void) => {
       if (!query.includes('prefers-reduced-motion: reduce')) callback();
     };
-    // initMotion เรียก mm.add ทั้งหมด 3 ครั้ง (parallax context, split/reveal/count
-    // context, mobile-lite context) — ใช้ mockImplementationOnce สามครั้งแทน
-    // mockImplementation ถาวร เพื่อไม่ต้อง restore เอง
+    // initMotion เรียก mm.add ทั้งหมด 3 ครั้ง ตามลำดับนี้เสมอ: full tier
+    // (parallax + pin + editions) → mobile tier (mobile-lite + editions 'lite')
+    // → NOT_REDUCED_MOTION (split/reveal/count/hero-exit/rail) — ลำดับนี้เป็น
+    // load-bearing: บทต้อง pin เสร็จก่อน rail/reveal จะสร้าง trigger ของตัวเอง
+    // ใช้ mockImplementationOnce สามครั้งแทน mockImplementation ถาวร
+    // เพื่อไม่ต้อง restore เอง
     matchMediaAdd
       .mockImplementationOnce(skipIfReducedMotionQuery)
       .mockImplementationOnce(skipIfReducedMotionQuery)
@@ -280,8 +296,9 @@ describe('initMotion', () => {
     document.body.innerHTML = `
       <section data-pin="fleet"><div data-stage="0"></div><div data-stage="1"></div></section>
     `;
-    // initMotion เรียก mm.add สามครั้ง (full tier, NOT_REDUCED_MOTION เดี่ยว ๆ,
-    // mobile-lite tier) — ใช้ mockImplementationOnce สามครั้งแทน mockImplementation
+    // initMotion เรียก mm.add สามครั้ง ตามลำดับ full tier → mobile tier →
+    // NOT_REDUCED_MOTION (ลำดับนี้ load-bearing: pin ต้องมีอยู่ก่อน rail/reveal
+    // จะสร้าง trigger) — ใช้ mockImplementationOnce สามครั้งแทน mockImplementation
     // ถาวร เพื่อไม่ต้อง restore เอง
     matchMediaAdd
       .mockImplementationOnce(onlyIfFullTier)

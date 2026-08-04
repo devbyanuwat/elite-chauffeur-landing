@@ -89,9 +89,22 @@ const first = CARS[0];
       <div class="ch-eyebrow fleet-count">01 / 0{CARS.length}</div>
     </div>
 
-    <nav class="rail" aria-hidden="true">
+    {/* final-review Fix 2: this used to be `aria-hidden="true"`, which is a
+        contradiction the moment Task 6 turned these into functional scroll
+        controls — the buttons stay focusable, so a keyboard user tabs into
+        four controls assistive tech has been told do not exist (WCAG 4.1.2).
+        `inert` would have removed them from both trees, but they are the only
+        "pick a car" control at >=1024px, so they must stay reachable. Named
+        via aria-labelledby (an attribute cannot carry data-i18n; setLang only
+        rewrites [data-i18n] innerHTML — same pattern as ChapterRail.astro),
+        and each button carries aria-pressed so the selected car is exposed by
+        more than the `.on` class's colour. chapters/fleet.ts keeps it in sync
+        with `.on`; the fallback script at the bottom of this file does the
+        same for the no-GSAP path. */}
+    <nav class="rail" aria-labelledby="fleet-rail-label">
+      <span id="fleet-rail-label" class="sr-only" data-i18n="fl.rail">เลือกรถ</span>
       {CARS.map((c, i) => (
-        <button type="button" class={i === 0 ? 'on' : ''}>
+        <button type="button" class={i === 0 ? 'on' : ''} aria-pressed={i === 0 ? 'true' : 'false'}>
           <span class="idx">0{i + 1}</span><span class="bar"><i></i></span><span class="lbl">{c.ghost}</span>
         </button>
       ))}
@@ -106,11 +119,20 @@ const first = CARS[0];
 
     <div class="fleet-tabs">
       {CARS.map((_c, i) => (
-        <button type="button" class={i === 0 ? 'on' : ''} aria-label={`รถคันที่ ${i + 1}`}>{i + 1}</button>
+        <button
+          type="button"
+          class={i === 0 ? 'on' : ''}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+          aria-label={`รถคันที่ ${i + 1}`}>{i + 1}</button>
       ))}
     </div>
 
-    <div class="fleet-meta">
+    {/* final-review Fix 2: the car swap rewrites name / price / chips in place.
+        Without a live region a screen-reader user only ever perceives car 01 —
+        the selected-state change on the controls above says *which* car is
+        picked, this says what that car actually is. polite (not assertive):
+        the swap is user-initiated and must not interrupt. */}
+    <div class="fleet-meta" aria-live="polite">
       <div>
         <div class="name">{first.name}</div>
         <div class="chips">
@@ -311,8 +333,12 @@ const first = CARS[0];
     filter: drop-shadow(0 30px 40px oklch(24% 0.02 60 / 0.18));
   }
 
-  /* mobile-only numbered tabs — tap to swap car; wired by this component's
-     own plain-JS script below (buildFleetChapter never runs <1024px) */
+  /* mobile-only numbered tabs — tap to swap car. Two controllers can own them:
+     buildFleetChapter() (chapters/fleet.ts) adopts them whenever the chapter
+     is live, which since Task 6 includes <1024px; this component's own plain-JS
+     script below is the fallback for every state where the chapter never
+     attaches (no JS module, reduced motion) and defers to the chapter via the
+     `.pin-ready` check when it does. */
   .fleet-tabs {
     display: flex;
     gap: 0.5rem;
@@ -434,9 +460,20 @@ const first = CARS[0];
     min-height: 0;
   }
 
+  /* final-review Fix 10: `width: min(62vw, 860px)` used to apply at every
+     width, but the base rule is `88vw` — so on a phone the product photo
+     SHRANK the moment the chapter engaged (62vw of 390px = 242px, down from
+     343px). 62vw only makes sense next to the desktop layout's ghost word and
+     side rail; below 1024px the base 88vw is what the mockup shows. Only the
+     vertical cap is shared. */
   .fleet-chapter.pin-ready .car-layer img {
-    width: min(62vw, 860px);
     max-height: 52vh;
+  }
+
+  @media (min-width: 1024px) {
+    .fleet-chapter.pin-ready .car-layer img {
+      width: min(62vw, 860px);
+    }
   }
 
   /* fix round 1 (review): clamp's own min (6rem = 96px) already blows past a
@@ -482,7 +519,12 @@ const first = CARS[0];
        buildFleetChapter() in editions.ts now attaches under EITHER matchMedia
        gate (full tier >=1024px, or lite tier <1024px — Task 6), and once it
        does it adopts these same `.fleet-tabs button` elements into its own
-       click→scrollTo wiring (see chapters/fleet.ts's `railButtons` query).
+       click→scrollTo wiring (see chapters/fleet.ts's `tabButtons` query — NOT
+       `railButtons`, which is the >=1024px `.rail` group. Those two arrays are
+       deliberately separate, each indexed by stage within its OWN group;
+       conflating them into one flat query was the critical bug of Task 6
+       round 1, because the tab buttons then landed at document indices 4–7
+       instead of stage indices 0–3).
        Without a guard here both controllers would fire on the same click:
        this fallback's instant DOM write AND the chapter's scroll (which
        itself re-drives the DOM via onUpdate) — a redundant, flicker-prone
@@ -532,8 +574,12 @@ const first = CARS[0];
       if (pickBtn) pickBtn.setAttribute('data-vtype', car.vtype);
       if (countEl) countEl.textContent = '0' + (i + 1) + ' / 0' + cars.length;
 
+      // final-review Fix 2: mirror `.on` into aria-pressed here too — this is
+      // the only controller when GSAP never attaches (no chapter, reduced
+      // motion), so the selected state has to be exposed from here as well.
       tabButtons.forEach(function (b, j) {
         b.classList.toggle('on', j === i);
+        b.setAttribute('aria-pressed', j === i ? 'true' : 'false');
       });
     }
 
