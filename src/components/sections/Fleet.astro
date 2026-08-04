@@ -515,16 +515,16 @@ const first = CARS[0];
   (function () {
     'use strict';
 
-    /* ---------- Fleet mobile tabs -> stage swap (plain JS, no GSAP) ----------
+    /* ---------- Fleet rail/tabs -> stage swap (plain JS, no GSAP) ----------
        buildFleetChapter() in editions.ts now attaches under EITHER matchMedia
        gate (full tier >=1024px, or lite tier <1024px — Task 6), and once it
-       does it adopts these same `.fleet-tabs button` elements into its own
-       click→scrollTo wiring (see chapters/fleet.ts's `tabButtons` query — NOT
-       `railButtons`, which is the >=1024px `.rail` group. Those two arrays are
-       deliberately separate, each indexed by stage within its OWN group;
-       conflating them into one flat query was the critical bug of Task 6
-       round 1, because the tab buttons then landed at document indices 4–7
-       instead of stage indices 0–3).
+       does it adopts these same `.rail button` / `.fleet-tabs button`
+       elements into its own click→scrollTo wiring (see chapters/fleet.ts's
+       `railButtons`/`tabButtons` queries — two arrays, deliberately
+       separate, each indexed by stage within its OWN group; conflating them
+       into one flat query was the critical bug of Task 6 round 1, because
+       the tab buttons then landed at document indices 4–7 instead of stage
+       indices 0–3).
        Without a guard here both controllers would fire on the same click:
        this fallback's instant DOM write AND the chapter's scroll (which
        itself re-drives the DOM via onUpdate) — a redundant, flicker-prone
@@ -535,7 +535,16 @@ const first = CARS[0];
        checking it here is the same signal every chapter's CSS already uses
        — when it's present, defer entirely; when it's absent (no-JS,
        reduced-motion, or the matchMedia gate simply hasn't fired yet), this
-       remains the only working control, same as before Task 6. */
+       remains the only working control, same as before Task 6.
+
+       residual fix (2026-08-04): `.rail button` used to be left out of this
+       fallback entirely. At >=1024px with reduced motion, chapters/fleet.ts
+       never attaches (motion/index.ts gates it out) and `.fleet-tabs` is
+       `display:none` above 1023px — so the rail buttons (visible, focusable,
+       carrying aria-pressed since the accessibility fix) drove nothing. They
+       now share the exact same handler/bookkeeping as the tabs, just like
+       buildFleetChapter treats both groups as one flat set of "pick a car"
+       controls. */
     var section = document.getElementById('fleet');
     if (!section) return;
 
@@ -555,7 +564,14 @@ const first = CARS[0];
     var priceEl = section.querySelector('.fleet-meta .price b');
     var pickBtn = section.querySelector('.pick') as HTMLElement | null;
     var countEl = section.querySelector('.fleet-count');
+    // residual fix (2026-08-04): `.rail` (>=1024px chrome) and `.fleet-tabs`
+    // (<1024px pills) are both "pick a car" controls for the same four
+    // stages — same split as chapters/fleet.ts's railButtons/tabButtons, kept
+    // as two separate per-group NodeLists (not one flattened query) so each
+    // button's index within its OWN group stays the stage index.
+    var railButtons = section.querySelectorAll('.rail button');
     var tabButtons = section.querySelectorAll('.fleet-tabs button');
+    var controlGroups = [railButtons, tabButtons];
 
     function applyStage(i: number) {
       var car = cars[i];
@@ -577,16 +593,21 @@ const first = CARS[0];
       // final-review Fix 2: mirror `.on` into aria-pressed here too — this is
       // the only controller when GSAP never attaches (no chapter, reduced
       // motion), so the selected state has to be exposed from here as well.
-      tabButtons.forEach(function (b, j) {
-        b.classList.toggle('on', j === i);
-        b.setAttribute('aria-pressed', j === i ? 'true' : 'false');
+      // residual fix (2026-08-04): both groups, same stage index.
+      controlGroups.forEach(function (buttons) {
+        buttons.forEach(function (b, j) {
+          b.classList.toggle('on', j === i);
+          b.setAttribute('aria-pressed', j === i ? 'true' : 'false');
+        });
       });
     }
 
-    tabButtons.forEach(function (btn, i) {
-      btn.addEventListener('click', function () {
-        if (section!.classList.contains('pin-ready')) return;
-        applyStage(i);
+    controlGroups.forEach(function (buttons) {
+      buttons.forEach(function (btn, i) {
+        btn.addEventListener('click', function () {
+          if (section!.classList.contains('pin-ready')) return;
+          applyStage(i);
+        });
       });
     });
 
