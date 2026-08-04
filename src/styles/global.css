@@ -300,6 +300,27 @@ section.block {
 }
 .rev-arrow:hover, .rev-arrow:focus-visible { border-color: var(--gold); color: var(--gold-dark); }
 
+/* fix: #chapter-rail (src/components/ChapterRail.astro) is fixed at
+   `right: clamp(10px, 1.4vw, 20px)` and stays mounted at every width below
+   1024px (it only hides its text label there, per MOBILE_TIER_QUERY in
+   src/scripts/motion/index.ts). .rev-slider-wrap/.rev-nav sit outside
+   `.wrap` on purpose (full-bleed mobile carousel — see index.astro), so
+   .rev-arrow's right edge otherwise lands flush with the viewport edge and
+   sits directly under the rail's dot column whenever the reviews section
+   scrolls through the rail's vertically-centred band. Reserve enough
+   right-hand space below the same 1024px breakpoint so the arrow's tap
+   target clears the dot's widest footprint (7px dot, scaled ×1.5 to ~10.5px
+   when `.on`, plus the rail's own up-to-~14.3px right offset at 1023px)
+   instead of shrinking or relocating the rail (which stays put — its
+   already-measured clearance against #sticky-cta/LineFab is unaffected).
+   Desktop (>=1024px) is untouched — .wrap gives the arrows plenty of room
+   there already. */
+@media (max-width: 1023px) {
+  .rev-nav {
+    padding-right: clamp(28px, 5vw, 34px);
+  }
+}
+
 @media (min-width: 640px) {
   .rev-card { flex-basis: clamp(240px, 23%, 320px); }
 }
