@@ -39,7 +39,9 @@ vi.mock('gsap/ScrollTrigger', () => ({
   ScrollTrigger: { create: scrollTriggerCreate },
 }));
 
-import { collectChapters } from '../../src/scripts/motion/editions';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import { applyEditionsPins, collectChapters } from '../../src/scripts/motion/editions';
 import { buildFleetChapter, fleetStageForProgress } from '../../src/scripts/motion/chapters/fleet';
 import { buildHowChapter, howStageForProgress } from '../../src/scripts/motion/chapters/how';
 import { buildIntroChapter } from '../../src/scripts/motion/chapters/intro';
@@ -103,6 +105,22 @@ describe('collectChapters', () => {
     `);
     const chapters = collectChapters(doc);
     expect(chapters.map((c) => c.name)).toEqual(['intro', 'fleet']);
+  });
+});
+
+describe('applyEditionsPins · tier', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
+
+  it('มือถือได้บทเดียวกันแต่ความยาวย่อลง', () => {
+    document.body.innerHTML = '<section data-chapter="why" data-chapter-len="240"><div class="why-item"></div></section>';
+    const spy = vi.spyOn(ScrollTrigger, 'create');
+
+    applyEditionsPins(document, 'lite');
+
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ end: '+=132%' }));
   });
 });
 

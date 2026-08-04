@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerCreate, timeline, set } = vi.hoisted(() => {
+const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerCreate, scrollTriggerConfig, timeline, set } = vi.hoisted(() => {
   const chainable = { to: vi.fn(), fromTo: vi.fn() };
   chainable.to.mockReturnValue(chainable);
   chainable.fromTo.mockReturnValue(chainable);
@@ -13,6 +13,7 @@ const { fromTo, to, from, registerPlugin, matchMediaAdd, refresh, scrollTriggerC
     matchMediaAdd: vi.fn((_query: string, callback: () => void) => callback()),
     refresh: vi.fn(),
     scrollTriggerCreate: vi.fn(),
+    scrollTriggerConfig: vi.fn(),
     timeline: vi.fn(() => chainable),
     set: vi.fn(),
   };
@@ -31,7 +32,7 @@ vi.mock('gsap', () => ({
 }));
 
 vi.mock('gsap/ScrollTrigger', () => ({
-  ScrollTrigger: { refresh, create: scrollTriggerCreate },
+  ScrollTrigger: { refresh, create: scrollTriggerCreate, config: scrollTriggerConfig },
 }));
 
 import { initMotion } from '../../src/scripts/motion/index';

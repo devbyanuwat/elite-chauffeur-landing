@@ -12,6 +12,7 @@ import { buildIntroChapter } from './chapters/intro';
 import { buildRoutesChapter } from './chapters/routes';
 import { buildStatsChapter } from './chapters/stats';
 import { buildWhyChapter } from './chapters/why';
+import { chapterLenFor, type MotionTier } from './tiers';
 
 export interface Chapter {
   name: string;
@@ -57,9 +58,9 @@ const BUILDERS: Record<string, (section: HTMLElement, len: number) => () => void
   why: buildWhyChapter,
 };
 
-export function applyEditionsPins(root: ParentNode): () => void {
+export function applyEditionsPins(root: ParentNode, tier: MotionTier): () => void {
   const cleanups = collectChapters(root)
-    .map((chapter) => BUILDERS[chapter.name]?.(chapter.el as HTMLElement, chapter.len))
+    .map((chapter) => BUILDERS[chapter.name]?.(chapter.el as HTMLElement, chapterLenFor(tier, chapter.len)))
     .filter((cleanup): cleanup is () => void => typeof cleanup === 'function');
 
   return () => cleanups.forEach((cleanup) => cleanup());

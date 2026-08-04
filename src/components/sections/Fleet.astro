@@ -416,46 +416,52 @@ const first = CARS[0];
     }
   }
 
-  /* ---- โหมด pin (desktop, motion allowed) ----
-     pin-ready มาจาก editions.ts เท่านั้น ดังนั้น layout ด้านบนยังเป็น
-     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
-  @media (min-width: 1024px) {
-    .fleet-chapter.pin-ready {
-      height: 100vh;
-    }
+  /* ---- โหมด pin (ทุกความกว้าง, motion allowed) ----
+     pin-ready มาจาก editions.ts เท่านั้น (ตอนนี้ทำงานทั้ง full และ lite tier —
+     Task 6) ดังนั้น layout ด้านบนยังเป็นพฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
+  .fleet-chapter.pin-ready {
+    height: 100svh;
+  }
 
-    .fleet-chapter.pin-ready .fleet-viewport {
-      height: 100%;
-      /* nav ลอย fixed สูง 72px — บทที่ pin เต็มจอต้องเผื่อหัว ไม่งั้นชื่อบทมุดใต้ nav */
-      padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px) clamp(16px, 3vh, 40px);
-    }
+  .fleet-chapter.pin-ready .fleet-viewport {
+    height: 100%;
+    /* nav ลอย fixed สูง 72px — บทที่ pin เต็มจอต้องเผื่อหัว ไม่งั้นชื่อบทมุดใต้ nav */
+    padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px) clamp(16px, 3vh, 40px);
+  }
 
-    .fleet-chapter.pin-ready .fleet-stagewrap {
-      flex: 1 1 auto;
-      min-height: 0;
-    }
+  .fleet-chapter.pin-ready .fleet-stagewrap {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
 
-    .fleet-chapter.pin-ready .car-layer img {
-      width: min(62vw, 860px);
-      max-height: 52vh;
-    }
+  .fleet-chapter.pin-ready .car-layer img {
+    width: min(62vw, 860px);
+    max-height: 52vh;
+  }
 
-    .fleet-chapter.pin-ready .ghost span {
-      font-size: clamp(6rem, 17vw, 15rem);
-    }
+  .fleet-chapter.pin-ready .ghost span {
+    font-size: clamp(6rem, 17vw, 15rem);
+  }
 
-    .fleet-chapter.pin-ready .fleet-meta {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 2rem;
-      /* กันราคาชนปุ่มลอยมุมขวาล่าง (sticky CTA + LINE) */
-      padding-right: 220px;
-    }
+  .fleet-chapter.pin-ready .fleet-meta {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    /* กันราคาชนปุ่มลอยมุมขวาล่าง (sticky CTA + LINE) */
+    padding-right: 220px;
+  }
 
-    .fleet-chapter.pin-ready .price {
-      text-align: right;
-    }
+  .fleet-chapter.pin-ready .price {
+    text-align: right;
+  }
+
+  /* fleet-tabs is the <1024px tap-to-swap fallback (own plain-JS below) —
+     once pin-ready lands (now true below 1024px too, Task 6) the rail +
+     buildFleetChapter own stage-switching, so the tap tabs must step aside
+     to avoid two independent controllers fighting over the same DOM */
+  .fleet-chapter.pin-ready .fleet-tabs {
+    display: none;
   }
 </style>
 

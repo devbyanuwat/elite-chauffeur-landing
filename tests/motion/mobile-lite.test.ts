@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { gsapSet, gsapFromTo, gsapFrom, gsapTimeline, timelineChain, scrollTriggerCreate } = vi.hoisted(() => {
+const { gsapSet, gsapFromTo, gsapFrom, gsapTimeline, scrollTriggerCreate } = vi.hoisted(() => {
   const chain = { fromTo: vi.fn(), to: vi.fn() };
   chain.fromTo.mockReturnValue(chain);
   chain.to.mockReturnValue(chain);
@@ -9,7 +9,6 @@ const { gsapSet, gsapFromTo, gsapFrom, gsapTimeline, timelineChain, scrollTrigge
     gsapFromTo: vi.fn(),
     gsapFrom: vi.fn(),
     gsapTimeline: vi.fn(() => chain),
-    timelineChain: chain,
     scrollTriggerCreate: vi.fn(),
   };
 });
@@ -355,73 +354,41 @@ describe('watchReviewTrack', () => {
   });
 });
 
-function makeHmStep(): string {
-  return `
-    <div class="hm-step">
-      <div class="hm-media"><img alt="" /><span class="hm-n">1</span></div>
-      <div class="hm-body"><div class="k">k</div><h3>t</h3><p>d</p></div>
-    </div>
-  `;
-}
-
 describe('applyMobileLite', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
     vi.clearAllMocks();
   });
 
-  it('สร้าง ScrollTrigger หนึ่งอันต่อ .hm-step (3 บล็อกใน fixture)', () => {
-    document.body.innerHTML = `${makeHmStep()}${makeHmStep()}${makeHmStep()}`;
-
-    applyMobileLite(document);
-
-    expect(scrollTriggerCreate).toHaveBeenCalledTimes(3);
-  });
-
-  it('.hm-step แต่ละอันได้ paused timeline ที่เล่นได้ทั้งสองทิศ (onEnter/onEnterBack เล่น, onLeave/onLeaveBack ย้อน)', () => {
-    document.body.innerHTML = makeHmStep();
-    (timelineChain as unknown as { play: () => void; reverse: () => void }).play = vi.fn();
-    (timelineChain as unknown as { play: () => void; reverse: () => void }).reverse = vi.fn();
-
-    applyMobileLite(document);
-
-    expect(gsapTimeline).toHaveBeenCalledWith({ paused: true });
-    const config = scrollTriggerCreate.mock.calls[0][0] as {
-      onEnter: () => void;
-      onEnterBack: () => void;
-      onLeave: () => void;
-      onLeaveBack: () => void;
-    };
-    const play = (timelineChain as unknown as { play: ReturnType<typeof vi.fn> }).play;
-    const reverse = (timelineChain as unknown as { reverse: ReturnType<typeof vi.fn> }).reverse;
-
-    config.onEnter();
-    config.onEnterBack();
-    config.onLeave();
-    config.onLeaveBack();
-
-    expect(play).toHaveBeenCalledTimes(2);
-    expect(reverse).toHaveBeenCalledTimes(2);
-  });
-
-  it('reveal targets ได้ once:true', () => {
-    document.body.innerHTML = '<div class="svc"><span class="n">01</span></div>';
+  it('reveal targets (นอก .chapter) ได้ once:true', () => {
+    document.body.innerHTML = '<div class="rev-card"></div>';
 
     applyMobileLite(document);
 
     const revealCall = gsapFrom.mock.calls.find(
-      (call) => (call[0] as Element).classList.contains('svc')
+      (call) => (call[0] as Element).classList.contains('rev-card')
     );
     expect(revealCall).toBeDefined();
     const vars = revealCall![1] as { scrollTrigger: { once: boolean; start: string } };
     expect(vars.scrollTrigger.once).toBe(true);
     expect(vars.scrollTrigger.start).toBe('top 90%');
+  });
 
-    const numeralCall = gsapFrom.mock.calls.find(
-      (call) => (call[0] as Element).classList.contains('n')
-    );
-    expect(numeralCall).toBeDefined();
-    expect((numeralCall![1] as { ease: string }).ease).toBe('back.out(3)');
+  it('[data-drift-img] ภายใน .chapter ถูกข้าม — บท (buildIntroChapter/buildHowChapter) เป็นเจ้าของ image drift นั้นแล้ว', () => {
+    document.body.innerHTML = `
+      <section class="chapter">
+        <img data-drift-img="10" id="in-chapter" />
+      </section>
+      <section>
+        <img data-drift-img="8" id="outside-chapter" />
+      </section>
+    `;
+
+    applyMobileLite(document);
+
+    const targets = gsapFromTo.mock.calls.map((call) => call[0] as HTMLElement);
+    expect(targets).not.toContain(document.getElementById('in-chapter'));
+    expect(targets).toContain(document.getElementById('outside-chapter'));
   });
 
   it('[data-drift-img] ที่ค่าไม่ถูกต้องหรือไม่มีค่าจะถูกข้าม', () => {

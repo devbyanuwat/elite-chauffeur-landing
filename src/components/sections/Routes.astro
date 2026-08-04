@@ -275,39 +275,44 @@ const CARDS: RouteCard[] = [
     }
   }
 
-  /* mobile-only guard: unconditional so it holds regardless of .pin-ready
-     (fix-review precedent from Fleet.astro's finding 1 — a viewport-scoped
-     override must never depend on a JS-added class to take effect) */
+  /* mobile-only guard for the no-JS/reduced-motion default only — Task 6
+     starts pinning (and therefore buildRoutesChapter's gsap.set(track, { x })
+     scrub) below 1024px too, so this can no longer be unconditional the way
+     Fleet.astro's finding-1 precedent called for: an unconditional !important
+     here would permanently block the track from ever translating once
+     pin-ready lands on mobile. Scoped to :not(.pin-ready) instead — still
+     resets any stray transform whenever pin isn't active (first paint before
+     JS attaches, no-JS, reduced-motion), still never depends on a JS-added
+     class to take effect *for the states that need the reset*. */
   @media (max-width: 1023.98px) {
-    .track {
+    .routes-chapter:not(.pin-ready) .track {
       transform: none !important;
     }
   }
 
-  /* ---- โหมด pin (desktop, motion allowed) ----
-     pin-ready มาจาก editions.ts เท่านั้น — layout ด้านบนยังเป็นพฤติกรรมพื้น
-     สำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
-  @media (min-width: 1024px) {
-    .routes-chapter.pin-ready {
-      height: 100vh;
-    }
+  /* ---- โหมด pin (ทุกความกว้าง, motion allowed) ----
+     pin-ready มาจาก editions.ts เท่านั้น (ตอนนี้ทำงานทั้ง full และ lite tier —
+     Task 6) — layout ด้านบน (รวม @media (max-width: 1023.98px) ก่อนหน้านี้)
+     ยังเป็นพฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน */
+  .routes-chapter.pin-ready {
+    height: 100svh;
+  }
 
-    .routes-chapter.pin-ready .routes-viewport {
-      height: 100%;
-      padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px);
-    }
+  .routes-chapter.pin-ready .routes-viewport {
+    height: 100%;
+    padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px);
+  }
 
-    .routes-chapter.pin-ready .track-clip {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      scroll-snap-type: none;
-    }
+  .routes-chapter.pin-ready .track-clip {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
 
-    .routes-chapter.pin-ready .route-card {
-      scroll-snap-align: none;
-    }
+  .routes-chapter.pin-ready .route-card {
+    scroll-snap-align: none;
   }
 </style>

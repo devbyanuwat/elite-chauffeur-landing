@@ -173,6 +173,10 @@ function watchLanguageChange(): void {
 export function initMotion(root: ParentNode = document): void {
   gsap.registerPlugin(ScrollTrigger);
 
+  // มือถือยืด/หด address bar ระหว่างเลื่อน ถ้าปล่อยให้ refresh ทุกครั้งความสูง
+  // ของบทที่ pin จะกระโดดกลางทาง — ตัวนี้บอกให้ข้าม resize ที่มาจากแถบนั้น
+  ScrollTrigger.config({ ignoreMobileResize: true });
+
   const splitTargets = Array.from(root.querySelectorAll<HTMLElement>('[data-split]'))
     .map((el) => ({ el, inners: splitLines(el) }));
 
@@ -181,7 +185,7 @@ export function initMotion(root: ParentNode = document): void {
   mm.add(`(min-width: ${FULL_TIER_MIN_WIDTH}px) and ${NOT_REDUCED_MOTION_COMPOSABLE}`, () => {
     applyParallax(root);
     const cleanupPins = applyPins(root);
-    const cleanupEditions = applyEditionsPins(root);
+    const cleanupEditions = applyEditionsPins(root, 'full');
     initStickyCtaOf(root);
     return () => {
       cleanupPins();
@@ -189,13 +193,18 @@ export function initMotion(root: ParentNode = document): void {
     };
   });
 
-  // T7: mobile's own lively motion tier (drift + bouncy reveals + .hm-step
-  // in/out timelines) — see mobile-lite.ts's applyMobileLite. Sticky CTA also
-  // registers here (not just the full tier above) so it works at every width
-  // motion is allowed, mobile included.
+  // T7: mobile's own lively motion tier (drift + bouncy reveals for
+  // non-chapter elements) — see mobile-lite.ts's applyMobileLite. Task 6
+  // additionally mounts the same six chapters used at the full tier here, at
+  // a thumb-sized length (chapterLenFor's 'lite' scaling) — chapters own the
+  // `.hm-step`-style in/out sequencing now, so mobile-lite no longer touches
+  // it. Sticky CTA also registers here (not just the full tier above) so it
+  // works at every width motion is allowed, mobile included.
   mm.add(MOBILE_TIER_QUERY, () => {
     applyMobileLite(root);
+    const cleanupEditions = applyEditionsPins(root, 'lite');
     initStickyCtaOf(root);
+    return () => cleanupEditions();
   });
 
   mm.add(NOT_REDUCED_MOTION, () => {

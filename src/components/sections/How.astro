@@ -364,41 +364,50 @@ const STEPS = [
     }
   }
 
-  /* ---- โหมด pin (desktop, motion allowed): theatrical single-active-step ----
-     pin-ready มาจาก editions.ts เท่านั้น ดังนั้น layout ด้านบนยังเป็น
-     พฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน (no-JS, <1024, reduced-motion) */
-  @media (min-width: 1024px) {
-    .how-chapter.pin-ready {
-      height: 100vh;
-    }
+  /* ---- โหมด pin (ทุกความกว้าง, motion allowed): theatrical single-active-step ----
+     pin-ready มาจาก editions.ts เท่านั้น (ตอนนี้ทำงานทั้ง full และ lite tier —
+     Task 6) ดังนั้น layout ด้านบน (รวม @media (max-width: 1023px) ก่อนหน้านี้)
+     ยังเป็นพฤติกรรมพื้นสำหรับทุกกรณีที่ pin ไม่ได้ทำงาน (no-JS, reduced-motion) */
+  .how-chapter.pin-ready {
+    height: 100svh;
+  }
 
-    .how-chapter.pin-ready .how-viewport {
-      height: 100%;
-      padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px);
-      justify-content: center;
-    }
+  .how-chapter.pin-ready .how-viewport {
+    height: 100%;
+    padding: calc(72px + clamp(10px, 2vh, 24px)) clamp(20px, 4vw, 64px);
+    justify-content: center;
+  }
 
-    .how-chapter.pin-ready .how-grid {
-      flex: 1 1 auto;
-      min-height: 0;
-    }
+  .how-chapter.pin-ready .how-grid {
+    /* <1024px's own @media block (untouched, above) still forces
+       .how-grid to display:none — that rule is the no-JS/reduced-motion
+       default and must stay put, but once pin-ready lands (now true at
+       every width, Task 6) the pinned collage is what should render, not
+       a blank chapter, so pin-ready overrides display back on here */
+    display: grid;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
 
-    .how-chapter.pin-ready .how-step {
-      opacity: 0.3;
-      transition: opacity 0.4s;
-    }
+  .how-chapter.pin-ready .how-step {
+    opacity: 0.3;
+    transition: opacity 0.4s;
+  }
 
-    .how-chapter.pin-ready .how-step.on {
-      opacity: 1;
-    }
+  .how-chapter.pin-ready .how-step.on {
+    opacity: 1;
+  }
 
-    .how-chapter.pin-ready .how-step .t {
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
+  .how-chapter.pin-ready .how-step .t {
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
 
-    .how-chapter.pin-ready .how-step.on .t {
-      opacity: 1;
-    }
+  .how-chapter.pin-ready .how-step.on .t {
+    opacity: 1;
+  }
+
+  .how-chapter.pin-ready .how-mobile {
+    display: none;
   }
 </style>
