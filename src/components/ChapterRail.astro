@@ -6,6 +6,16 @@ const stops = [
   { id: 'routes', th: 'เส้นทาง', en: 'Routes' },
   { id: 'stats', th: 'ตัวเลข', en: 'By the numbers' },
   { id: 'why', th: 'ทำไมต้องเรา', en: 'Why us' },
+  // fix round 2: reviews/faq/booking carry no data-chapter (not pinned
+  // chapters), so they're never in collectChapters()'s output — but the
+  // visitor still scrolls through them, and aria-current was getting stuck
+  // on `why` for the rest of the page. initRail now resolves stops from
+  // these dots' href directly rather than from the chapter list, so listing
+  // them here is what makes them light up at all. Order matches page order
+  // in src/pages/index.astro (Why → Reviews → Faq → Booking).
+  { id: 'reviews', th: 'รีวิว', en: 'Reviews' },
+  { id: 'faq', th: 'คำถามบ่อย', en: 'FAQ' },
+  { id: 'booking', th: 'จองรถ', en: 'Booking' },
 ];
 ---
 
@@ -81,6 +91,24 @@ const stops = [
   @media (prefers-reduced-motion: reduce) {
     #chapter-rail a {
       transition: none;
+    }
+  }
+
+  /* fix round 2: nine dots at the default 0.55rem gap grow the rail by
+     roughly 40px over the six-dot baseline (7px dot + 0.55rem gap × 3 more
+     stops) that was measured against #sticky-cta / LineFab at 390×640 and
+     found 158px/210px clear — plenty of margin there. A short viewport
+     (landscape phones, embedded webviews) has far less headroom, and
+     max-height only caps overflow, it doesn't shrink the rail's actual
+     height. Tighten the gap directly below 480px tall so growth can't eat
+     into the CTA/fab corner. */
+  @media (max-height: 480px) {
+    #chapter-rail.rail-ready {
+      max-height: min(45svh, 220px);
+    }
+
+    #chapter-rail ul {
+      gap: 0.3rem;
     }
   }
 </style>

@@ -17,6 +17,17 @@ export function railStops(root: ParentNode): RailStop[] {
  * rail ต้องเป็นลูกของ <body> เท่านั้น — element position: fixed ที่อยู่ใน
  * subtree ของ section ที่ถูก pin จะโดน transform ของ pin ลากไปด้วย ซึ่งเป็น
  * บั๊กเดียวกับที่ commit fc0720d แก้ให้ nav และปุ่มลอย
+ *
+ * fix round 2: `railStops(root)` (→ `collectChapters`) only ever returns
+ * sections carrying `data-chapter` — reviews/faq/booking carry none, so the
+ * rail had no trigger for them and `aria-current` simply stuck on `why`
+ * (the last chapter) for the rest of the scroll. The rail's own markup
+ * (`src/components/ChapterRail.astro`) now lists nine dots, three of which
+ * point at non-chapter sections. So stops are driven from the DOM the rail
+ * itself renders — each dot's `href` — not from the chapter list; a dot
+ * whose target section is absent from the page is skipped (`document
+ * .getElementById` returns null) with no trigger created, same quiet-degrade
+ * direction as the id-based dot lookup from fix round 1.
  */
 export function initRail(root: ParentNode): () => void {
   const rail = document.querySelector<HTMLElement>('#chapter-rail');
@@ -24,25 +35,19 @@ export function initRail(root: ParentNode): () => void {
 
   if (rail.parentElement !== document.body) document.body.appendChild(rail);
 
-  const stops = railStops(root);
   const dots = Array.from(rail.querySelectorAll<HTMLElement>('[data-rail-dot]'));
   const label = rail.querySelector<HTMLElement>('[data-rail-label]');
 
-  // fix round 1: `stops` is document order (from collectChapters), `dots` is
-  // the component's own markup order (src/components/ChapterRail.astro) —
-  // these are NOT the same order (the page renders Stats before Fleet/How/
-  // Routes, the rail lists Fleet/How/Routes/Stats). Indexing `dots[index]`
-  // with `stops`' index silently mismatched 5 of 6 chapters to the wrong dot.
-  // Match by id instead so reordering sections in index.astro can never
-  // desync the rail again; a stop with no matching dot degrades quietly (no
-  // ScrollTrigger created for it) rather than mis-highlighting.
-  const triggers = stops
-    .map((stop) => {
-      const dot = dots.find((candidate) => candidate.getAttribute('href') === `#${stop.id}`);
-      if (!dot) return null;
+  // `root` is kept as a parameter (rather than always querying `document`)
+  // so tests can scope lookups the same way `railStops` does; in practice
+  // `initRail` is only ever called with `document`.
+  const triggers = dots
+    .map((dot) => {
+      const id = (dot.getAttribute('href') ?? '').replace(/^#/, '');
+      if (id === '' || root.querySelector(`#${id}`) === null) return null;
 
       return ScrollTrigger.create({
-        trigger: `#${stop.id}`,
+        trigger: `#${id}`,
         start: 'top center',
         end: 'bottom center',
         onToggle: (self) => {

@@ -78,4 +78,67 @@ describe('initRail', () => {
 
     cleanup();
   });
+
+  it('ติด dot ของ section ที่ไม่ใช่ chapter ได้ (ไม่มี data-chapter เลย)', () => {
+    // fix round 2: reviews/faq/booking ไม่มี data-chapter จึงไม่โผล่ใน
+    // railStops()/collectChapters() เลย — initRail ต้องยังสร้าง trigger ให้
+    // จาก href ของ dot เองได้ ไม่ใช่พึ่ง collectChapters
+    document.body.innerHTML = `
+      <section id="why" data-chapter="why"></section>
+      <section id="reviews"></section>
+      <nav id="chapter-rail">
+        <span data-rail-label></span>
+        <ul>
+          <li><a href="#why" data-rail-dot data-rail-name="ทำไมต้องเรา"></a></li>
+          <li><a href="#reviews" data-rail-dot data-rail-name="รีวิว"></a></li>
+        </ul>
+      </nav>`;
+
+    const cleanup = initRail(document);
+
+    const reviewsCall = scrollTriggerCreate.mock.calls.find(
+      (call) => (call[0] as { trigger: string }).trigger === '#reviews'
+    );
+    expect(reviewsCall).toBeDefined();
+    const config = reviewsCall![0] as { onToggle: (self: { isActive: boolean }) => void };
+
+    config.onToggle({ isActive: true });
+
+    const reviewsDot = document.querySelector<HTMLElement>('[href="#reviews"]')!;
+    const whyDot = document.querySelector<HTMLElement>('[href="#why"]')!;
+    const label = document.querySelector<HTMLElement>('[data-rail-label]')!;
+
+    expect(reviewsDot.classList.contains('on')).toBe(true);
+    expect(reviewsDot.getAttribute('aria-current')).toBe('true');
+    expect(whyDot.classList.contains('on')).toBe(false);
+    expect(label.textContent).toBe('รีวิว');
+
+    cleanup();
+  });
+
+  it('ข้าม dot ที่ id ปลายทางไม่มีอยู่จริงในหน้า โดยไม่ throw', () => {
+    // เพจอื่นที่ยังไม่มี ChapterRail วันนี้ (ตามที่ยืนยันไว้) หรือเพจใน
+    // อนาคตที่มี rail แต่มี section ไม่ครบ ต้องไม่ throw และไม่ติด dot ผิด
+    document.body.innerHTML = `
+      <section id="why" data-chapter="why"></section>
+      <nav id="chapter-rail">
+        <span data-rail-label></span>
+        <ul>
+          <li><a href="#why" data-rail-dot data-rail-name="ทำไมต้องเรา"></a></li>
+          <li><a href="#booking" data-rail-dot data-rail-name="จองรถ"></a></li>
+        </ul>
+      </nav>`;
+
+    expect(() => initRail(document)).not.toThrow();
+
+    const bookingCall = scrollTriggerCreate.mock.calls.find(
+      (call) => (call[0] as { trigger: string }).trigger === '#booking'
+    );
+    expect(bookingCall).toBeUndefined();
+
+    const whyCall = scrollTriggerCreate.mock.calls.find(
+      (call) => (call[0] as { trigger: string }).trigger === '#why'
+    );
+    expect(whyCall).toBeDefined();
+  });
 });
