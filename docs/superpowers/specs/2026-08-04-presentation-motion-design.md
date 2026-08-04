@@ -111,7 +111,11 @@ markup ที่มีบล็อกสำรองสำหรับมือ�
 
 ## เปลี่ยนคำเป็น "จองรถ"
 
-ปุ่มทั้ง 4 จุด → ไทย `จองรถ`, อังกฤษ `Book a car` ปลายทางยัง `#booking`
+ปุ่มทั้ง 4 จุด → ไทย `จองรถ`, อังกฤษ `Book now` ปลายทางยัง `#booking`
+
+อังกฤษใช้ `Book now` ไม่ใช่ `Book a car` เพราะปุ่ม `nav.cta` บนแถบนำทางเขียนว่า
+`จองรถ` / `Book now` อยู่ก่อนแล้ว (`src/components/Nav.astro:44`, `src/i18n/en.json:9`)
+ปุ่มที่พาไปที่เดียวกันต้องอ่านเหมือนกัน
 
 | ไฟล์ | คีย์ / บรรทัด | เป็น |
 |---|---|---|
@@ -120,7 +124,7 @@ markup ที่มีบล็อกสำรองสำหรับมือ�
 | `src/components/BookingForm.astro:66` | `book.submit` | จองรถ |
 | `src/components/sections/Cta.astro:10` | `cta.b1` | จองรถ |
 | `src/components/sections/Cta.astro:8` | `cta.sub` | จองรถได้ทันที หรือทักหาเราทาง LINE ทีมงานดูแลคุณตลอด 24 ชั่วโมง |
-| `src/i18n/en.json:21` | `book.title` | Book a car |
+| `src/i18n/en.json:21` | `book.title` | Book a car (หัวข้อ ไม่ใช่ปุ่ม จึงไม่ต้องตรงกับ `Book now`) |
 | `src/components/sections/How.astro:28` | ขั้น 2 | รับราคายืนยันใน 15 นาที / Confirmed price within 15 minutes |
 | `src/content/services/van.yaml:56,60` | FAQ | เขียนใหม่เป็น "ราคาที่เราแจ้ง" / "ราคายืนยัน" |
 | `src/content/airports/suvarnabhumi-bkk.yaml:42` | `priceFootnote` | เขียนใหม่ ไม่ใช้คำว่าใบเสนอราคา |
