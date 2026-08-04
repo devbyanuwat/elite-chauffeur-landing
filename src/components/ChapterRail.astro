@@ -1,0 +1,86 @@
+---
+const stops = [
+  { id: 'services', th: 'เรื่องของเรา', en: 'Our story' },
+  { id: 'fleet', th: 'รถของเรา', en: 'Our fleet' },
+  { id: 'how', th: 'วิธีจอง', en: 'How to book' },
+  { id: 'routes', th: 'เส้นทาง', en: 'Routes' },
+  { id: 'stats', th: 'ตัวเลข', en: 'By the numbers' },
+  { id: 'why', th: 'ทำไมต้องเรา', en: 'Why us' },
+];
+---
+
+<nav id="chapter-rail" aria-label="บทของหน้านี้">
+  <span data-rail-label aria-hidden="true"></span>
+  <ul>
+    {stops.map((stop) => (
+      <li>
+        <a href={`#${stop.id}`} data-rail-dot data-rail-name={stop.th}>
+          <span class="sr-only">{stop.th}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  /* rail โผล่เฉพาะเมื่อ initRail ต่อสายสำเร็จ — ไม่มี JavaScript ก็ไม่มีจุดลอย
+     ค้างที่กดแล้วไม่มีอะไรเกิดขึ้น */
+  #chapter-rail {
+    display: none;
+  }
+
+  #chapter-rail.rail-ready {
+    position: fixed;
+    right: clamp(10px, 1.4vw, 20px);
+    top: 50%;
+    transform: translateY(-50%);
+    /* จบเหนือแนว sticky CTA และ LINE fab ที่มุมล่างขวา */
+    max-height: min(60svh, 420px);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    z-index: 40;
+  }
+
+  #chapter-rail ul {
+    display: grid;
+    gap: 0.55rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #chapter-rail a {
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    opacity: 0.3;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  #chapter-rail a.on {
+    background: var(--gold-dark);
+    opacity: 1;
+    transform: scale(1.5);
+  }
+
+  #chapter-rail [data-rail-label] {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1023px) {
+    #chapter-rail [data-rail-label] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #chapter-rail a {
+      transition: none;
+    }
+  }
+</style>

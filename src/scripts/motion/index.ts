@@ -5,6 +5,7 @@ import { parseCount, parseParallaxDepth, parseReveal, parseRevealGroup, splitLin
 import { applyEditionsPins } from './editions';
 import { applyMobileLite, initStickyCta, startReviewDrift, watchReviewTrack, wireReviewArrows } from './mobile-lite';
 import { applyPins } from './pin';
+import { initRail } from './rail';
 import { FULL_TIER_MIN_WIDTH } from './tiers';
 
 const EASE = 'power3.out';
@@ -252,7 +253,11 @@ export function initMotion(root: ParentNode = document): void {
     applyHeroExit(root);
     applyCounts(root);
     const stopReviewDrift = applyReviewDrift(root);
-    return () => stopReviewDrift.forEach((stop) => stop());
+    const cleanupRail = initRail(root);
+    return () => {
+      stopReviewDrift.forEach((stop) => stop());
+      cleanupRail();
+    };
   });
 
   // reduced-motion: mobile-lite (drift) ไม่ถูกลงทะเบียนเลย แต่ลูกศร + scroll
