@@ -73,7 +73,7 @@ function buildDom(): void {
         { ghost: 'ALPHARD', name: 'Toyota Alphard', price: '฿1,000', img: '/images/car2.webp', alt: 'Toyota Alphard', vtype: 'premium' },
         { ghost: 'FORTUNER', name: 'Toyota Fortuner', price: '฿500', img: '/images/car3.webp', alt: 'Toyota Fortuner Legender', vtype: 'suv' },
         { ghost: 'XPANDER', name: 'Mitsubishi Xpander', price: '฿450', img: '/images/car1.webp', alt: 'Mitsubishi Xpander Cross', vtype: 'suv' },
-        { ghost: 'ALTIS', name: 'Toyota Corolla Altis', price: '฿400', img: '/images/car4.webp', alt: 'Toyota Corolla Altis', vtype: 'sedan' },
+        { ghost: 'ALTIS', name: 'Toyota Corolla Altis', price: '฿400', img: '/images/car4.webp', alt: 'Toyota Corolla Altis', vtype: null },
       ])}</script>
     </section>
   `;
@@ -154,5 +154,20 @@ describe('Fleet.astro fallback script (no-GSAP path)', () => {
 
     const nameEl = document.querySelector('.fleet-meta .name');
     expect(nameEl?.textContent).toBe('Toyota Fortuner');
+  });
+
+  it('ruling 1 (2026-08-22): car.vtype = null (แอดมินยังไม่ผูกประเภท) -> ลบ data-vtype ออกจากปุ่ม แทนที่จะเขียน "null"/""', () => {
+    // eslint-disable-next-line no-eval
+    eval(script);
+
+    const railButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.rail button'));
+    const pickBtn = document.querySelector('.pick')!;
+    expect(pickBtn.getAttribute('data-vtype')).toBe('premium'); // ค่าตั้งต้น (ALPHARD)
+
+    railButtons[3].click(); // ALTIS — vtype: null ใน fixture ด้านบน
+    expect(pickBtn.hasAttribute('data-vtype')).toBe(false);
+
+    railButtons[0].click(); // กลับไป ALPHARD — ต้องได้ค่ากลับมาเหมือนเดิม ไม่ใช่ค้างว่าง
+    expect(pickBtn.getAttribute('data-vtype')).toBe('premium');
   });
 });
