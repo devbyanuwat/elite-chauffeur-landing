@@ -21,6 +21,9 @@ import {
   siteNavigationSchema,
   breadcrumbSchema,
 } from '../lib/schema.ts';
+import { getReviewSummary } from '../lib/reviews-api';
+
+const reviewSummary = await getReviewSummary();
 
 const title = 'SABUYGO | Premium Car Rental & Chauffeur Service Bangkok';
 const description =
@@ -76,7 +79,16 @@ const ogDescription =
   '@type': 'Organization',
   name: 'SABUYGO',
   url: 'https://sabuygo.com',
-  aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '128', bestRating: '5' },
+  ...(reviewSummary
+    ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: String(reviewSummary.average),
+          reviewCount: String(reviewSummary.count),
+          bestRating: '5',
+        },
+      }
+    : {}),
 })} />
 
 <script>

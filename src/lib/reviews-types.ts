@@ -7,3 +7,8 @@ export interface Review {
   vehicleType: string | null;
   createdAt: string;
 }
+
+export interface ReviewSummary {
+  average: number;
+  count: number;
+}

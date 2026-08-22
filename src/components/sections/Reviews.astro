@@ -16,6 +16,11 @@ const reviews = await getReviews();
         <figure class="rev-card">
           {r.carPhotoUrl && <img src={r.carPhotoUrl} alt="รถของคนขับ SABUYGO" loading="lazy" width="320" height="200" />}
           <figcaption>
+            <div class="rev-stars" role="img" aria-label={`ให้คะแนน ${r.rating} เต็ม 5`}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <span class={n <= r.rating ? 'on' : ''} aria-hidden="true">★</span>
+              ))}
+            </div>
             <p>&ldquo;{r.comment}&rdquo;</p>
             <span>{r.customerNameMasked} · {VEH_LABEL[r.vehicleType ?? ''] ?? 'บริการโดย SABUYGO'}</span>
           </figcaption>
@@ -30,3 +35,19 @@ const reviews = await getReviews();
 ) : (
   <StaticReviews />
 )}
+
+<style>
+  .rev-stars {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+  .rev-stars span {
+    color: var(--border);
+  }
+  .rev-stars span.on {
+    color: var(--gold);
+  }
+</style>

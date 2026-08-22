@@ -1,4 +1,4 @@
-import type { Review } from './reviews-types';
+import type { Review, ReviewSummary } from './reviews-types';
 
 const TTL_MS = Number(process.env.REVIEWS_CACHE_TTL_MS ?? 120_000);
 
@@ -30,15 +30,28 @@ async function cached<T>(key: string, fetcher: () => Promise<T>, fresh: T): Prom
   }
 }
 
-export async function getReviews(): Promise<Review[]> {
-  return cached<Review[]>(
+interface ReviewsPayload {
+  reviews: Review[];
+  summary: ReviewSummary | null;
+}
+
+async function fetchPayload(): Promise<ReviewsPayload> {
+  return cached<ReviewsPayload>(
     'reviews',
     async () => {
       const res = await fetch(`${base()}/api/public/reviews`);
       if (!res.ok) throw new Error(`reviews ${res.status}`);
-      const data = (await res.json()) as { reviews?: Review[] };
-      return data.reviews ?? [];
+      const data = (await res.json()) as Partial<ReviewsPayload>;
+      return { reviews: data.reviews ?? [], summary: data.summary ?? null };
     },
-    [],
+    { reviews: [], summary: null },
   );
+}
+
+export async function getReviews(): Promise<Review[]> {
+  return (await fetchPayload()).reviews;
+}
+
+export async function getReviewSummary(): Promise<ReviewSummary | null> {
+  return (await fetchPayload()).summary;
 }
