@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import BookingForm from '../../components/BookingForm.astro';
+import { getFleet } from '../../lib/fleet-api';
 
 /**
  * Shared template for both intercity route subpages (bangkok-to-hua-hin,
@@ -76,12 +77,36 @@ const faqSchema: Record<string, unknown> = {
 
 // ---- Structure that never varies between the two route pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
-const VEHICLES = [
+
+/**
+ * คำบรรยายรถ (ระดับรถ + จำนวนกระเป๋า) เป็น copy การตลาด ผูกกับ "ชั้นราคา" ไม่ใช่ชื่อรุ่น
+ * BOS ไม่ได้เก็บจำนวนกระเป๋า และ spec รอบนี้จงใจไม่เพิ่มคอลัมน์ — จึงคงไว้ที่ landing
+ * เอาเฉพาะชื่อรุ่นกับจำนวนที่นั่งมาจาก BOS
+ */
+const CLASS_COPY: Record<string, string> = {
+  economy: 'Sedan · 2 กระเป๋า',
+  standard: 'Crossover MPV · 4 กระเป๋า',
+  premium: 'Luxury Van · 6 กระเป๋า',
+  vip: 'VIP Sedan · 3 กระเป๋า',
+};
+
+const FALLBACK_VEHICLES = [
   { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
   { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
   { name: 'Toyota Fortuner Legender', type: 'Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า' },
   { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
-] as const;
+];
+
+const fleetFromBos = await getFleet();
+const VEHICLES =
+  fleetFromBos.length > 0
+    ? fleetFromBos.map((c) => ({
+        name: c.name,
+        type: [c.seats ? `${c.seats} ผู้โดยสาร` : '', CLASS_COPY[c.vehicleClass] ?? '']
+          .filter(Boolean)
+          .join(' · '),
+      }))
+    : FALLBACK_VEHICLES;
 
 const ICONS: Record<string, string> = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',

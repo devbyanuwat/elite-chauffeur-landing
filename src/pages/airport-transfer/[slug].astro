@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import BookingForm from '../../components/BookingForm.astro';
+import { getFleet } from '../../lib/fleet-api';
 
 /**
  * Shared template for both airport-transfer subpages (suvarnabhumi-bkk,
@@ -81,19 +82,81 @@ const faqSchema: Record<string, unknown> = {
 
 // ---- Structure that never varies between the two airport pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
-const VEHICLES = [
+const FALLBACK_VEHICLES = [
   { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
   { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
   { name: 'Toyota Fortuner Legender', type: 'Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า' },
   { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
-] as const;
+];
 
-const FLEET = [
+const FALLBACK_FLEET = [
   { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่' },
   { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่' },
   { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่' },
   { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP' },
-] as const;
+];
+
+/**
+ * คำบรรยายรถ (ระดับรถ + จำนวนกระเป๋า) เป็น copy การตลาด ผูกกับ "ชั้นราคา" ไม่ใช่ชื่อรุ่น —
+ * เหมือน CLASS_COPY ของหน้า routes/[slug].astro
+ */
+const CLASS_COPY: Record<string, string> = {
+  economy: 'Sedan · 2 กระเป๋า',
+  standard: 'Crossover MPV · 4 กระเป๋า',
+  premium: 'Luxury Van · 6 กระเป๋า',
+  vip: 'VIP Sedan · 3 กระเป๋า',
+};
+
+// ระดับรถ (Executive Sedan / Luxury Van ...) เป็น copy ผูกชั้นราคา เหมือน CLASS_COPY ของหน้า routes
+const CLASS_TIER: Record<string, string> = {
+  economy: 'Executive Sedan',
+  standard: 'Crossover MPV',
+  premium: 'Luxury Van',
+  vip: 'VIP Sedan',
+};
+
+const CLASS_BAGS: Record<string, string> = {
+  economy: '2 กระเป๋าใหญ่',
+  standard: '4 กระเป๋าใหญ่',
+  premium: '6 กระเป๋าใหญ่',
+  vip: '3 กระเป๋าใหญ่',
+};
+
+const fleetFromBos = await getFleet();
+
+const VEHICLES =
+  fleetFromBos.length > 0
+    ? fleetFromBos.map((c) => ({
+        name: c.name,
+        type: [c.seats ? `${c.seats} ผู้โดยสาร` : '', CLASS_COPY[c.vehicleClass] ?? '']
+          .filter(Boolean)
+          .join(' · '),
+      }))
+    : FALLBACK_VEHICLES;
+
+const FLEET =
+  fleetFromBos.length > 0
+    ? fleetFromBos.map((c) => {
+        const twin = FALLBACK_FLEET.find((f) => f.name === c.name);
+        return {
+          img: c.photoUrl ?? twin?.img ?? '',
+          name: c.name,
+          type: CLASS_TIER[c.vehicleClass] ?? '',
+          cap: [
+            c.seats ? `${c.seats} ผู้โดยสาร` : '',
+            CLASS_BAGS[c.vehicleClass] ?? '',
+            c.vip ? 'VIP' : '',
+          ]
+            .filter(Boolean)
+            .join(' · '),
+        };
+      })
+    : FALLBACK_FLEET;
+
+// VEH_KEYS/FLEET_CAP_KEYS (ด้านล่าง) เป็น key i18n ที่ผูกกับลำดับ 4 คันของชุด fallback
+// เดิม — ถ้าจำนวน/ลำดับรถมาจาก BOS ลำดับจะเพี้ยน จึงใช้ key เหล่านี้เฉพาะตอนที่ยังใช้
+// ชุด fallback เท่านั้น
+const usingFallback = fleetFromBos.length === 0;
 
 const ICONS: Record<string, string> = {
   clock: '<path d="M12 2v10l4 2"/><circle cx="12" cy="12" r="10"/>',
@@ -188,7 +251,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
                 <tr>
                   <td data-label="ประเภทรถ">
                     <span class="veh-name">{v.name}</span>
-                    <span class="veh-type" data-i18n={VEH_KEYS[i]}>{v.type}</span>
+                    <span class="veh-type" data-i18n={usingFallback ? VEH_KEYS[i] : undefined}>{v.type}</span>
                   </td>
                   {d.rateRows[i].map((price, zi) => (
                     <td data-label={d.zoneLabels[zi]}>
@@ -239,10 +302,14 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
           {
             FLEET.map((f, i) => (
               <div class="fleet-mini">
-                <img src={f.img} alt={f.name} width="600" height="375" loading="lazy" />
+                {/* ruling 2 (2026-08-22): f.img can be '' when mergeFleet-style
+                    logic finds no BOS photo and no same-name fallback twin —
+                    render only when there's something to point at, same as
+                    Fleet.astro / Reviews.astro, instead of a broken-image icon. */}
+                {f.img && <img src={f.img} alt={f.name} width="600" height="375" loading="lazy" />}
                 <h4>{f.name}</h4>
                 <div class="type">{f.type}</div>
-                <div class="cap" data-i18n={FLEET_CAP_KEYS[i]}>{f.cap}</div>
+                <div class="cap" data-i18n={usingFallback ? FLEET_CAP_KEYS[i] : undefined}>{f.cap}</div>
               </div>
             ))
           }
