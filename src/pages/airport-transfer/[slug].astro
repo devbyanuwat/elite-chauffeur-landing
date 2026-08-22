@@ -608,18 +608,45 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   }
 
   /* ==================== FLEET STRIP ==================== */
-  /* fix-review IMPORTANT (2026-08-23): a hardcoded `repeat(4, 1fr)` (plus
-     `repeat(2, 1fr)` at <=900px) assumed the fleet card count is always 4 —
-     BOS can serve any number (today: 3), leaving an empty trailing column at
-     desktop width and a 2+1 orphan row at the 900px breakpoint. auto-fit +
-     minmax sizes columns to however many cards actually exist at every
-     width, so the two fixed-count breakpoints below are no longer needed —
-     verified the 4-card fallback still lays out the same shape it did
-     before (1 column on phone, growing up to 4 on desktop). */
+  /* fix-review IMPORTANT (2026-08-23): a hardcoded `repeat(4, 1fr)` assumed
+     the fleet card count is always 4 — BOS can serve any number (today: 3),
+     leaving an empty trailing column at desktop width. auto-fit + minmax
+     fixes that: 4 tracks of >=220px stop fitting the ~1060px content box
+     below ~1023px viewport width, and auto-fit drops to fewer tracks there.
+     re-review fix (2026-08-23): auto-fit does NOT subsume the two
+     fixed-count breakpoints below — measured on the built page with all 4
+     fallback cards, dropping them left a 3-then-1 orphan row (a visible
+     empty gutter beside the lone 4th card) whenever the content box fit 3
+     tracks but not 4. That's the live fallback layout (BOS_PUBLIC_API unset
+     in prod), so it's a real regression. Restored both breakpoints
+     unchanged — measured again after restoring them:
+       - <=500px / 501-900px: breakpoints force 1-col / 2x2 — clean, no
+         orphan (confirmed at 768px and exactly at 900px: content box
+         805px, 2x2).
+       - 1023px+: auto-fit alone reaches 4 equal tracks (confirmed at 1024px
+         and 1280px) — clean, no orphan.
+       - 901-1022px: NEITHER applies (above the 900px breakpoint, below
+         auto-fit's natural 4-track point) — measured orphan still present
+         in this narrower band (e.g. 901px and 1007px: 3-then-1). Restoring
+         the breakpoints closes most of the original regression but not
+         all of it; the remaining 901-1022px gap is a known, unresolved
+         edge case, not silently claimed fixed. Left as-is since closing it
+         needs a decision (e.g. extend the breakpoint to 1022px, or shrink
+         minmax's floor below 220px) that wasn't part of this finding. */
   .fleet-strip {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
+  }
+  @media (max-width: 900px) {
+    .fleet-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 500px) {
+    .fleet-strip {
+      grid-template-columns: 1fr;
+    }
   }
   .fleet-mini {
     background: var(--bg-card);
