@@ -9,7 +9,7 @@ interface FleetCar {
   price: string;
   img: string;
   alt: string;
-  vtype: string;
+  vtype: string | null;
 }
 
 const FLEET_STAGE_COUNT = 4;
@@ -118,7 +118,14 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
       // of them) in sync regardless of when the toggle happens.
       const bankEntry = section.querySelector(`#fleet-chip-bank [data-car-index="${i}"]`);
       chipsEl.innerHTML = bankEntry ? bankEntry.innerHTML : '';
-      if (pickBtn) pickBtn.dataset.vtype = car.vtype;
+      // ruling 1 (2026-08-22): car.vtype is null when the admin hasn't bound
+      // a price class to a vtype yet — delete the dataset key instead of
+      // writing "null"/"" into it, or the booking form would silently
+      // preselect the wrong vehicle class.
+      if (pickBtn) {
+        if (car.vtype) pickBtn.dataset.vtype = car.vtype;
+        else delete pickBtn.dataset.vtype;
+      }
     }
 
     if (!animate) {

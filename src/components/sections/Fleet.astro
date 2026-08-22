@@ -16,20 +16,8 @@
 // chip set in the hidden #fleet-chip-bank below all render with data-i18n, so
 // setLang's normal [data-i18n] sweep keeps them localized regardless of which
 // car is on screen or when the toggle happens relative to a stage swap.
-interface Chip {
-  text: string;
-  key: string;
-}
-
-interface Car {
-  ghost: string;
-  name: string;
-  price: string;
-  chips: Chip[];
-  img: string;
-  alt: string;
-  vtype: 'sedan' | 'suv' | 'premium';
-}
+import { getFleet } from '../../lib/fleet-api';
+import { mergeFleet, type Car, type Chip } from '../../lib/fleet-view';
 
 const SEAT7: Chip = { text: '7 ที่นั่ง', key: 'fl.chip.seat7' };
 const SEAT4: Chip = { text: '4 ที่นั่ง', key: 'fl.chip.seat4' };
@@ -76,7 +64,10 @@ const CARS: Car[] = [
   },
 ];
 
-const first = CARS[0];
+// ดึงตอน build — คอมโพเนนต์นี้เป็น chapter ที่ GSAP pin ทำเป็น server island ไม่ได้
+// (buildFleetChapter อ่าน #fleet-data ตอน DOMContentLoaded ซึ่งมาก่อน island)
+const cars = mergeFleet(await getFleet(), CARS);
+const first = cars[0];
 ---
 
 <section class="chapter fleet-chapter" id="fleet" data-chapter="fleet" data-chapter-len="380">
@@ -86,7 +77,7 @@ const first = CARS[0];
         <span class="ch-eyebrow" data-i18n="fl.eyebrow">รถของเรา</span>
         <h2 class="ch-title" data-i18n="fl.title">เลือกรถที่ใช่ สำหรับทุกการเดินทาง</h2>
       </div>
-      <div class="ch-eyebrow fleet-count">01 / 0{CARS.length}</div>
+      <div class="ch-eyebrow fleet-count">01 / 0{cars.length}</div>
     </div>
 
     {/* final-review Fix 2: this used to be `aria-hidden="true"`, which is a
@@ -103,7 +94,7 @@ const first = CARS[0];
         same for the no-GSAP path. */}
     <nav class="rail" aria-labelledby="fleet-rail-label">
       <span id="fleet-rail-label" class="sr-only" data-i18n="fl.rail">เลือกรถ</span>
-      {CARS.map((c, i) => (
+      {cars.map((c, i) => (
         <button type="button" class={i === 0 ? 'on' : ''} aria-pressed={i === 0 ? 'true' : 'false'}>
           <span class="idx">0{i + 1}</span><span class="bar"><i></i></span><span class="lbl">{c.ghost}</span>
         </button>
@@ -113,12 +104,18 @@ const first = CARS[0];
     <div class="fleet-stagewrap">
       <div class="ghost"><span>{first.ghost}</span></div>
       <div class="car-layer">
-        <img src={first.img} alt={first.alt} width="600" height="375" loading="eager" />
+        {/* ruling 2 (2026-08-22): mergeFleet() can return img: '' for a
+            price class the admin enabled with no photo uploaded and no
+            same-name fallback twin (e.g. vip). Render the <img> only when
+            there's something to point it at — same conditional shape
+            Reviews.astro uses for carPhotoUrl — instead of shipping a
+            broken-image icon. The card itself still renders either way. */}
+        {first.img && <img src={first.img} alt={first.alt} width="600" height="375" loading="eager" />}
       </div>
     </div>
 
     <div class="fleet-tabs">
-      {CARS.map((_c, i) => (
+      {cars.map((_c, i) => (
         <button
           type="button"
           class={i === 0 ? 'on' : ''}
@@ -143,7 +140,7 @@ const first = CARS[0];
         <small data-i18n="fl.from">เริ่มต้น</small><br />
         <b>{first.price}</b><small data-i18n="fl.day">/วัน</small>
         <div>
-          <button type="button" class="pick" data-vtype={first.vtype}>
+          <button type="button" class="pick" data-vtype={first.vtype ?? undefined}>
             <span data-i18n="fl.book">เลือกคันนี้</span> →
           </button>
         </div>
@@ -157,7 +154,7 @@ const first = CARS[0];
          directly — that's how a stage swap after an EN toggle stays in
          English instead of reverting to the Thai literal. -->
     <div id="fleet-chip-bank" hidden aria-hidden="true">
-      {CARS.map((c, i) => (
+      {cars.map((c, i) => (
         <div data-car-index={i}>
           {c.chips.map((chip) => <span class="chip" data-i18n={chip.key}>{chip.text}</span>)}
         </div>
@@ -167,7 +164,7 @@ const first = CARS[0];
     <script
       type="application/json"
       id="fleet-data"
-      set:html={JSON.stringify(CARS.map(({ ghost, name, price, img, alt, vtype }) => ({ ghost, name, price, img, alt, vtype })))}
+      set:html={JSON.stringify(cars.map(({ ghost, name, price, img, alt, vtype }) => ({ ghost, name, price, img, alt, vtype })))}
     />
   </div>
 </section>
@@ -549,7 +546,7 @@ const first = CARS[0];
     if (!section) return;
 
     var dataEl = document.getElementById('fleet-data');
-    var cars: { ghost: string; name: string; price: string; img: string; alt: string; vtype: string }[] = [];
+    var cars: { ghost: string; name: string; price: string; img: string; alt: string; vtype: string | null }[] = [];
     try {
       var parsed = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
       if (Array.isArray(parsed)) cars = parsed;
@@ -587,7 +584,14 @@ const first = CARS[0];
       // Thai chip text — see #fleet-chip-bank's comment above.
       var bankEntry = document.querySelector('#fleet-chip-bank [data-car-index="' + i + '"]');
       chipsEl.innerHTML = bankEntry ? bankEntry.innerHTML : '';
-      if (pickBtn) pickBtn.setAttribute('data-vtype', car.vtype);
+      // ruling 1 (2026-08-22): car.vtype can be null (admin hasn't bound a
+      // price class to a vtype yet) — remove the attribute rather than write
+      // "null"/"" into it, otherwise the booking form would silently
+      // preselect the wrong vehicle class.
+      if (pickBtn) {
+        if (car.vtype) pickBtn.setAttribute('data-vtype', car.vtype);
+        else pickBtn.removeAttribute('data-vtype');
+      }
       if (countEl) countEl.textContent = '0' + (i + 1) + ' / 0' + cars.length;
 
       // final-review Fix 2: mirror `.on` into aria-pressed here too — this is
