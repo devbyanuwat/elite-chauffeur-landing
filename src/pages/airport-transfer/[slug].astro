@@ -100,15 +100,24 @@ const VEHICLES = [
   { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
 ] as const;
 
+// fix-review IMPORTANT (2026-08-23): vehicleClass ผูกกับชั้นราคาของ BOS
+// (economy/standard/premium/vip) — ใช้ยืมรูปแทนการเทียบ name ตรงตัว (name
+// เปลี่ยนได้ทุกเมื่อที่แอดมินแก้ showcase_name บน BOS — ดูคอมเมนต์ที่ twin
+// ด้านล่าง). ค่านี้ไม่ถูก render ที่ไหนเลยจึงไม่กระทบ fallback output
 const FALLBACK_FLEET = [
-  { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่' },
-  { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่' },
-  { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่' },
-  { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP' },
+  { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่', vehicleClass: 'economy' },
+  { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่', vehicleClass: 'standard' },
+  { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่', vehicleClass: 'vip' },
+  { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP', vehicleClass: 'premium' },
 ];
 
 // ระดับรถ (Executive Sedan / Luxury Van ...) เป็น copy ผูกชั้นราคา — ใช้กับ FLEET เท่านั้น
 // (VEHICLES/price matrix ด้านบนเป็น hardcode ตายตัว ไม่ผ่าน BOS แล้ว)
+// fix-review MINOR (documented trade, not a bug): คีย์ตาม class ทำให้คำบรรยาย
+// (เช่น "Luxury Van · 6 กระเป๋าใหญ่" ที่จริงเป็นสเปคของ Alphard) ถูกแปะให้กับ
+// รถจริงคันไหนก็ได้ที่ BOS ส่งมาเป็นชั้นราคานั้น — เช่น Kia Carnival ในชั้น
+// premium ก็จะได้คำบรรยายเดียวกัน นี่คือทางเลือกที่ดีที่สุดเท่าที่ทำได้แล้ว
+// เพราะ BOS ไม่ได้เก็บจำนวนกระเป๋าต่อคัน ไม่ใช่บั๊ก — ไม่ต้อง restructure
 const CLASS_TIER: Record<string, string> = {
   economy: 'Executive Sedan',
   standard: 'Crossover MPV',
@@ -130,7 +139,12 @@ const fleetFromBos = await getFleet();
 const FLEET =
   fleetFromBos.length > 0
     ? fleetFromBos.map((c) => {
-        const twin = FALLBACK_FLEET.find((f) => f.name === c.name);
+        // fix-review IMPORTANT: เทียบด้วย vehicleClass ไม่ใช่ name — ก่อนหน้า
+        // นี้ `f.name === c.name` พังทันทีที่แอดมินแก้ showcase_name บน BOS
+        // (นั่นคือเหตุผลที่ BOS มีปุ่มแก้ชื่อให้แอดมินตั้งแต่แรก) FALLBACK_FLEET
+        // เองก็มีชื่อไม่ตรงกับ VEHICLES อยู่แล้ว ('Mitsubishi Xpander' vs
+        // 'Mitsubishi Xpander Cross') ซึ่งเป็นหลักฐานว่าการเทียบด้วยชื่อเปราะ
+        const twin = FALLBACK_FLEET.find((f) => f.vehicleClass === c.vehicleClass);
         return {
           img: c.photoUrl ?? twin?.img ?? '',
           name: c.name,
@@ -289,7 +303,12 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
         <div class="section-head reveal">
           <span class="eyebrow">Vehicle Options</span>
           <h2 data-i18n="fleet.h2">เลือกรถตามความต้องการ</h2>
-          <p data-i18n="fleet.desc">4 ประเภทรถ ครอบคลุมตั้งแต่ couple ไปจนถึง family / VIP group</p>
+          {/* fix-review MINOR (2026-08-23): used to say "4 ประเภทรถ" — BOS
+              can serve any number of price classes (today: 3), so a hardcoded
+              count in marketing copy goes stale the moment BOS is live.
+              Reworded to not state a count; en.json counterpart updated to
+              match (src/content/airports/*.yaml's fleet.desc). */}
+          <p data-i18n="fleet.desc">รถให้เลือกหลากหลาย ครอบคลุมตั้งแต่เดินทางเป็นคู่ไปจนถึงครอบครัวหรือกลุ่ม VIP</p>
         </div>
 
         <div class="fleet-strip reveal">
@@ -297,9 +316,12 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
             FLEET.map((f, i) => (
               <div class="fleet-mini">
                 {/* ruling 2 (2026-08-22): f.img can be '' when mergeFleet-style
-                    logic finds no BOS photo and no same-name fallback twin —
+                    logic finds no BOS photo and no same-class fallback twin —
                     render only when there's something to point at, same as
-                    Fleet.astro / Reviews.astro, instead of a broken-image icon. */}
+                    Fleet.astro / Reviews.astro, instead of a broken-image icon.
+                    fix-review IMPORTANT (2026-08-23): "same-name" above is now
+                    "same-class" — see FALLBACK_FLEET's twin-lookup above,
+                    which now keys on vehicleClass instead of name. */}
                 {f.img && <img src={f.img} alt={f.name} width="600" height="375" loading="lazy" />}
                 <h4>{f.name}</h4>
                 <div class="type">{f.type}</div>
@@ -586,20 +608,18 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   }
 
   /* ==================== FLEET STRIP ==================== */
+  /* fix-review IMPORTANT (2026-08-23): a hardcoded `repeat(4, 1fr)` (plus
+     `repeat(2, 1fr)` at <=900px) assumed the fleet card count is always 4 —
+     BOS can serve any number (today: 3), leaving an empty trailing column at
+     desktop width and a 2+1 orphan row at the 900px breakpoint. auto-fit +
+     minmax sizes columns to however many cards actually exist at every
+     width, so the two fixed-count breakpoints below are no longer needed —
+     verified the 4-card fallback still lays out the same shape it did
+     before (1 column on phone, growing up to 4 on desktop). */
   .fleet-strip {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
-  }
-  @media (max-width: 900px) {
-    .fleet-strip {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 500px) {
-    .fleet-strip {
-      grid-template-columns: 1fr;
-    }
   }
   .fleet-mini {
     background: var(--bg-card);

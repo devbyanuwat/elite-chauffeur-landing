@@ -16,9 +16,15 @@ const reviews = await getReviews();
         <figure class="rev-card">
           {r.carPhotoUrl && <img src={r.carPhotoUrl} alt="รถของคนขับ SABUYGO" loading="lazy" width="320" height="200" />}
           <figcaption>
+            {/* fix-review IMPORTANT (2026-08-23): every star used to render
+                the same glyph (★) and rely on colour alone (.on vs default)
+                to show the score — WCAG 1.4.1, colour must not be the only
+                channel. Full star / empty star (★ / ☆) carries the same
+                information without colour. Colours stay as reinforcement;
+                the aria-label wrapper + aria-hidden children are unchanged. */}
             <div class="rev-stars" role="img" aria-label={`ให้คะแนน ${r.rating} เต็ม 5`}>
               {[1, 2, 3, 4, 5].map((n) => (
-                <span class={n <= r.rating ? 'on' : ''} aria-hidden="true">★</span>
+                <span class={n <= r.rating ? 'on' : ''} aria-hidden="true">{n <= r.rating ? '★' : '☆'}</span>
               ))}
             </div>
             <p>&ldquo;{r.comment}&rdquo;</p>

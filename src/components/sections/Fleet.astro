@@ -25,6 +25,10 @@ const AUTO: Chip = { text: 'เกียร์ออโต้', key: 'fl.chip.au
 const INSURED: Chip = { text: 'ประกันเต็มคัน', key: 'fl.chip.insured' };
 const VIP: Chip = { text: 'VIP', key: 'fl.chip.vip' };
 
+// fix-review IMPORTANT (2026-08-23): vehicleClass ผูกกับชั้นราคาของ BOS
+// (economy/standard/premium/vip) — mergeFleet() ใช้ค่านี้ยืมรูป/vtype แทนการ
+// เทียบ name ตรงตัว (name เปลี่ยนได้ทุกเมื่อที่แอดมินแก้ showcase_name) ค่านี้
+// ไม่ถูก render ที่ไหนเลยจึงไม่กระทบ fallback output
 const CARS: Car[] = [
   {
     ghost: 'ALTIS',
@@ -34,6 +38,7 @@ const CARS: Car[] = [
     img: '/images/car4.webp',
     alt: 'Toyota Corolla Altis',
     vtype: 'sedan',
+    vehicleClass: 'economy',
   },
   {
     ghost: 'XPANDER',
@@ -43,6 +48,7 @@ const CARS: Car[] = [
     img: '/images/car1.webp',
     alt: 'Mitsubishi Xpander Cross',
     vtype: 'suv',
+    vehicleClass: 'standard',
   },
   {
     ghost: 'FORTUNER',
@@ -52,6 +58,7 @@ const CARS: Car[] = [
     img: '/images/car3.webp',
     alt: 'Toyota Fortuner Legender',
     vtype: 'suv',
+    vehicleClass: 'vip',
   },
   {
     ghost: 'ALPHARD',
@@ -61,6 +68,7 @@ const CARS: Car[] = [
     img: '/images/car2.webp',
     alt: 'Toyota Alphard',
     vtype: 'premium',
+    vehicleClass: 'premium',
   },
 ];
 
@@ -104,13 +112,19 @@ const first = cars[0];
     <div class="fleet-stagewrap">
       <div class="ghost"><span>{first.ghost}</span></div>
       <div class="car-layer">
-        {/* ruling 2 (2026-08-22): mergeFleet() can return img: '' for a
-            price class the admin enabled with no photo uploaded and no
-            same-name fallback twin (e.g. vip). Render the <img> only when
-            there's something to point it at — same conditional shape
-            Reviews.astro uses for carPhotoUrl — instead of shipping a
-            broken-image icon. The card itself still renders either way. */}
-        {first.img && <img src={first.img} alt={first.alt} width="600" height="375" loading="eager" />}
+        {/* fix-review CRITICAL (2026-08-23): this used to omit the whole
+            <img> element when there was no photo (ruling 2 — mergeFleet()
+            can return img: '' for a price class with no upload and no
+            same-class fallback twin, e.g. vip). But both stage controllers
+            hard-require the element to exist (buildFleetChapter's own guard
+            in chapters/fleet.ts, and this file's no-GSAP fallback script
+            below) — a missing <img> silently killed the whole pinned
+            chapter with no error. Always render the element; set `src`
+            conditionally instead — `undefined` makes Astro omit the
+            attribute entirely, so an <img> with no src still shows nothing
+            (no broken-image icon, same intent as ruling 2) while giving
+            both controllers the DOM node they require. */}
+        <img src={first.img || undefined} alt={first.alt} width="600" height="375" loading="eager" />
       </div>
     </div>
 
@@ -133,12 +147,35 @@ const first = cars[0];
       <div>
         <div class="name">{first.name}</div>
         <div class="chips">
-          {first.chips.map((chip) => <span class="chip" data-i18n={chip.key}>{chip.text}</span>)}
+          {/* fix-review IMPORTANT: a seat count (chip.prefix, e.g. "7 ") must
+              render OUTSIDE the data-i18n span — setLang() (i18n.ts) replaces
+              that span's whole innerHTML on every language toggle, so a
+              number baked into the same node vanishes on EN and, worse, gets
+              captured as the shared "last one in the document wins" Thai
+              value for every other car's identical fl.chip.seats key. Chips
+              with no prefix (AUTO/INSURED/VIP, and the hardcoded SEAT4/SEAT7
+              fallback) render exactly as before — this is additive only. */}
+          {first.chips.map((chip) =>
+            chip.prefix ? (
+              <span class="chip">{chip.prefix}<span data-i18n={chip.key}>{chip.text}</span></span>
+            ) : (
+              <span class="chip" data-i18n={chip.key}>{chip.text}</span>
+            )
+          )}
         </div>
       </div>
       <div class="price">
-        <small data-i18n="fl.from">เริ่มต้น</small><br />
-        <b>{first.price}</b><small data-i18n="fl.day">/วัน</small>
+        {/* fix-review MINOR: formatPrice(null) (fleet-view.ts) returns '' —
+            showcase_price is nullable in BOS, so a raw {first.price} here
+            used to leave a bare "เริ่มต้น" / "/วัน" hole with nothing
+            between them. Wrap the whole label+amount+unit group so it's all
+            or nothing; the CTA button below stays regardless of price. */}
+        {first.price && (
+          <>
+            <small data-i18n="fl.from">เริ่มต้น</small><br />
+            <b>{first.price}</b><small data-i18n="fl.day">/วัน</small>
+          </>
+        )}
         <div>
           <button type="button" class="pick" data-vtype={first.vtype ?? undefined}>
             <span data-i18n="fl.book">เลือกคันนี้</span> →
@@ -156,7 +193,18 @@ const first = cars[0];
     <div id="fleet-chip-bank" hidden aria-hidden="true">
       {cars.map((c, i) => (
         <div data-car-index={i}>
-          {c.chips.map((chip) => <span class="chip" data-i18n={chip.key}>{chip.text}</span>)}
+          {/* fix-review IMPORTANT: same prefix-outside-data-i18n shape as the
+              visible chips above — this bank is what fleet.ts / the no-GSAP
+              fallback script clone into the visible .chips container on every
+              stage swap, so it must carry the same nested markup or a swap
+              would drop the seat count right back into the flat-span bug. */}
+          {c.chips.map((chip) =>
+            chip.prefix ? (
+              <span class="chip">{chip.prefix}<span data-i18n={chip.key}>{chip.text}</span></span>
+            ) : (
+              <span class="chip" data-i18n={chip.key}>{chip.text}</span>
+            )
+          )}
         </div>
       ))}
     </div>
