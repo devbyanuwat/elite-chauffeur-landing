@@ -82,12 +82,23 @@ const faqSchema: Record<string, unknown> = {
 
 // ---- Structure that never varies between the two airport pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
-const FALLBACK_VEHICLES = [
+
+// fix-round-1 (2026-08-23, CRITICAL finding from task review): VEHICLES here
+// pairs with `d.rateRows[i]` by raw array index — rateRows is a YAML array
+// pinned to exactly 4 tuples in economy/standard/premium/vip order
+// (content.config.ts's `.length(4)`, authored per-airport against these four
+// canonical tiers). BOS's /api/public/fleet has no notion of that fixed
+// order and can return any subset, in any order, of however many classes an
+// admin has enabled, so this list must stay the canonical hardcoded four,
+// always — never BOS-driven. Contrast with FLEET below (the image grid),
+// where each card stands alone and BOS-driven is safe. See task-13
+// fix-round-1 report.
+const VEHICLES = [
   { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
   { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
   { name: 'Toyota Fortuner Legender', type: 'Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า' },
   { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
-];
+] as const;
 
 const FALLBACK_FLEET = [
   { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่' },
@@ -96,18 +107,8 @@ const FALLBACK_FLEET = [
   { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP' },
 ];
 
-/**
- * คำบรรยายรถ (ระดับรถ + จำนวนกระเป๋า) เป็น copy การตลาด ผูกกับ "ชั้นราคา" ไม่ใช่ชื่อรุ่น —
- * เหมือน CLASS_COPY ของหน้า routes/[slug].astro
- */
-const CLASS_COPY: Record<string, string> = {
-  economy: 'Sedan · 2 กระเป๋า',
-  standard: 'Crossover MPV · 4 กระเป๋า',
-  premium: 'Luxury Van · 6 กระเป๋า',
-  vip: 'VIP Sedan · 3 กระเป๋า',
-};
-
-// ระดับรถ (Executive Sedan / Luxury Van ...) เป็น copy ผูกชั้นราคา เหมือน CLASS_COPY ของหน้า routes
+// ระดับรถ (Executive Sedan / Luxury Van ...) เป็น copy ผูกชั้นราคา — ใช้กับ FLEET เท่านั้น
+// (VEHICLES/price matrix ด้านบนเป็น hardcode ตายตัว ไม่ผ่าน BOS แล้ว)
 const CLASS_TIER: Record<string, string> = {
   economy: 'Executive Sedan',
   standard: 'Crossover MPV',
@@ -122,17 +123,9 @@ const CLASS_BAGS: Record<string, string> = {
   vip: '3 กระเป๋าใหญ่',
 };
 
+// FLEET (การ์ดรูปรถ) ยังคง BOS-driven ได้ต่อไป — แต่ละการ์ดยืนด้วยตัวเอง ไม่ได้
+// index เข้า array ที่ตายตัวความยาวแบบ rateRows ข้างบน
 const fleetFromBos = await getFleet();
-
-const VEHICLES =
-  fleetFromBos.length > 0
-    ? fleetFromBos.map((c) => ({
-        name: c.name,
-        type: [c.seats ? `${c.seats} ผู้โดยสาร` : '', CLASS_COPY[c.vehicleClass] ?? '']
-          .filter(Boolean)
-          .join(' · '),
-      }))
-    : FALLBACK_VEHICLES;
 
 const FLEET =
   fleetFromBos.length > 0
@@ -153,9 +146,10 @@ const FLEET =
       })
     : FALLBACK_FLEET;
 
-// VEH_KEYS/FLEET_CAP_KEYS (ด้านล่าง) เป็น key i18n ที่ผูกกับลำดับ 4 คันของชุด fallback
-// เดิม — ถ้าจำนวน/ลำดับรถมาจาก BOS ลำดับจะเพี้ยน จึงใช้ key เหล่านี้เฉพาะตอนที่ยังใช้
-// ชุด fallback เท่านั้น
+// FLEET_CAP_KEYS (ด้านล่าง) เป็น key i18n ที่ผูกกับลำดับ 4 คันของชุด fallback fleet
+// เดิม — ถ้าจำนวน/ลำดับรถมาจาก BOS ลำดับจะเพี้ยน จึงใช้ key นี้เฉพาะตอนที่ยังใช้ชุด
+// fallback เท่านั้น (VEHICLES/VEH_KEYS ไม่ต้องกันแบบนี้อีกแล้ว เพราะ VEHICLES เป็น
+// hardcode ตายตัวเสมอ — ดู comment ด้านบน)
 const usingFallback = fleetFromBos.length === 0;
 
 const ICONS: Record<string, string> = {
@@ -251,7 +245,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
                 <tr>
                   <td data-label="ประเภทรถ">
                     <span class="veh-name">{v.name}</span>
-                    <span class="veh-type" data-i18n={usingFallback ? VEH_KEYS[i] : undefined}>{v.type}</span>
+                    <span class="veh-type" data-i18n={VEH_KEYS[i]}>{v.type}</span>
                   </td>
                   {d.rateRows[i].map((price, zi) => (
                     <td data-label={d.zoneLabels[zi]}>
