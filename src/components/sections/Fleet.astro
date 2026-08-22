@@ -2,7 +2,7 @@
 // chapter 1 · fleet (ports mockups/pinned-editions.html #fleet)
 // data-chapter / data-chapter-len is editions.ts's own contract — separate
 // from pin.ts's data-pin/data-stage. Default (no .pin-ready — no JS, <1024px,
-// or reduced motion) renders as a plain block layout with the Alphard card
+// or reduced motion) renders as a plain block layout with the Altis card
 // (stage 0) fully visible; ghost word + car image only overlap absolutely
 // once .pin-ready is present, same as the mockup's base (non-media) rules.
 //
@@ -39,22 +39,13 @@ const VIP: Chip = { text: 'VIP', key: 'fl.chip.vip' };
 
 const CARS: Car[] = [
   {
-    ghost: 'ALPHARD',
-    name: 'Toyota Alphard',
-    price: '฿1,000',
-    chips: [SEAT7, AUTO, INSURED, VIP],
-    img: '/images/car2.webp',
-    alt: 'Toyota Alphard',
-    vtype: 'premium',
-  },
-  {
-    ghost: 'FORTUNER',
-    name: 'Toyota Fortuner',
-    price: '฿500',
-    chips: [SEAT7, AUTO, INSURED],
-    img: '/images/car3.webp',
-    alt: 'Toyota Fortuner Legender',
-    vtype: 'suv',
+    ghost: 'ALTIS',
+    name: 'Toyota Corolla Altis',
+    price: '฿400',
+    chips: [SEAT4, AUTO, INSURED],
+    img: '/images/car4.webp',
+    alt: 'Toyota Corolla Altis',
+    vtype: 'sedan',
   },
   {
     ghost: 'XPANDER',
@@ -66,13 +57,22 @@ const CARS: Car[] = [
     vtype: 'suv',
   },
   {
-    ghost: 'ALTIS',
-    name: 'Toyota Corolla Altis',
-    price: '฿400',
-    chips: [SEAT4, AUTO, INSURED],
-    img: '/images/car4.webp',
-    alt: 'Toyota Corolla Altis',
-    vtype: 'sedan',
+    ghost: 'FORTUNER',
+    name: 'Toyota Fortuner',
+    price: '฿500',
+    chips: [SEAT7, AUTO, INSURED],
+    img: '/images/car3.webp',
+    alt: 'Toyota Fortuner Legender',
+    vtype: 'suv',
+  },
+  {
+    ghost: 'ALPHARD',
+    name: 'Toyota Alphard',
+    price: '฿5,000',
+    chips: [SEAT7, AUTO, INSURED, VIP],
+    img: '/images/car2.webp',
+    alt: 'Toyota Alphard',
+    vtype: 'premium',
   },
 ];
 
