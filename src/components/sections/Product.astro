@@ -1,0 +1,192 @@
+---
+/* Hallmark · macrostructure: Split Studio · section-head: S2 hanging
+ * genre: editorial · theme: project system (preserved — global.css :root)
+ * tone: luxury-quiet · anchor hue: terracotta (--gold)
+ * enrichment: none (typography only) · scope: section (no nav/footer/hero)
+ * pre-emit critique: P4 H4 E4 S3 R5 V4
+ * NOTE: S3 (Specificity) is 3 because every string below is an unfilled slot.
+ *       It rises to 5 once real copy lands. Do not ship to production at S3.
+ */
+
+/**
+ * Product — โครงเปล่าพร้อม slot รอเติมเนื้อหา
+ * ================================================
+ *
+ * โครงมาจากโน้ตลายมือ: 4 ข้อ โดยข้อหนึ่งแตกเป็นรายการย่อยประมาณ 6 บรรทัด
+ * layout เป็น diptych สลับซ้าย-ขวา (Split Studio) — ครึ่งหนึ่งเป็นคำอธิบาย
+ * อีกครึ่งเป็นหลักฐาน/รายการย่อย ไม่ใช้เลขขั้นตอน เพราะ How.astro ถือจังหวะนั้นแล้ว
+ *
+ * **เนื้อหาทั้งหมดอยู่ใน src/lib/product-data.ts** — แก้ที่นั่น ไม่ใช่ที่นี่
+ * ไฟล์นี้ถือแต่ layout กับ CSS
+ *
+ * ยังไม่ได้ทำ (ตั้งใจ) — ทำหลังเนื้อหาลง
+ * ---------------------------------------
+ * 1. คำแปลอังกฤษ — เรียก productI18nKeys() เพื่อดูรายการ key ที่ต้องเติมใน en.json
+ * 2. เสียบเข้าหน้าแรก — ยังไม่ได้ import ใน src/pages/index.astro โดยตั้งใจ
+ *    section ที่ยังเป็น TODO ไม่ควรขึ้นหน้าจริง ตอนเสียบต้องทำ 2 อย่างคู่กัน:
+ *      import Product from '../components/sections/Product.astro';
+ *      import { productCatalogSchema } from '../lib/product-data';
+ *    แล้วเติม productCatalogSchema เข้า array ของ prop jsonLd ที่ส่งให้ Base
+ * 3. ChapterRail — ถ้าจะให้ section นี้มี dot ใน rail ต้องเพิ่มใน ChapterRail.astro
+ * 4. Speakable schema — ควรอยู่ระดับหน้า (WebPage) ไม่ใช่ระดับ section
+ *    หน้าแรกมี WebSite/LocalBusiness/BreadcrumbList อยู่แล้ว ยัด WebPage node
+ *    เพิ่มจาก component นี้เสี่ยงชนกัน ให้เติมที่ index.astro ตอนเสียบ section:
+ *      speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.pd-answer'] }
+ */
+
+import { PRODUCTS, HEAD, CTA } from '../../lib/product-data';
+---
+
+<section class="block product" id="product">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="pd.eyebrow">{HEAD.eyebrow}</span>
+      <h2 data-i18n="pd.title">{HEAD.title}</h2>
+      <p data-i18n="pd.sub">{HEAD.sub}</p>
+    </div>
+
+    <div class="pd-list">
+      {PRODUCTS.map((p) => (
+        <article class="pd-row" aria-labelledby={`pd-h-${p.id}`}>
+          <div class="pd-text reveal">
+            <h3 class="pd-q" id={`pd-h-${p.id}`} data-i18n={`pd.${p.id}.q`}>{p.q}</h3>
+            <p class="pd-answer" data-i18n={`pd.${p.id}.a`}>{p.a}</p>
+          </div>
+
+          <div class="pd-proof reveal">
+            <p class="pd-proof-label" data-i18n={`pd.${p.id}.pl`}>{p.proofLabel}</p>
+            <ul class="pd-proof-list">
+              {p.proof.map((line, j) => (
+                <li data-i18n={`pd.${p.id}.p.${j + 1}`}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="pd-cta reveal">
+      <a class="btn btn-line" href={CTA.href} data-i18n="pd.cta">{CTA.label}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Split Studio: ช่องว่างคือเส้นแบ่ง ไม่ใช้เส้นขีด
+     ยกเว้นเส้นบาง ๆ คั่นระหว่างแถว เพื่อไม่ให้ 4 แถวไหลติดกันเป็นพืด */
+  .pd-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(48px, 7vw, 96px);
+    margin-top: clamp(40px, 6vw, 72px);
+  }
+
+  .pd-row {
+    display: grid;
+    /* minmax(0,1fr) ไม่ใช่ 1fr — กัน grid track ดันกว้างเกินจนหน้าเลื่อนแนวนอน */
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(20px, 3vw, 32px);
+    align-items: start;
+  }
+
+  .pd-row + .pd-row {
+    padding-top: clamp(48px, 7vw, 96px);
+    border-top: 1px solid var(--border);
+  }
+
+  @media (min-width: 861px) {
+    .pd-row {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: clamp(40px, 6vw, 96px);
+    }
+
+    /* diptych สลับทิศลงมา — แถวคู่ให้คำอธิบายไปอยู่ขวา */
+    .pd-row:nth-child(even) .pd-text {
+      order: 2;
+    }
+  }
+
+  .pd-q {
+    font-family: var(--font-display);
+    font-style: normal;
+    font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+    font-weight: 500;
+    line-height: 1.28;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    /* หัวข้อไทยยาว ๆ ต้องตัดคำได้ ไม่งั้นดันกรอบทะลุที่ 320px */
+    overflow-wrap: anywhere;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .pd-answer {
+    margin: 0.75em 0 0;
+    max-width: 46ch;
+    font-size: 1rem;
+    line-height: 1.72;
+    color: var(--text-secondary);
+  }
+
+  .pd-proof {
+    padding-top: 0.35rem;
+  }
+
+  .pd-proof-label {
+    margin: 0 0 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .pd-proof-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .pd-proof-list li {
+    position: relative;
+    padding-left: 1.4rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  /* จุดนำหน้า — accent โผล่แค่ตรงนี้ทั้ง section ตามกติกา "ทองเป็นแขก ไม่ใช่เจ้าบ้าน" */
+  .pd-proof-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: var(--gold);
+  }
+
+  .pd-cta {
+    margin-top: clamp(48px, 7vw, 88px);
+  }
+
+  /* reveal — ใช้ระบบ .reveal เดิมของ repo ทั้งหมด ไม่สร้างกลไกใหม่
+     ครึ่งซ้าย/ขวาถือ .reveal คนละอัน IntersectionObserver จึงติด .in ให้แยกกัน
+     (src/scripts/motion/legacy-reveal.ts — คลาสคือ `.in` ไม่ใช่ `.is-visible`)
+     resting state opacity:0 อยู่ใน src/styles/motion.css และ gate ด้วย .js-motion
+     อยู่แล้ว ปิด JavaScript จึงไม่มีอะไรถูกซ่อน — ห้ามประกาศ opacity:0 ที่นี่ซ้ำ
+     โดยไม่ gate ไม่งั้นจะพลาดซ้ำรอย final-review Fix 2
+
+     เหลือแค่หน่วงฝั่ง proof นิดเดียว ให้ diptych เข้าเหลื่อมกันตามสูตร Split Studio
+     reduced-motion ไม่ต้องจัดการเอง — global.css คุม .reveal + ตัด transition ให้แล้ว */
+     `.js-motion` อยู่บน <html> ซึ่งไม่ได้อยู่ในคอมโพเนนต์นี้ ถ้าไม่ห่อ :global()
+     Astro จะ scope มันด้วย selector ก็จะไม่ match อะไรเลยแบบเงียบ ๆ */
+  :global(.js-motion) .pd-proof.reveal {
+    transition-delay: 0.09s;
+  }
+</style>
