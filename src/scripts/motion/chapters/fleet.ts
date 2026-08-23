@@ -9,18 +9,22 @@ interface FleetCar {
   price: string;
   img: string;
   alt: string;
-  vtype: string;
+  vtype: string | null;
 }
-
-const FLEET_STAGE_COUNT = 4;
 
 /**
  * สูตร stage-index จาก progress สำหรับ chapter 1 (fleet) — ตรงกับ mockup 1:1
  * (`Math.min(3, Math.floor(st.progress * 4))`), แยกออกมาเป็นฟังก์ชันล้วน ๆ
  * ให้เทสต์ได้โดยไม่ต้องพึ่ง ScrollTrigger/DOM
+ *
+ * fix-review CRITICAL: `count` ต้องมาจากความยาวจริงของรายการรถ (`cars.length`)
+ * เสมอ — ห้ามเป็นค่าคงที่ เพราะ BOS ตอบรถได้ทุกจำนวน (วันนี้ตอบ 3 คัน ไม่ใช่ 4)
+ * ค่าคงที่ตายตัวจะทำให้ stage สุดท้ายชี้เกิน array (`cars[3]` เป็น undefined
+ * เมื่อมีแค่ 3 คัน → throw กลาง onUpdate ของ GSAP ทุก scroll frame ในโซนนั้น)
+ * default = 4 เก็บไว้เพื่อไม่ต้องแก้ caller เดิมที่ยังไม่ผ่าน count มา
  */
-export function fleetStageForProgress(progress: number): number {
-  return Math.min(FLEET_STAGE_COUNT - 1, Math.floor(progress * FLEET_STAGE_COUNT));
+export function fleetStageForProgress(progress: number, count = 4): number {
+  return Math.min(count - 1, Math.floor(progress * count));
 }
 
 function readFleetCars(section: HTMLElement): FleetCar[] {
@@ -118,7 +122,14 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
       // of them) in sync regardless of when the toggle happens.
       const bankEntry = section.querySelector(`#fleet-chip-bank [data-car-index="${i}"]`);
       chipsEl.innerHTML = bankEntry ? bankEntry.innerHTML : '';
-      if (pickBtn) pickBtn.dataset.vtype = car.vtype;
+      // ruling 1 (2026-08-22): car.vtype is null when the admin hasn't bound
+      // a price class to a vtype yet — delete the dataset key instead of
+      // writing "null"/"" into it, or the booking form would silently
+      // preselect the wrong vehicle class.
+      if (pickBtn) {
+        if (car.vtype) pickBtn.dataset.vtype = car.vtype;
+        else delete pickBtn.dataset.vtype;
+      }
     }
 
     if (!animate) {
@@ -170,7 +181,7 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
     scrub: true,
     invalidateOnRefresh: true,
     onUpdate(st) {
-      fleetStage(fleetStageForProgress(st.progress));
+      fleetStage(fleetStageForProgress(st.progress, cars.length));
     },
   });
 
@@ -188,13 +199,18 @@ export function buildFleetChapter(section: HTMLElement, len: number): () => void
   // fix round 2 (review): wired per-group (each button's `i` is its index
   // within its OWN group — .rail or .fleet-tabs — not a flattened
   // document-order index), same fix as the .on toggle above. Without this
-  // every mobile tab's target `y` used i ∈ [4,7] against FLEET_STAGE_COUNT
-  // (4), landing past `trigger.end` — outside the chapter entirely.
+  // every mobile tab's target `y` used i ∈ [4,7] against the stage count,
+  // landing past `trigger.end` — outside the chapter entirely.
+  //
+  // fix-review CRITICAL: the divisor here used to be the same hardcoded
+  // FLEET_STAGE_COUNT as fleetStageForProgress — with 3 BOS cars a rail
+  // click targeted 3/4 of the chapter's scroll range instead of the full
+  // width. `cars.length` is the same source of truth used above.
   const clickHandlers: { btn: HTMLElement; handler: () => void }[] = [];
   controlGroups.forEach((buttons) => {
     buttons.forEach((btn, i) => {
       const handler = () => {
-        const y = trigger.start + ((i + 0.5) / FLEET_STAGE_COUNT) * (trigger.end - trigger.start);
+        const y = trigger.start + ((i + 0.5) / cars.length) * (trigger.end - trigger.start);
         window.scrollTo({ top: y, behavior: 'smooth' });
       };
       btn.addEventListener('click', handler);

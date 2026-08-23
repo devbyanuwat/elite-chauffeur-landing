@@ -128,16 +128,49 @@ describe('applyEditionsPins · tier', () => {
 });
 
 describe('fleetStageForProgress', () => {
-  // chapter 1 · fleet มี 4 stage (CARS.length === 4) — สูตรตรงกับ mockup ที่
-  // ScrollTrigger.onUpdate ยิง Math.min(3, Math.floor(st.progress * 4))
+  // fix-review CRITICAL (2026-08-23): the hardcoded fallback set ships 4
+  // cars, but BOS's live /api/public/fleet answers 3 today (the `vip` price
+  // class is seeded with a null showcase name and gets filtered out) — the
+  // stage count is no longer CARS.length === 4 unconditionally, it's
+  // whatever the rendered fleet list's length is. `count` defaults to 4 so
+  // this describe block (and every existing caller that doesn't pass it)
+  // keeps testing/using the fallback-sized chapter unchanged.
   it.each([
     [0, 0],
     [0.24, 0],
     [0.26, 1],
     [0.5, 2],
     [0.99, 3],
-  ])('progress %f -> stage %i', (p, expected) => {
+  ])('progress %f -> stage %i (default count = 4)', (p, expected) => {
     expect(fleetStageForProgress(p)).toBe(expected);
+  });
+
+  // fix-review CRITICAL: this is exactly the BOS-live scenario — 3 cars, not
+  // 4. Reverting the `count` parameter back to a hardcoded 4 would make the
+  // last two cases here fail (0.99 * 4 = 3.96, floored to 3, min(3, 3) = 3 —
+  // one past the last valid index 2).
+  it.each([
+    [0, 0],
+    [0.32, 0],
+    [0.34, 1],
+    [0.66, 1],
+    [0.99, 2],
+  ])('progress %f -> stage %i (count = 3, BOS-sized fleet today)', (p, expected) => {
+    expect(fleetStageForProgress(p, 3)).toBe(expected);
+    expect(fleetStageForProgress(p, 3)).toBeLessThanOrEqual(2);
+  });
+
+  it.each([
+    [0, 0],
+    [0.99, 4],
+  ])('progress %f -> stage %i (count = 5, no throw at either end)', (p, expected) => {
+    expect(fleetStageForProgress(p, 5)).toBe(expected);
+  });
+
+  it('ทุกค่า count คืน stage สุดท้ายเป็น count - 1 พอดี ไม่เกิน ไม่ขาด', () => {
+    for (const count of [1, 2, 3, 4, 5, 7]) {
+      expect(fleetStageForProgress(0.999, count)).toBe(count - 1);
+    }
   });
 });
 
@@ -202,6 +235,94 @@ describe('buildIntroChapter · fix-review I2 (context revert on cleanup)', () =>
     expect(context).not.toHaveBeenCalled();
     expect(scrollTriggerCreate).not.toHaveBeenCalled();
     expect(() => cleanup()).not.toThrow();
+  });
+});
+
+// fix-review CRITICAL (2026-08-23): parameterized fixture builder — the bug
+// this guards against only reproduces with a car count that ISN'T 4, so
+// every fixture in this suite being exactly 4 cars is precisely why the
+// hardcoded FLEET_STAGE_COUNT went unnoticed through six task reviews and
+// 186 green tests. Builds `count` cars/rail-buttons/tab-buttons instead of a
+// fixed 4.
+function fleetHtml(count: number): string {
+  const letters = 'ABCDEFGH';
+  const cars = Array.from({ length: count }, (_, i) => {
+    const l = letters[i] ?? `X${i}`;
+    return `{ "ghost": "${l}", "name": "Car ${l}", "price": "${(i + 1) * 1000}", "img": "/${l.toLowerCase()}.webp", "alt": "${l}", "vtype": "sedan" }`;
+  }).join(',\n');
+  const railButtons = Array.from({ length: count }, (_, i) => `<button data-rail="${i}"></button>`).join('\n');
+  const tabButtons = Array.from({ length: count }, (_, i) => `<button>${i + 1}</button>`).join('\n');
+  return `
+    <section class="fleet-chapter">
+      <script type="application/json" id="fleet-data">[${cars}]</script>
+      <div class="ghost"><span></span></div>
+      <div class="car-layer"><img></div>
+      <div class="fleet-meta">
+        <div class="name"></div>
+        <div class="chips"></div>
+        <div class="price"><b></b></div>
+      </div>
+      <button class="pick"></button>
+      <div class="fleet-count"></div>
+      <div class="rail">${railButtons}</div>
+      <div class="fleet-tabs">${tabButtons}</div>
+    </section>
+  `;
+}
+
+describe('buildFleetChapter · fix-review CRITICAL (stage count derives from cars.length, not a hardcoded 4)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
+
+  it.each([3, 5])(
+    'count = %i คัน: scroll ไปสุด onUpdate ไม่ throw, stage สุดท้าย = count - 1, ตัวนับอ่าน count/count',
+    (count) => {
+      document.body.innerHTML = fleetHtml(count);
+      const section = document.querySelector<HTMLElement>('.fleet-chapter')!;
+      stubTrigger(1000, 5000);
+
+      buildFleetChapter(section, 300);
+      const onUpdate = scrollTriggerCreate.mock.calls[0][0].onUpdate as (st: { progress: number }) => void;
+
+      // reverting the `cars.length` fix back to a hardcoded 4 makes this
+      // throw for count < 4 (cars[3] undefined -> reading car.ghost throws)
+      // and leaves a dead trailing stage for count > 4.
+      expect(() => onUpdate({ progress: 0.999 })).not.toThrow();
+
+      const lastIndex = count - 1;
+      const padded = String(count).padStart(2, '0');
+      expect(section.querySelector('.fleet-count')!.textContent).toBe(`${padded} / ${padded}`);
+
+      const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+      railButtons.forEach((b, j) => expect(b.classList.contains('on')).toBe(j === lastIndex));
+    }
+  );
+
+  it.each([3, 5])('count = %i คัน: คลิก rail ปุ่มสุดท้ายต้อง scroll ไปตำแหน่งภายในช่วง trigger เสมอ (ไม่หารด้วย 4 ตายตัว)', (count) => {
+    document.body.innerHTML = fleetHtml(count);
+    const section = document.querySelector<HTMLElement>('.fleet-chapter')!;
+    stubTrigger(1000, 5000); // start=1000, end=5000 -> len=4000
+
+    buildFleetChapter(section, 300);
+
+    const scrollTo = vi.fn();
+    vi.stubGlobal('scrollTo', scrollTo);
+
+    const railButtons = Array.from(section.querySelectorAll<HTMLElement>('.rail button'));
+    const lastIndex = count - 1;
+    railButtons[lastIndex].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    const target = scrollTo.mock.calls[0][0] as { top: number };
+    // reverting to a hardcoded divisor of 4 would put a 3-car last click at
+    // 1000 + (2.5/4)*4000 = 3500 (short of the chapter's own end) and a
+    // 5-car last click at 1000 + (4.5/4)*4000 = 5500 (past trigger.end).
+    const expected = 1000 + ((lastIndex + 0.5) / count) * 4000;
+    expect(target.top).toBe(expected);
+    expect(target.top).toBeGreaterThanOrEqual(1000);
+    expect(target.top).toBeLessThanOrEqual(5000);
   });
 });
 

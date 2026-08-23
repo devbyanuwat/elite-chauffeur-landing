@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import BookingForm from '../../components/BookingForm.astro';
+import { getFleet } from '../../lib/fleet-api';
 
 /**
  * Shared template for both airport-transfer subpages (suvarnabhumi-bkk,
@@ -81,6 +82,17 @@ const faqSchema: Record<string, unknown> = {
 
 // ---- Structure that never varies between the two airport pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
+
+// fix-round-1 (2026-08-23, CRITICAL finding from task review): VEHICLES here
+// pairs with `d.rateRows[i]` by raw array index — rateRows is a YAML array
+// pinned to exactly 4 tuples in economy/standard/premium/vip order
+// (content.config.ts's `.length(4)`, authored per-airport against these four
+// canonical tiers). BOS's /api/public/fleet has no notion of that fixed
+// order and can return any subset, in any order, of however many classes an
+// admin has enabled, so this list must stay the canonical hardcoded four,
+// always — never BOS-driven. Contrast with FLEET below (the image grid),
+// where each card stands alone and BOS-driven is safe. See task-13
+// fix-round-1 report.
 const VEHICLES = [
   { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
   { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
@@ -88,12 +100,71 @@ const VEHICLES = [
   { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
 ] as const;
 
-const FLEET = [
-  { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่' },
-  { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่' },
-  { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่' },
-  { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP' },
-] as const;
+// fix-review IMPORTANT (2026-08-23): vehicleClass ผูกกับชั้นราคาของ BOS
+// (economy/standard/premium/vip) — ใช้ยืมรูปแทนการเทียบ name ตรงตัว (name
+// เปลี่ยนได้ทุกเมื่อที่แอดมินแก้ showcase_name บน BOS — ดูคอมเมนต์ที่ twin
+// ด้านล่าง). ค่านี้ไม่ถูก render ที่ไหนเลยจึงไม่กระทบ fallback output
+const FALLBACK_FLEET = [
+  { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่', vehicleClass: 'economy' },
+  { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่', vehicleClass: 'standard' },
+  { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่', vehicleClass: 'vip' },
+  { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP', vehicleClass: 'premium' },
+];
+
+// ระดับรถ (Executive Sedan / Luxury Van ...) เป็น copy ผูกชั้นราคา — ใช้กับ FLEET เท่านั้น
+// (VEHICLES/price matrix ด้านบนเป็น hardcode ตายตัว ไม่ผ่าน BOS แล้ว)
+// fix-review MINOR (documented trade, not a bug): คีย์ตาม class ทำให้คำบรรยาย
+// (เช่น "Luxury Van · 6 กระเป๋าใหญ่" ที่จริงเป็นสเปคของ Alphard) ถูกแปะให้กับ
+// รถจริงคันไหนก็ได้ที่ BOS ส่งมาเป็นชั้นราคานั้น — เช่น Kia Carnival ในชั้น
+// premium ก็จะได้คำบรรยายเดียวกัน นี่คือทางเลือกที่ดีที่สุดเท่าที่ทำได้แล้ว
+// เพราะ BOS ไม่ได้เก็บจำนวนกระเป๋าต่อคัน ไม่ใช่บั๊ก — ไม่ต้อง restructure
+const CLASS_TIER: Record<string, string> = {
+  economy: 'Executive Sedan',
+  standard: 'Crossover MPV',
+  premium: 'Luxury Van',
+  vip: 'VIP Sedan',
+};
+
+const CLASS_BAGS: Record<string, string> = {
+  economy: '2 กระเป๋าใหญ่',
+  standard: '4 กระเป๋าใหญ่',
+  premium: '6 กระเป๋าใหญ่',
+  vip: '3 กระเป๋าใหญ่',
+};
+
+// FLEET (การ์ดรูปรถ) ยังคง BOS-driven ได้ต่อไป — แต่ละการ์ดยืนด้วยตัวเอง ไม่ได้
+// index เข้า array ที่ตายตัวความยาวแบบ rateRows ข้างบน
+const fleetFromBos = await getFleet();
+
+const FLEET =
+  fleetFromBos.length > 0
+    ? fleetFromBos.map((c) => {
+        // fix-review IMPORTANT: เทียบด้วย vehicleClass ไม่ใช่ name — ก่อนหน้า
+        // นี้ `f.name === c.name` พังทันทีที่แอดมินแก้ showcase_name บน BOS
+        // (นั่นคือเหตุผลที่ BOS มีปุ่มแก้ชื่อให้แอดมินตั้งแต่แรก) FALLBACK_FLEET
+        // เองก็มีชื่อไม่ตรงกับ VEHICLES อยู่แล้ว ('Mitsubishi Xpander' vs
+        // 'Mitsubishi Xpander Cross') ซึ่งเป็นหลักฐานว่าการเทียบด้วยชื่อเปราะ
+        const twin = FALLBACK_FLEET.find((f) => f.vehicleClass === c.vehicleClass);
+        return {
+          img: c.photoUrl ?? twin?.img ?? '',
+          name: c.name,
+          type: CLASS_TIER[c.vehicleClass] ?? '',
+          cap: [
+            c.seats ? `${c.seats} ผู้โดยสาร` : '',
+            CLASS_BAGS[c.vehicleClass] ?? '',
+            c.vip ? 'VIP' : '',
+          ]
+            .filter(Boolean)
+            .join(' · '),
+        };
+      })
+    : FALLBACK_FLEET;
+
+// FLEET_CAP_KEYS (ด้านล่าง) เป็น key i18n ที่ผูกกับลำดับ 4 คันของชุด fallback fleet
+// เดิม — ถ้าจำนวน/ลำดับรถมาจาก BOS ลำดับจะเพี้ยน จึงใช้ key นี้เฉพาะตอนที่ยังใช้ชุด
+// fallback เท่านั้น (VEHICLES/VEH_KEYS ไม่ต้องกันแบบนี้อีกแล้ว เพราะ VEHICLES เป็น
+// hardcode ตายตัวเสมอ — ดู comment ด้านบน)
+const usingFallback = fleetFromBos.length === 0;
 
 const ICONS: Record<string, string> = {
   clock: '<path d="M12 2v10l4 2"/><circle cx="12" cy="12" r="10"/>',
@@ -232,17 +303,29 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
         <div class="section-head reveal">
           <span class="eyebrow">Vehicle Options</span>
           <h2 data-i18n="fleet.h2">เลือกรถตามความต้องการ</h2>
-          <p data-i18n="fleet.desc">4 ประเภทรถ ครอบคลุมตั้งแต่ couple ไปจนถึง family / VIP group</p>
+          {/* fix-review MINOR (2026-08-23): used to say "4 ประเภทรถ" — BOS
+              can serve any number of price classes (today: 3), so a hardcoded
+              count in marketing copy goes stale the moment BOS is live.
+              Reworded to not state a count; en.json counterpart updated to
+              match (src/content/airports/*.yaml's fleet.desc). */}
+          <p data-i18n="fleet.desc">รถให้เลือกหลากหลาย ครอบคลุมตั้งแต่เดินทางเป็นคู่ไปจนถึงครอบครัวหรือกลุ่ม VIP</p>
         </div>
 
         <div class="fleet-strip reveal">
           {
             FLEET.map((f, i) => (
               <div class="fleet-mini">
-                <img src={f.img} alt={f.name} width="600" height="375" loading="lazy" />
+                {/* ruling 2 (2026-08-22): f.img can be '' when mergeFleet-style
+                    logic finds no BOS photo and no same-class fallback twin —
+                    render only when there's something to point at, same as
+                    Fleet.astro / Reviews.astro, instead of a broken-image icon.
+                    fix-review IMPORTANT (2026-08-23): "same-name" above is now
+                    "same-class" — see FALLBACK_FLEET's twin-lookup above,
+                    which now keys on vehicleClass instead of name. */}
+                {f.img && <img src={f.img} alt={f.name} width="600" height="375" loading="lazy" />}
                 <h4>{f.name}</h4>
                 <div class="type">{f.type}</div>
-                <div class="cap" data-i18n={FLEET_CAP_KEYS[i]}>{f.cap}</div>
+                <div class="cap" data-i18n={usingFallback ? FLEET_CAP_KEYS[i] : undefined}>{f.cap}</div>
               </div>
             ))
           }
@@ -525,9 +608,34 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   }
 
   /* ==================== FLEET STRIP ==================== */
+  /* fix-review IMPORTANT (2026-08-23): a hardcoded `repeat(4, 1fr)` assumed
+     the fleet card count is always 4 — BOS can serve any number (today: 3),
+     leaving an empty trailing column at desktop width. auto-fit + minmax
+     fixes that: 4 tracks of >=220px stop fitting the ~1060px content box
+     below ~1023px viewport width, and auto-fit drops to fewer tracks there.
+     re-review fix (2026-08-23): auto-fit does NOT subsume the two
+     fixed-count breakpoints below — measured on the built page with all 4
+     fallback cards, dropping them left a 3-then-1 orphan row (a visible
+     empty gutter beside the lone 4th card) whenever the content box fit 3
+     tracks but not 4. That's the live fallback layout (BOS_PUBLIC_API unset
+     in prod), so it's a real regression. Restored both breakpoints
+     unchanged — measured again after restoring them:
+       - <=500px / 501-900px: breakpoints force 1-col / 2x2 — clean, no
+         orphan (confirmed at 768px and exactly at 900px: content box
+         805px, 2x2).
+       - 1023px+: auto-fit alone reaches 4 equal tracks (confirmed at 1024px
+         and 1280px) — clean, no orphan.
+       - 901-1022px: NEITHER applies (above the 900px breakpoint, below
+         auto-fit's natural 4-track point) — measured orphan still present
+         in this narrower band (e.g. 901px and 1007px: 3-then-1). Restoring
+         the breakpoints closes most of the original regression but not
+         all of it; the remaining 901-1022px gap is a known, unresolved
+         edge case, not silently claimed fixed. Left as-is since closing it
+         needs a decision (e.g. extend the breakpoint to 1022px, or shrink
+         minmax's floor below 220px) that wasn't part of this finding. */
   .fleet-strip {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
   }
   @media (max-width: 900px) {

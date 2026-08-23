@@ -76,6 +76,19 @@ const faqSchema: Record<string, unknown> = {
 
 // ---- Structure that never varies between the two route pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
+
+// fix-round-1 (2026-08-23, CRITICAL finding from task review): VEHICLES here
+// pairs with `d.rateRows[i]` by raw array index — rateRows is a YAML array
+// pinned to exactly 4 tuples in economy/standard/premium/vip order
+// (content.config.ts's `.length(4)`, authored per-route against these four
+// canonical tiers). BOS's `/api/public/fleet` has no notion of that fixed
+// order and can return any subset, in any order, of however many classes an
+// admin has enabled — a prior version of this file made VEHICLES BOS-driven,
+// which meant a 3-car BOS response (e.g. `vip` filtered out for missing
+// showcase_name) silently paired Alphard with Fortuner's price and dropped
+// Alphard's real row, and a 5th class would throw on `d.rateRows[4]` and
+// crash the static build. This list must stay the canonical hardcoded four,
+// always — never BOS-driven. See task-13 fix-round-1 report.
 const VEHICLES = [
   { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
   { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },

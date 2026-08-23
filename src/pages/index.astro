@@ -21,6 +21,18 @@ import {
   siteNavigationSchema,
   breadcrumbSchema,
 } from '../lib/schema.ts';
+import { getReviewSummary } from '../lib/reviews-api';
+
+// ruling (2026-08-23, deferred by design): this runs at BUILD time, but
+// <Reviews server:defer> below renders the visible review cards at REQUEST
+// time — the two can disagree, so the JSON-LD rating can lag the visible
+// cards until the next rebuild. Accepted trade, not a bug to fix here:
+// before this branch the JSON-LD rating was a hardcoded fake 4.9/128 that
+// matched nothing at all, so real build-time data is strictly better even
+// with the lag, and Reviews was already a server island before this branch
+// (unrelated to fleet/reviews-from-BOS work). Unifying the two phases is a
+// separate, larger change — not part of this fix wave.
+const reviewSummary = await getReviewSummary();
 
 const title = 'SABUYGO | Premium Car Rental & Chauffeur Service Bangkok';
 const description =
@@ -76,7 +88,16 @@ const ogDescription =
   '@type': 'Organization',
   name: 'SABUYGO',
   url: 'https://sabuygo.com',
-  aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '128', bestRating: '5' },
+  ...(reviewSummary
+    ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: String(reviewSummary.average),
+          reviewCount: String(reviewSummary.count),
+          bestRating: '5',
+        },
+      }
+    : {}),
 })} />
 
 <script>
