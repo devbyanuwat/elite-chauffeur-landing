@@ -3,8 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Booking from '../components/sections/Booking.astro';
 import Stats from '../components/sections/Stats.astro';
-import IntroStory from '../components/sections/IntroStory.astro';
-import Routes from '../components/sections/Routes.astro';
+import Product from '../components/sections/Product.astro';
 import Fleet from '../components/sections/Fleet.astro';
 import How from '../components/sections/How.astro';
 import Why from '../components/sections/Why.astro';
@@ -22,6 +21,7 @@ import {
   breadcrumbSchema,
 } from '../lib/schema.ts';
 import { getReviewSummary } from '../lib/reviews-api';
+import { productCatalogSchema } from '../lib/product-data';
 
 // ruling (2026-08-23, deferred by design): this runs at BUILD time, but
 // <Reviews server:defer> below renders the visible review cards at REQUEST
@@ -45,6 +45,20 @@ const canonical = 'https://sabuygo.com';
 const ogTitle = 'SABUYGO | Premium Chauffeur Service Bangkok';
 const ogDescription =
   'บริการรถเช่าพร้อมคนขับระดับพรีเมียม กรุงเทพฯ มีประกันทุกคัน คนขับผ่านการคัดสรร ปลอดภัย 24 ชม.';
+
+// Page-level WebPage node — carries speakable for Product's answer paragraphs
+// (per Product.astro's mounting note: speakable belongs at page level; no other
+// schema on this page declares @type WebPage, verified — no collision).
+// Lives here, not schema.ts: schema.ts exports are all ported from the legacy
+// index.html and this node has no legacy counterpart.
+const webPageSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': 'https://sabuygo.com/#webpage',
+  url: 'https://sabuygo.com',
+  name: title,
+  speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.pd-answer'] },
+};
 ---
 <Base
   title={title}
@@ -52,15 +66,14 @@ const ogDescription =
   canonical={canonical}
   ogTitle={ogTitle}
   ogDescription={ogDescription}
-  jsonLd={[limousineServiceSchema, websiteSchema, siteNavigationSchema, breadcrumbSchema]}
+  jsonLd={[limousineServiceSchema, websiteSchema, siteNavigationSchema, breadcrumbSchema, productCatalogSchema, webPageSchema]}
 >
   <main id="main">
     <Hero />
     <Stats />
-    <IntroStory />
+    <Product />
     <Fleet />
     <How />
-    <Routes />
     <Why />
     <section class="block tm-section" id="reviews">
       <div class="wrap">

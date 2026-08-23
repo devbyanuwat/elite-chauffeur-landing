@@ -5,15 +5,15 @@ const stops = [
   // position 5, jumped to 1, walked 2→3→4 and only then came back to 6, i.e. a
   // progress rail that ran backwards. Order below now matches page order in
   // src/pages/index.astro exactly:
-  //   Hero → Stats → IntroStory(#services) → Fleet → How → Routes → Why →
+  //   Hero → Stats → Product(#product) → Fleet → How → Why →
   //   reviews → faq → booking
+  //   (IntroStory + Routes unmounted 2026-08-23 — Product replaces both)
   // (Hero carries no dot — the rail's first stop is the first section you can
   // meaningfully jump back to.)
   { id: 'stats', th: 'ตัวเลข', en: 'By the numbers' },
-  { id: 'services', th: 'เรื่องของเรา', en: 'Our story' },
+  { id: 'product', th: 'บริการ', en: 'Services' },
   { id: 'fleet', th: 'รถของเรา', en: 'Our fleet' },
   { id: 'how', th: 'วิธีจอง', en: 'How to book' },
-  { id: 'routes', th: 'เส้นทาง', en: 'Routes' },
   { id: 'why', th: 'ทำไมต้องเรา', en: 'Why us' },
   // fix round 2: reviews/faq/booking carry no data-chapter (not pinned
   // chapters), so they're never in collectChapters()'s output — but the

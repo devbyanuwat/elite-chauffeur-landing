@@ -433,7 +433,7 @@ describe('initMotion', () => {
 
     const ctaTrigger = scrollTriggerCreate.mock.calls
       .map((call) => call[0] as { trigger?: string; endTrigger?: string })
-      .find((config) => config.trigger === '#services' && config.endTrigger === '#booking');
+      .find((config) => config.trigger === '#product' && config.endTrigger === '#booking');
     expect(ctaTrigger).toBeDefined();
   });
 });

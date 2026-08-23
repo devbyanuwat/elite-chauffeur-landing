@@ -434,7 +434,7 @@ describe('initStickyCta', () => {
       end: string;
       onToggle: (self: { isActive: boolean }) => void;
     };
-    expect(config.trigger).toBe('#services');
+    expect(config.trigger).toBe('#product');
     expect(config.endTrigger).toBe('#booking');
     expect(config.start).toBe('top -30%');
     expect(config.end).toBe('top 70%');

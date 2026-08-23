@@ -68,7 +68,7 @@ const siteNavigationSchemaList = [
     '@context': 'https://schema.org',
     '@type': 'SiteNavigationElement',
     name: 'บริการ',
-    url: 'https://sabuygo.com/#services',
+    url: 'https://sabuygo.com/#product',
   },
   {
     '@context': 'https://schema.org',
@@ -110,7 +110,7 @@ export const breadcrumbSchema: Record<string, unknown> = {
       '@type': 'ListItem',
       position: 2,
       name: 'บริการ',
-      item: 'https://sabuygo.com/#services',
+      item: 'https://sabuygo.com/#product',
     },
     {
       '@type': 'ListItem',

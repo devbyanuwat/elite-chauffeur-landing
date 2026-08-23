@@ -274,8 +274,9 @@ export function applyMobileLite(root: ParentNode = document): void {
  * pointer-events all live in that component's CSS, gated on `.show`).
  *
  * Trigger is `#services` (IntroStory's chapter id) rather than `#intro` (the
- * mockup's id) — this codebase kept `#services` so Nav.astro's existing
- * `/#services` anchor still lands on the intro chapter (see IntroStory.astro).
+ * mockup's id) — this codebase — trigger is `#product`, the first
+ * scrollable section past the hero/stats (IntroStory was unmounted 2026-08-23;
+ * Product replaced it, see index.astro).
  * endTrigger is `#booking` (Booking.astro's section id), matching the
  * mockup's `bookend`.
  *
@@ -284,7 +285,7 @@ export function applyMobileLite(root: ParentNode = document): void {
  */
 export function initStickyCta(cta: HTMLElement): void {
   ScrollTrigger.create({
-    trigger: '#services',
+    trigger: '#product',
     start: 'top -30%',
     endTrigger: '#booking',
     end: 'top 70%',
