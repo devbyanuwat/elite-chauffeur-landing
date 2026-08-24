@@ -1,4 +1,11 @@
 ---
+import { getLandingContent } from '../lib/cms-api';
+
+// Landing CMS — เนื้อหานโยบายแก้จาก BOS (/v3/landing) เป็น HTML ก้อนเดียว
+// admin เท่านั้นที่เขียนได้ (session-gated) จึงยอมรับ set:html ตรงนี้
+const cmsAll = await getLandingContent();
+const cmsPrivacy = cmsAll?.['privacy'] as { bodyHtml?: string } | undefined;
+const cmsBody = typeof cmsPrivacy?.bodyHtml === 'string' && cmsPrivacy.bodyHtml.trim() ? cmsPrivacy.bodyHtml : null;
 import Base from '../layouts/Base.astro';
 
 // Ported verbatim from live privacy.html <head> (Task 8). Nav/Footer/head
@@ -55,6 +62,8 @@ const twitterDescription = 'นโยบายความเป็นส่ว�
 
       <!-- Content -->
       <main class="pp-content">
+        {cmsBody ? <Fragment set:html={cmsBody} /> : (
+        <Fragment>
 
         <!-- Intro -->
         <div class="pp-section" style="border-bottom-style: dashed;">
@@ -447,6 +456,8 @@ const twitterDescription = 'นโยบายความเป็นส่ว�
           <p>การที่ท่านยังคงใช้เว็บไซต์หลังจากการเปลี่ยนแปลงมีผล ถือว่าท่านรับทราบนโยบายที่ปรับปรุงแล้ว</p>
         </div>
 
+        </Fragment>
+        )}
       </main>
     </div>
   </div>
