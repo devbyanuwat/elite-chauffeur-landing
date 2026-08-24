@@ -1,9 +1,16 @@
 ---
+import { getLandingContent } from '../lib/cms-api';
+import { t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const contact = cmsAll?.['global-contact'] as { lineUrl?: string } | undefined;
+const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
+const TX = (cmsAll?.['cta'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 
-<a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="line-float" aria-label="ติดต่อผ่าน LINE">
+<a href={lineUrl} target="_blank" rel="noopener nofollow" class="line-float" aria-label="ติดต่อผ่าน LINE">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.64 2 10.12c0 4.01 3.55 7.37 8.35 8.01.32.07.77.21.88.49.1.25.07.64.03.89l-.14.86c-.04.25-.2.99.87.54 1.07-.45 5.76-3.39 7.86-5.81C21.2 13.4 22 11.86 22 10.12 22 5.64 17.52 2 12 2z"/></svg>
-  <span data-i18n="float.line">แชท LINE</span>
+  <span data-i18n="float.line">{t(TX, 'float.line', 'แชท LINE')}</span>
 </a>
 
 <style>

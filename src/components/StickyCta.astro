@@ -1,7 +1,12 @@
 ---
+import { getLandingContent } from '../lib/cms-api';
+import { t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['cta'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 
-<a id="sticky-cta" class="sticky-cta" href="#booking" data-i18n="sticky.cta">จองรถ</a>
+<a id="sticky-cta" class="sticky-cta" href="#booking" data-i18n="sticky.cta">{t(TX, 'sticky.cta', 'จองรถ')}</a>
 
 <style>
   /* Ported verbatim from mockups/pinned-editions.html .sticky-cta — visibility

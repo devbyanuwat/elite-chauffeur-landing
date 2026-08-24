@@ -1,5 +1,12 @@
 ---
-const stops = [
+import { getLandingContent } from '../lib/cms-api';
+import { isHidden, t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const NAVTX = (cmsAll?.['nav'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+// section ที่ปิดจาก BOS -> dot หายตาม (id บนหน้า = key ใน CMS ยกเว้น reviews ที่ key คือ static-reviews)
+const HIDE_KEY: Record<string, string> = { reviews: 'static-reviews' };
+const allStops = [
   // final-review Fix 1: `stats` used to sit fifth in this array while <Stats />
   // is the SECOND section in src/pages/index.astro — the active dot started at
   // position 5, jumped to 1, walked 2→3→4 and only then came back to 6, i.e. a
@@ -25,6 +32,7 @@ const stops = [
   { id: 'faq', th: 'คำถามบ่อย', en: 'FAQ' },
   { id: 'booking', th: 'จองรถ', en: 'Booking' },
 ];
+const stops = allStops.filter((st) => !isHidden(cmsAll, HIDE_KEY[st.id] ?? st.id));
 ---
 
 {/* final-review Fix 5: the nav's accessible name and every dot's name used to
@@ -41,7 +49,7 @@ const stops = [
     {stops.map((stop) => (
       <li>
         <a href={`#${stop.id}`} data-rail-dot>
-          <span class="sr-only" data-i18n={`rail.${stop.id}`}>{stop.th}</span>
+          <span class="sr-only" data-i18n={`rail.${stop.id}`}>{t(NAVTX, `rail.${stop.id}`, stop.th)}</span>
         </a>
       </li>
     ))}

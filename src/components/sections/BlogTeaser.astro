@@ -1,4 +1,9 @@
 ---
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['cta'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 import { getArticles } from '../../lib/blog-api';
 
 const all = await getArticles();
@@ -16,10 +21,10 @@ const articles = [...all]
     <div class="wrap">
       <div class="blog-head" data-reveal="mask">
         <div>
-          <span class="eyebrow" data-i18n="blogteaser.eyebrow">บทความ</span>
-          <h2 data-i18n="blogteaser.title">วางแผนทริปให้ง่ายขึ้น</h2>
+          <span class="eyebrow" data-i18n="blogteaser.eyebrow">{t(TX, 'blogteaser.eyebrow', 'บทความ')}</span>
+          <h2 data-i18n="blogteaser.title">{t(TX, 'blogteaser.title', 'วางแผนทริปให้ง่ายขึ้น')}</h2>
         </div>
-        <a class="blog-head-all" href="/blog/" data-i18n="blogteaser.all">ดูทั้งหมด →</a>
+        <a class="blog-head-all" href="/blog/" data-i18n="blogteaser.all">{t(TX, 'blogteaser.all', 'ดูทั้งหมด →')}</a>
       </div>
       <div class="blog-grid" data-reveal-group="90">
         {articles.map((a) => {

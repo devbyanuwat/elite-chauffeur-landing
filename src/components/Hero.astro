@@ -1,4 +1,15 @@
 ---
+import { getLandingContent } from '../lib/cms-api';
+import { t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['hero'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+const heroImages = (cmsAll?.['hero'] as { images?: { bg?: string; depthMap?: string } } | undefined)?.images;
+// depth pair ต้องมาคู่ — มีตัวเดียวถือว่าไม่ครบ ใช้ของเดิมทั้งคู่ (validator ฝั่ง BOS กันอยู่แล้ว ชั้นนี้กันเข็มขัด)
+const heroBg = heroImages?.bg && heroImages?.depthMap ? heroImages.bg : '/images/hero-bg.travelv1-baseline.webp';
+const heroDepth = heroImages?.bg && heroImages?.depthMap ? heroImages.depthMap : '/images/parallax/hero-travelv1/depth.webp';
+const contact = cmsAll?.['global-contact'] as { lineUrl?: string } | undefined;
+const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
 ---
 
 <section class="hero">
@@ -10,13 +21,13 @@
   <div
     class="hero-bg"
     data-depth-field
-    data-depth-color="/images/hero-bg.travelv1-baseline.webp"
-    data-depth-map="/images/parallax/hero-travelv1/depth.webp"
+    data-depth-color={heroBg}
+    data-depth-map={heroDepth}
     data-depth-strength="0.03"
   >
     <img
       class="hero-bg-photo"
-      src="/images/hero-bg.travelv1-baseline.webp"
+      src={heroBg}
       alt=""
       aria-hidden="true"
       width="1920"
@@ -27,19 +38,19 @@
   <div class="wrap wrap-wide hero-grid">
     <div class="hero-content">
       <h1>
-        <span data-i18n="hero.t1">เดินทาง</span>
-        <span class="underline" data-i18n="hero.t2">สบาย ๆ</span>
-        <span data-i18n="hero.t3">กับคนขับ</span>
-        <span class="accent" data-i18n="hero.t4">มืออาชีพ</span>
+        <span data-i18n="hero.t1">{t(TX, 'hero.t1', 'เดินทาง')}</span>
+        <span class="underline" data-i18n="hero.t2">{t(TX, 'hero.t2', 'สบาย ๆ')}</span>
+        <span data-i18n="hero.t3">{t(TX, 'hero.t3', 'กับคนขับ')}</span>
+        <span class="accent" data-i18n="hero.t4">{t(TX, 'hero.t4', 'มืออาชีพ')}</span>
       </h1>
       <div class="hero-actions">
-        <a href="#booking" class="btn btn-primary btn-lg" data-i18n="hero.cta1">จองรถ</a>
-        <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow" class="hero-line" data-i18n="hero.cta2">ปรึกษาผ่าน LINE</a>
+        <a href="#booking" class="btn btn-primary btn-lg" data-i18n="hero.cta1">{t(TX, 'hero.cta1', 'จองรถ')}</a>
+        <a href={lineUrl} target="_blank" rel="noopener nofollow" class="hero-line" data-i18n="hero.cta2">{t(TX, 'hero.cta2', 'ปรึกษาผ่าน LINE')}</a>
       </div>
       <div class="hero-trust">
         <div class="hero-trust-item">
           <b>4.9<span class="stars">&#9733;</span></b>
-          <span data-i18n="hero.trust1">จากลูกค้าจริง</span>
+          <span data-i18n="hero.trust1">{t(TX, 'hero.trust1', 'จากลูกค้าจริง')}</span>
         </div>
       </div>
     </div>

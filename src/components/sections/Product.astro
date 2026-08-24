@@ -34,7 +34,11 @@
  *      speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.pd-answer'] }
  */
 
-import { PRODUCTS, HEAD, CTA } from '../../lib/product-data';
+import { getLandingContent } from '../../lib/cms-api';
+import { mergedProduct } from '../../lib/product-cms';
+
+const cmsAll = await getLandingContent();
+const { products: PRODUCTS, head: HEAD, cta: CTA } = mergedProduct(cmsAll);
 ---
 
 <section class="block product" id="product">

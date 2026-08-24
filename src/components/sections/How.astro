@@ -1,4 +1,14 @@
 ---
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['how'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+const rawHowImgs = (cmsAll?.['how'] as { images?: unknown } | undefined)?.images;
+const HOW_IMGS =
+  Array.isArray(rawHowImgs) && rawHowImgs.length === 3 && rawHowImgs.every((v) => typeof v === 'string' && v.trim())
+    ? (rawHowImgs as string[])
+    : ['/images/parallax/hero/color.webp', '/images/parallax/airport/color.webp', '/images/parallax/trust/color.webp'];
 // chapter 2 · how (ports mockups/pinned-editions.html #how + its separate
 // .how-mobile block). data-chapter / data-chapter-len is editions.ts's own
 // contract — separate from pin.ts's data-pin/data-stage (old attributes
@@ -22,7 +32,7 @@ const STEPS = [
     dFallback: 'กรอกจุดรับ ปลายทาง วันเวลา — ไม่ถึงนาทีก็เสร็จ ไม่ต้องสมัครสมาชิก',
     tag: 'how.1.tag',
     tagFallback: 'ใช้เวลาไม่ถึง 1 นาที',
-    img: '/images/parallax/hero/color.webp',
+    img: HOW_IMGS[0],
   },
   {
     k: 'how.2.k',
@@ -33,7 +43,7 @@ const STEPS = [
     dFallback: 'ทีมงานยืนยันราคารวมทุกอย่างก่อนจอง ไม่มีบวกเพิ่มหน้างาน',
     tag: 'how.2.tag',
     tagFallback: 'ราคาล็อกตั้งแต่จอง',
-    img: '/images/parallax/airport/color.webp',
+    img: HOW_IMGS[1],
   },
   {
     k: 'how.3.k',
@@ -44,7 +54,7 @@ const STEPS = [
     dFallback: 'คนขับมารับตรงเวลา ติดตามการเดินทางได้ พักผ่อนได้เต็มที่ตลอดทาง',
     tag: 'how.3.tag',
     tagFallback: 'ตรงเวลา · มีประกันทุกคัน',
-    img: '/images/parallax/trust/color.webp',
+    img: HOW_IMGS[2],
   },
 ];
 ---
@@ -53,8 +63,8 @@ const STEPS = [
   <div class="how-viewport">
     <div class="ch-head">
       <div>
-        <span class="ch-eyebrow" data-i18n="how.eyebrow">ขั้นตอนง่าย ๆ</span>
-        <h2 class="ch-title" data-i18n="how.title">จองรถได้ใน 3 ขั้นตอน</h2>
+        <span class="ch-eyebrow" data-i18n="how.eyebrow">{t(TX, 'how.eyebrow', 'ขั้นตอนง่าย ๆ')}</span>
+        <h2 class="ch-title" data-i18n="how.title">{t(TX, 'how.title', 'จองรถได้ใน 3 ขั้นตอน')}</h2>
       </div>
     </div>
 
@@ -83,10 +93,10 @@ const STEPS = [
         <div class="line"></div>
         {STEPS.map((s, i) => (
           <div class={i === 0 ? 'how-step on' : 'how-step'}>
-            <div class="k" data-i18n={s.k}>{s.kFallback}</div>
-            <h3 data-i18n={s.t}>{s.tFallback}</h3>
-            <p data-i18n={s.d}>{s.dFallback}</p>
-            <span class="t" data-i18n={s.tag}>{s.tagFallback}</span>
+            <div class="k" data-i18n={s.k}>{t(TX, s.k, s.kFallback)}</div>
+            <h3 data-i18n={s.t}>{t(TX, s.t, s.tFallback)}</h3>
+            <p data-i18n={s.d}>{t(TX, s.d, s.dFallback)}</p>
+            <span class="t" data-i18n={s.tag}>{t(TX, s.tag, s.tagFallback)}</span>
           </div>
         ))}
       </div>
@@ -102,10 +112,10 @@ const STEPS = [
             <span class="hm-n">{i + 1}</span>
           </div>
           <div class="hm-body">
-            <div class="k" data-i18n={s.k}>{s.kFallback}</div>
-            <h3 data-i18n={s.t}>{s.tFallback}</h3>
-            <p data-i18n={s.d}>{s.dFallback}</p>
-            <span class="t" data-i18n={s.tag}>{s.tagFallback}</span>
+            <div class="k" data-i18n={s.k}>{t(TX, s.k, s.kFallback)}</div>
+            <h3 data-i18n={s.t}>{t(TX, s.t, s.tFallback)}</h3>
+            <p data-i18n={s.d}>{t(TX, s.d, s.dFallback)}</p>
+            <span class="t" data-i18n={s.tag}>{t(TX, s.tag, s.tagFallback)}</span>
           </div>
         </div>
       ))}

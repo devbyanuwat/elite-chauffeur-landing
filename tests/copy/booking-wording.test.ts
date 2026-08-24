@@ -29,8 +29,10 @@ describe('booking wording', () => {
     expect(en['book.submit']).toBe('Book now');
     expect(en['nav.cta']).toBe('Book now');
 
+    // หลัง Landing CMS: ปุ่มเป็น {t(TX, 'key', 'จองรถ')} — คำหลักยังต้องเป็น "จองรถ"
+    // ใน fallback ของซอร์สเสมอ (CMS หายเว็บก็ยังพูดคำเดิม)
     for (const file of ['src/components/Hero.astro', 'src/components/StickyCta.astro', 'src/components/sections/Cta.astro']) {
-      expect(readFileSync(file, 'utf8')).toContain('>จองรถ<');
+      expect(readFileSync(file, 'utf8')).toContain("'จองรถ'");
     }
   });
 });

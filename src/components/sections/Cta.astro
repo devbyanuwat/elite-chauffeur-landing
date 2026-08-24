@@ -1,14 +1,21 @@
 ---
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const contact = cmsAll?.['global-contact'] as { phone?: string } | undefined;
+const telHref = 'tel:' + (contact?.phone ?? '0623879159').replace(/^\+66/, '0');
+const TX = (cmsAll?.['cta'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 
 <section class="block" style="padding-top:0">
   <div class="wrap">
     <div class="cta-band" data-reveal-group="90">
-      <h2 data-i18n="cta.title">พร้อมออกเดินทางแล้วหรือยัง?</h2>
-      <p data-i18n="cta.sub">จองรถได้ทันที หรือทักหาเราทาง LINE ทีมงานพร้อมดูแลคุณตลอด 24 ชั่วโมง</p>
+      <h2 data-i18n="cta.title">{t(TX, 'cta.title', 'พร้อมออกเดินทางแล้วหรือยัง?')}</h2>
+      <p data-i18n="cta.sub">{t(TX, 'cta.sub', 'จองรถได้ทันที หรือทักหาเราทาง LINE ทีมงานพร้อมดูแลคุณตลอด 24 ชั่วโมง')}</p>
       <div class="cta-actions">
-        <a href="#booking" class="btn btn-primary btn-lg" data-i18n="cta.b1">จองรถ</a>
-        <a href="tel:0623879159" class="btn btn-ghost btn-lg" data-i18n="cta.b2">โทร 062-387-9159</a>
+        <a href="#booking" class="btn btn-primary btn-lg" data-i18n="cta.b1">{t(TX, 'cta.b1', 'จองรถ')}</a>
+        <a href={telHref} class="btn btn-ghost btn-lg" data-i18n="cta.b2">{t(TX, 'cta.b2', 'โทร 062-387-9159')}</a>
       </div>
     </div>
   </div>

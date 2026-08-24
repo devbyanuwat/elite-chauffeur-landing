@@ -17,6 +17,8 @@
 // setLang's normal [data-i18n] sweep keeps them localized regardless of which
 // car is on screen or when the toggle happens relative to a stage swap.
 import { getFleet } from '../../lib/fleet-api';
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
 import { mergeFleet, type Car, type Chip } from '../../lib/fleet-view';
 
 const SEAT7: Chip = { text: '7 ที่นั่ง', key: 'fl.chip.seat7' };
@@ -74,6 +76,8 @@ const CARS: Car[] = [
 
 // ดึงตอน build — คอมโพเนนต์นี้เป็น chapter ที่ GSAP pin ทำเป็น server island ไม่ได้
 // (buildFleetChapter อ่าน #fleet-data ตอน DOMContentLoaded ซึ่งมาก่อน island)
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['fleet'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 const cars = mergeFleet(await getFleet(), CARS);
 const first = cars[0];
 ---
@@ -82,8 +86,8 @@ const first = cars[0];
   <div class="fleet-viewport">
     <div class="ch-head">
       <div>
-        <span class="ch-eyebrow" data-i18n="fl.eyebrow">รถของเรา</span>
-        <h2 class="ch-title" data-i18n="fl.title">เลือกรถที่ใช่ สำหรับทุกการเดินทาง</h2>
+        <span class="ch-eyebrow" data-i18n="fl.eyebrow">{t(TX, 'fl.eyebrow', 'รถของเรา')}</span>
+        <h2 class="ch-title" data-i18n="fl.title">{t(TX, 'fl.title', 'เลือกรถที่ใช่ สำหรับทุกการเดินทาง')}</h2>
       </div>
       <div class="ch-eyebrow fleet-count">01 / 0{cars.length}</div>
     </div>
@@ -101,7 +105,7 @@ const first = cars[0];
         with `.on`; the fallback script at the bottom of this file does the
         same for the no-GSAP path. */}
     <nav class="rail" aria-labelledby="fleet-rail-label">
-      <span id="fleet-rail-label" class="sr-only" data-i18n="fl.rail">เลือกรถ</span>
+      <span id="fleet-rail-label" class="sr-only" data-i18n="fl.rail">{t(TX, 'fl.rail', 'เลือกรถ')}</span>
       {cars.map((c, i) => (
         <button type="button" class={i === 0 ? 'on' : ''} aria-pressed={i === 0 ? 'true' : 'false'}>
           <span class="idx">0{i + 1}</span><span class="bar"><i></i></span><span class="lbl">{c.ghost}</span>
@@ -172,13 +176,13 @@ const first = cars[0];
             or nothing; the CTA button below stays regardless of price. */}
         {first.price && (
           <>
-            <small data-i18n="fl.from">เริ่มต้น</small><br />
-            <b>{first.price}</b><small data-i18n="fl.day">/วัน</small>
+            <small data-i18n="fl.from">{t(TX, 'fl.from', 'เริ่มต้น')}</small><br />
+            <b>{first.price}</b><small data-i18n="fl.day">{t(TX, 'fl.day', '/วัน')}</small>
           </>
         )}
         <div>
           <button type="button" class="pick" data-vtype={first.vtype ?? undefined}>
-            <span data-i18n="fl.book">เลือกคันนี้</span> →
+            <span data-i18n="fl.book">{t(TX, 'fl.book', 'เลือกคันนี้')}</span> →
           </button>
         </div>
       </div>

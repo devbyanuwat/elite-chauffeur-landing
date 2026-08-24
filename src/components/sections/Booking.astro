@@ -1,4 +1,9 @@
 ---
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['booking'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 import BookingForm from '../BookingForm.astro';
 ---
 
@@ -9,8 +14,8 @@ import BookingForm from '../BookingForm.astro';
   <div class="wrap">
     <div class="booking">
       <div class="booking-head" data-reveal="mask">
-        <h2 data-i18n="book.title">จองรถ</h2>
-        <span data-i18n="book.sub">ตอบกลับไว</span>
+        <h2 data-i18n="book.title">{t(TX, 'book.title', 'จองรถ')}</h2>
+        <span data-i18n="book.sub">{t(TX, 'book.sub', 'ตอบกลับไว')}</span>
       </div>
       <BookingForm />
     </div>

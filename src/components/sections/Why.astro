@@ -1,34 +1,39 @@
 ---
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['why'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 
 <section class="block why chapter why-chapter" id="why" data-chapter="why" data-chapter-len="240">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow" data-i18n="wy.eyebrow">ทำไมต้อง SABUYGO</span>
-      <h2 data-i18n="wy.title">ความสบายใจ คือสิ่งที่เราส่งมอบ</h2>
-      <p data-i18n="wy.sub">ทุกการเดินทางผ่านมาตรฐานเดียวกัน เพื่อให้คุณวางใจได้ทุกครั้ง</p>
+      <span class="eyebrow" data-i18n="wy.eyebrow">{t(TX, 'wy.eyebrow', 'ทำไมต้อง SABUYGO')}</span>
+      <h2 data-i18n="wy.title">{t(TX, 'wy.title', 'ความสบายใจ คือสิ่งที่เราส่งมอบ')}</h2>
+      <p data-i18n="wy.sub">{t(TX, 'wy.sub', 'ทุกการเดินทางผ่านมาตรฐานเดียวกัน เพื่อให้คุณวางใจได้ทุกครั้ง')}</p>
     </div>
     <div class="why-grid">
       <div class="why-item">
         <div class="why-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <h3 data-i18n="wy.1.t">ประกันเต็มทุกคัน</h3>
-        <p data-i18n="wy.1.d">รถทุกคันในเครือต้องมีประกันชั้นหนึ่งและ พ.ร.บ. คุ้มครองผู้โดยสารและทรัพย์สิน เป็นเงื่อนไขบังคับก่อนเข้าร่วม</p>
+        <h3 data-i18n="wy.1.t">{t(TX, 'wy.1.t', 'ประกันเต็มทุกคัน')}</h3>
+        <p data-i18n="wy.1.d">{t(TX, 'wy.1.d', 'รถทุกคันในเครือต้องมีประกันชั้นหนึ่งและ พ.ร.บ. คุ้มครองผู้โดยสารและทรัพย์สิน เป็นเงื่อนไขบังคับก่อนเข้าร่วม')}</p>
       </div>
       <div class="why-item">
         <div class="why-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         </div>
-        <h3 data-i18n="wy.2.t">คนขับมืออาชีพ</h3>
-        <p data-i18n="wy.2.d">คัดกรองประวัติ สุภาพ ตรงเวลา ชำนาญเส้นทาง ดูแลคุณเหมือนคนสำคัญในทุกการเดินทาง</p>
+        <h3 data-i18n="wy.2.t">{t(TX, 'wy.2.t', 'คนขับมืออาชีพ')}</h3>
+        <p data-i18n="wy.2.d">{t(TX, 'wy.2.d', 'คัดกรองประวัติ สุภาพ ตรงเวลา ชำนาญเส้นทาง ดูแลคุณเหมือนคนสำคัญในทุกการเดินทาง')}</p>
       </div>
       <div class="why-item">
         <div class="why-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
-        <h3 data-i18n="wy.3.t">ราคาโปร่งใส</h3>
-        <p data-i18n="wy.3.d">รู้ราคาชัดเจนตั้งแต่ก่อนจอง ไม่มีค่าใช้จ่ายแอบแฝง ไม่บวกเพิ่มช่วงเวลาเร่งด่วน</p>
+        <h3 data-i18n="wy.3.t">{t(TX, 'wy.3.t', 'ราคาโปร่งใส')}</h3>
+        <p data-i18n="wy.3.d">{t(TX, 'wy.3.d', 'รู้ราคาชัดเจนตั้งแต่ก่อนจอง ไม่มีค่าใช้จ่ายแอบแฝง ไม่บวกเพิ่มช่วงเวลาเร่งด่วน')}</p>
       </div>
     </div>
   </div>

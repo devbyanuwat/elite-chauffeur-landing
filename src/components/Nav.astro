@@ -1,4 +1,9 @@
 ---
+import { getLandingContent } from '../lib/cms-api';
+import { t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['nav'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 /**
  * Final-review B2 fix — this Nav is shared verbatim across every page
  * (homepage + 4 SEO subpages + privacy), rendered once by Base.astro. The
@@ -27,12 +32,12 @@ const { brandHref = '#', ctaHref = '#booking' } = Astro.props;
     </a>
 
     <ul class="nav-links">
-      <li><a href="/#product" data-i18n="nav.services">บริการ</a></li>
-      <li><a href="/#fleet" data-i18n="nav.fleet">รถของเรา</a></li>
-      <li><a href="/#reviews" data-i18n="nav.reviews">รีวิว</a></li>
-      <li><a href="/#how" data-i18n="nav.how">วิธีจอง</a></li>
-      <li><a href="/#faq" data-i18n="nav.faq">คำถามบ่อย</a></li>
-      <li><a href="/blog/" data-i18n="nav.blog">บทความ</a></li>
+      <li><a href="/#product" data-i18n="nav.services">{t(TX, 'nav.services', 'บริการ')}</a></li>
+      <li><a href="/#fleet" data-i18n="nav.fleet">{t(TX, 'nav.fleet', 'รถของเรา')}</a></li>
+      <li><a href="/#reviews" data-i18n="nav.reviews">{t(TX, 'nav.reviews', 'รีวิว')}</a></li>
+      <li><a href="/#how" data-i18n="nav.how">{t(TX, 'nav.how', 'วิธีจอง')}</a></li>
+      <li><a href="/#faq" data-i18n="nav.faq">{t(TX, 'nav.faq', 'คำถามบ่อย')}</a></li>
+      <li><a href="/blog/" data-i18n="nav.blog">{t(TX, 'nav.blog', 'บทความ')}</a></li>
     </ul>
 
     <div class="nav-right">
@@ -40,7 +45,7 @@ const { brandHref = '#', ctaHref = '#booking' } = Astro.props;
         <button type="button" data-lang="th" aria-pressed="true">TH</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
-      <a href={ctaHref} class="btn btn-primary nav-cta" data-i18n="nav.cta">จองรถ</a>
+      <a href={ctaHref} class="btn btn-primary nav-cta" data-i18n="nav.cta">{t(TX, 'nav.cta', 'จองรถ')}</a>
       <button class="nav-toggle" aria-label="เปิดเมนู" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>

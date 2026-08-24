@@ -1,4 +1,14 @@
 ---
+import { getLandingContent } from '../lib/cms-api';
+import { t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const contact = cmsAll?.['global-contact'] as { phone?: string; phoneDisplay?: string; lineId?: string; lineUrl?: string } | undefined;
+const telHref = 'tel:' + (contact?.phone ?? '0623879159').replace(/^\+66/, '0');
+const phoneDisplay = contact?.phoneDisplay ?? '062-387-9159';
+const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
+const lineId = contact?.lineId ?? '@031cvnva';
+const TX = (cmsAll?.['footer'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 
 <footer id="contact">
@@ -9,38 +19,38 @@
           <img src="/images/sabuygo-logo.webp" alt="SABUYGO" width="44" height="44" />
           <span class="nav-wordmark">SABUYGO</span>
         </div>
-        <p data-i18n="ft.tag">บริการรถพร้อมคนขับมืออาชีพ รับส่งสนามบิน เดินทางธุรกิจ และเช่ารถเที่ยวทั่วไทย ด้วยมาตรฐานความปลอดภัยและราคาที่โปร่งใส</p>
+        <p data-i18n="ft.tag">{t(TX, 'ft.tag', 'บริการรถพร้อมคนขับมืออาชีพ รับส่งสนามบิน เดินทางธุรกิจ และเช่ารถเที่ยวทั่วไทย ด้วยมาตรฐานความปลอดภัยและราคาที่โปร่งใส')}</p>
       </div>
       <div class="footer-col">
-        <h4 data-i18n="ft.services">บริการ</h4>
+        <h4 data-i18n="ft.services">{t(TX, 'ft.services', 'บริการ')}</h4>
         <ul>
-          <li><a href="/#product" data-i18n="srv.1.t">รับส่งสนามบิน</a></li>
-          <li><a href="/#product" data-i18n="srv.2.t">เดินทางธุรกิจ</a></li>
-          <li><a href="/#fleet" data-i18n="srv.3.t">เช่ารถเที่ยว พร้อมคนขับ</a></li>
+          <li><a href="/#product" data-i18n="srv.1.t">{t(TX, 'srv.1.t', 'รับส่งสนามบิน')}</a></li>
+          <li><a href="/#product" data-i18n="srv.2.t">{t(TX, 'srv.2.t', 'เดินทางธุรกิจ')}</a></li>
+          <li><a href="/#fleet" data-i18n="srv.3.t">{t(TX, 'srv.3.t', 'เช่ารถเที่ยว พร้อมคนขับ')}</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4 data-i18n="ft.company">ข้อมูล</h4>
+        <h4 data-i18n="ft.company">{t(TX, 'ft.company', 'ข้อมูล')}</h4>
         <ul>
-          <li><a href="/#faq" data-i18n="nav.faq">คำถามบ่อย</a></li>
-          <li><a href="/#how" data-i18n="nav.how">วิธีจอง</a></li>
-          <li><a href="/#why" data-i18n="ft.why">ทำไมต้องเรา</a></li>
-          <li><a href="/blog/" data-i18n="nav.blog">บทความ</a></li>
-          <li><a href="/privacy/" data-i18n="ft.privacy">นโยบายความเป็นส่วนตัว</a></li>
+          <li><a href="/#faq" data-i18n="nav.faq">{t(TX, 'nav.faq', 'คำถามบ่อย')}</a></li>
+          <li><a href="/#how" data-i18n="nav.how">{t(TX, 'nav.how', 'วิธีจอง')}</a></li>
+          <li><a href="/#why" data-i18n="ft.why">{t(TX, 'ft.why', 'ทำไมต้องเรา')}</a></li>
+          <li><a href="/blog/" data-i18n="nav.blog">{t(TX, 'nav.blog', 'บทความ')}</a></li>
+          <li><a href="/privacy/" data-i18n="ft.privacy">{t(TX, 'ft.privacy', 'นโยบายความเป็นส่วนตัว')}</a></li>
         </ul>
       </div>
       <div class="footer-col footer-contact">
-        <h4 data-i18n="ft.contact">ติดต่อเรา</h4>
+        <h4 data-i18n="ft.contact">{t(TX, 'ft.contact', 'ติดต่อเรา')}</h4>
         <ul>
-          <li><strong><a href="tel:0623879159">062-387-9159</a></strong></li>
-          <li><a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">LINE @031cvnva</a></li>
-          <li><span data-i18n="ft.hours">เปิดบริการทุกวัน 24 ชม.</span></li>
+          <li><strong><a href={telHref}>{phoneDisplay}</a></strong></li>
+          <li><a href={lineUrl} target="_blank" rel="noopener nofollow">LINE {lineId}</a></li>
+          <li><span data-i18n="ft.hours">{t(TX, 'ft.hours', 'เปิดบริการทุกวัน 24 ชม.')}</span></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 SABUYGO</span>
-      <span data-i18n="ft.rights">สงวนลิขสิทธิ์</span>
+      <span data-i18n="ft.rights">{t(TX, 'ft.rights', 'สงวนลิขสิทธิ์')}</span>
     </div>
   </div>
 </footer>

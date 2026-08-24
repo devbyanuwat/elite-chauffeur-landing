@@ -1,36 +1,41 @@
 ---
+import { getLandingContent } from '../../lib/cms-api';
+import { t } from '../../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const TX = (cmsAll?.['faq'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 
 <section class="block" id="faq">
   <div class="wrap">
     <div class="section-head center" data-reveal="mask">
-      <span class="eyebrow" data-i18n="fq.eyebrow">คำถามที่พบบ่อย</span>
-      <h2 data-i18n="fq.title">เรื่องที่ลูกค้าถามบ่อย</h2>
+      <span class="eyebrow" data-i18n="fq.eyebrow">{t(TX, 'fq.eyebrow', 'คำถามที่พบบ่อย')}</span>
+      <h2 data-i18n="fq.title">{t(TX, 'fq.title', 'เรื่องที่ลูกค้าถามบ่อย')}</h2>
     </div>
     <div class="faq-list" data-reveal-group="70">
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span data-i18n="fq.1.q">จองล่วงหน้ากี่วัน?</span><span class="plus" aria-hidden="true"></span>
+          <span data-i18n="fq.1.q">{t(TX, 'fq.1.q', 'จองล่วงหน้ากี่วัน?')}</span><span class="plus" aria-hidden="true"></span>
         </button>
-        <div class="faq-a"><p data-i18n="fq.1.a">แนะนำจองล่วงหน้าอย่างน้อย 1 วันเพื่อความแน่นอน แต่กรณีเร่งด่วนสามารถทักผ่าน LINE เพื่อเช็ครถว่างได้ตลอด 24 ชั่วโมง</p></div>
+        <div class="faq-a"><p data-i18n="fq.1.a">{t(TX, 'fq.1.a', 'แนะนำจองล่วงหน้าอย่างน้อย 1 วันเพื่อความแน่นอน แต่กรณีเร่งด่วนสามารถทักผ่าน LINE เพื่อเช็ครถว่างได้ตลอด 24 ชั่วโมง')}</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span data-i18n="fq.2.q">ราคารวมอะไรบ้าง?</span><span class="plus" aria-hidden="true"></span>
+          <span data-i18n="fq.2.q">{t(TX, 'fq.2.q', 'ราคารวมอะไรบ้าง?')}</span><span class="plus" aria-hidden="true"></span>
         </button>
-        <div class="faq-a"><p data-i18n="fq.2.a">ราคารวมค่ารถ คนขับ และน้ำมันตามแพ็กเกจ ระบุชัดเจนก่อนยืนยันการจอง ค่าทางด่วนและที่จอดพิเศษจะแจ้งให้ทราบล่วงหน้า ไม่มีบวกเพิ่มทีหลัง</p></div>
+        <div class="faq-a"><p data-i18n="fq.2.a">{t(TX, 'fq.2.a', 'ราคารวมค่ารถ คนขับ และน้ำมันตามแพ็กเกจ ระบุชัดเจนก่อนยืนยันการจอง ค่าทางด่วนและที่จอดพิเศษจะแจ้งให้ทราบล่วงหน้า ไม่มีบวกเพิ่มทีหลัง')}</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span data-i18n="fq.3.q">ชำระเงินอย่างไร?</span><span class="plus" aria-hidden="true"></span>
+          <span data-i18n="fq.3.q">{t(TX, 'fq.3.q', 'ชำระเงินอย่างไร?')}</span><span class="plus" aria-hidden="true"></span>
         </button>
-        <div class="faq-a"><p data-i18n="fq.3.a">รองรับโอนผ่านธนาคารและพร้อมเพย์ ทีมงานจะส่งรายละเอียดการชำระเงินหลังยืนยันการจอง</p></div>
+        <div class="faq-a"><p data-i18n="fq.3.a">{t(TX, 'fq.3.a', 'รองรับโอนผ่านธนาคารและพร้อมเพย์ ทีมงานจะส่งรายละเอียดการชำระเงินหลังยืนยันการจอง')}</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span data-i18n="fq.4.q">ให้บริการพื้นที่ไหนบ้าง?</span><span class="plus" aria-hidden="true"></span>
+          <span data-i18n="fq.4.q">{t(TX, 'fq.4.q', 'ให้บริการพื้นที่ไหนบ้าง?')}</span><span class="plus" aria-hidden="true"></span>
         </button>
-        <div class="faq-a"><p data-i18n="fq.4.a">ให้บริการกรุงเทพฯ ปริมณฑล และเดินทางต่างจังหวัดทั่วไทย เส้นทางยอดนิยมเช่น พัทยา หัวหิน รวมถึงรับส่งสนามบินสุวรรณภูมิและดอนเมือง</p></div>
+        <div class="faq-a"><p data-i18n="fq.4.a">{t(TX, 'fq.4.a', 'ให้บริการกรุงเทพฯ ปริมณฑล และเดินทางต่างจังหวัดทั่วไทย เส้นทางยอดนิยมเช่น พัทยา หัวหิน รวมถึงรับส่งสนามบินสุวรรณภูมิและดอนเมือง')}</p></div>
       </div>
     </div>
   </div>
