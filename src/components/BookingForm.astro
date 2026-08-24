@@ -1,5 +1,35 @@
 ---
 import ServiceTabs from './ServiceTabs.astro';
+import { getLandingContent } from '../lib/cms-api';
+import { t } from '../lib/cms-merge';
+
+const cmsAll = await getLandingContent();
+const BTX = (cmsAll?.['booking'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+const contact = cmsAll?.['global-contact'] as { lineId?: string; lineUrl?: string } | undefined;
+const lineId = contact?.lineId ?? '@031cvnva';
+const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
+// endpoint จาก env ก่อน (dev ชี้เครื่องอื่นได้) ไม่งั้นค่า production เดิม
+const bosApi = (import.meta.env.BOS_PUBLIC_API ?? 'https://bos.sabuygo.com').replace(/\/+$/, '') + '/api/public/inquiry';
+
+// ข้อความที่ inline script ใช้ — เก็บเป็น {th,en} คู่ ส่งลงหน้าเป็น JSON ให้สคริปต์อ่าน
+// แก้ได้จาก /v3/landing (section ฟอร์มจอง key พิเศษ book.js.*)
+function pair(key: string, th: string, en: string): { th: string; en: string } {
+  const v = BTX?.[key];
+  return v && typeof v.th === 'string' && v.th.trim() ? { th: v.th, en: v.en || en } : { th, en };
+}
+const BOOKING_JS = {
+  sending: pair('book.js.sending', 'กำลังส่ง...', 'Sending...'),
+  successPre: pair('book.js.success1', 'รับคำขอแล้ว', 'Thanks! We received your request'),
+  successPost: pair(
+    'book.js.success2',
+    ' ทีมงานจะติดต่อกลับโดยเร็ว หรือทักด่วนทาง ',
+    '. Our team will reply shortly. Faster via ',
+  ),
+  fail: pair('book.js.fail', 'ส่งไม่สำเร็จ ลองใหม่หรือทัก LINE ', 'Could not send — please try again or add LINE '),
+  lineId,
+  lineUrl,
+  api: bosApi,
+};
 ---
 
 <form id="bookingForm" novalidate>
@@ -72,6 +102,7 @@ import ServiceTabs from './ServiceTabs.astro';
        afterwards — it is not shown instantly. -->
   <p class="booking-note" data-i18n="book.note">ส่งข้อมูลฟรี · ทีมงานยืนยันราคาให้ภายในไม่กี่นาที</p>
   <div class="booking-success" id="bookingSuccess" role="status" aria-live="polite"></div>
+  <script type="application/json" id="booking-i18n" set:html={JSON.stringify(BOOKING_JS)} />
 </form>
 
 <style>
@@ -302,7 +333,19 @@ import ServiceTabs from './ServiceTabs.astro';
     var success = document.getElementById('bookingSuccess')!;
     var svcInput = document.getElementById('serviceType') as HTMLInputElement;
     var vtypeInput = document.getElementById('vehicleType') as HTMLInputElement;
-    var BOS_API = 'https://bos.sabuygo.com/api/public/inquiry';
+    // ข้อความ/ปลายทางมาจาก #booking-i18n (render จาก CMS + env) — แก้ได้จาก BOS
+    var bookingCfgEl = document.getElementById('booking-i18n');
+    var BOOKING_CFG: {
+      sending: { th: string; en: string };
+      successPre: { th: string; en: string };
+      successPost: { th: string; en: string };
+      fail: { th: string; en: string };
+      lineId: string; lineUrl: string; api: string;
+    } = bookingCfgEl ? JSON.parse(bookingCfgEl.textContent || '{}') : null;
+    var BOS_API = (BOOKING_CFG && BOOKING_CFG.api) || 'https://bos.sabuygo.com/api/public/inquiry';
+    function lineLink(): string {
+      return '<a href="' + BOOKING_CFG.lineUrl + '" target="_blank" rel="noopener nofollow">LINE ' + BOOKING_CFG.lineId + '</a>';
+    }
     // UI keys -> canonical service codes (src/lib/service-types.ts ฝั่ง BOS)
     var SVC_API: Record<string, string> = { airport: 'one_way', rental: 'hourly_charter', b2b: 'wait_return', fullday: 'daily_charter' };
     // ส่งค่าไทยอ่านง่ายให้ทีมแอดมิน; 'any' = ไม่ระบุ (ไม่ส่ง field)
@@ -375,7 +418,7 @@ import ServiceTabs from './ServiceTabs.astro';
       var errBox = document.getElementById('bookingError');
       var btnLabel = submitBtn.innerHTML;
       submitBtn.disabled = true;
-      submitBtn.textContent = en ? 'Sending...' : 'กำลังส่ง...';
+      submitBtn.textContent = en ? BOOKING_CFG.sending.en : BOOKING_CFG.sending.th;
       if (errBox) errBox.classList.remove('show');
 
       fetch(BOS_API, {
@@ -388,16 +431,14 @@ import ServiceTabs from './ServiceTabs.astro';
         if (!r.ok) throw new Error((r.data && r.data.error) || '');
         var num = (r.data && r.data.inquiryNumber) ? ' (' + r.data.inquiryNumber + ')' : '';
         success.innerHTML = en
-          ? 'Thanks! We received your request' + num +
-          '. Our team will reply shortly. Faster via <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>.'
-          : 'รับคำขอแล้ว' + num +
-          ' ทีมงานจะติดต่อกลับโดยเร็ว หรือทักด่วนทาง <a href="https://line.me/R/ti/p/@031cvnva" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>';
+          ? BOOKING_CFG.successPre.en + num + BOOKING_CFG.successPost.en + lineLink() + '.'
+          : BOOKING_CFG.successPre.th + num + BOOKING_CFG.successPost.th + lineLink();
         success.classList.add('show');
         success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }).catch(function (err) {
         if (errBox) {
           errBox.textContent = (err && err.message) ||
-            (en ? 'Could not send — please try again or add LINE @031cvnva' : 'ส่งไม่สำเร็จ ลองใหม่หรือทัก LINE @031cvnva');
+            (en ? BOOKING_CFG.fail.en + BOOKING_CFG.lineId : BOOKING_CFG.fail.th + BOOKING_CFG.lineId);
           errBox.classList.add('show');
         }
       }).then(function () {
