@@ -1,5 +1,8 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { t } from '../../lib/cms-merge';
+import { getLandingContent } from '../../lib/cms-api';
+import { airportsSchema } from '../../lib/content-schemas';
 import Base from '../../layouts/Base.astro';
 import BookingForm from '../../components/BookingForm.astro';
 import { getFleet } from '../../lib/fleet-api';
@@ -23,7 +26,16 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const d = entry.data;
+// Landing CMS override — เนื้อหาจาก BOS (key "airport:<slug>") ต้องผ่าน zod เดียวกับ yaml
+// ผิดโครงตกกลับ yaml เดิม + log — admin กรอกผิด build ไม่มีวันพัง
+const cmsAll = await getLandingContent();
+const CTX = (cmsAll?.['chrome-subpage'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+const cmsOverride = cmsAll?.[`airport:${entry.id}`];
+const parsed = cmsOverride ? airportsSchema.safeParse(cmsOverride) : null;
+if (cmsOverride && parsed && !parsed.success) {
+  console.error(`[cms] airport:${entry.id} override fails schema, using yaml`, parsed.error.issues[0]);
+}
+const d = parsed && parsed.success ? parsed.data : entry.data;
 
 // ---- JSON-LD, built per-page from the collection entry (ported structure
 // from the live <script type="application/ld+json"> blocks; only the values
@@ -201,7 +213,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
       <div class="wrap hero-inner">
         <div class="hero-text">
           <div class="breadcrumb">
-            <a href="/" data-i18n="crumb.home">หน้าแรก</a>
+            <a href="/" data-i18n="crumb.home">{t(CTX, 'chrome.home', 'หน้าแรก')}</a>
             <span> / </span>
             <span data-i18n="crumb.current">{d.breadcrumbLabel}</span>
           </div>
@@ -241,7 +253,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
     <section class="section section-alt block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Fixed Rates</span>
+          <span class="eyebrow">{t(CTX, 'chrome.fixedRates', 'Fixed Rates')}</span>
           <h2 data-i18n="price.h2">ราคาคงที่ ชัดเจนตั้งแต่ต้น</h2>
           <p data-i18n="price.desc">{d.priceDesc}</p>
         </div>
@@ -279,8 +291,8 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
     <section class="section block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Service Scope</span>
-          <h2 data-i18n="inc.h2">ทุกการจองรวม</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.serviceScope', 'Service Scope')}</span>
+          <h2 data-i18n="inc.h2">{t(CTX, 'chrome.included', 'ทุกการจองรวม')}</h2>
           <p data-i18n="inc.desc">{d.includedDesc}</p>
         </div>
 
@@ -301,7 +313,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
     <section class="section section-alt block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Vehicle Options</span>
+          <span class="eyebrow">{t(CTX, 'chrome.vehicleOptions', 'Vehicle Options')}</span>
           <h2 data-i18n="fleet.h2">เลือกรถตามความต้องการ</h2>
           {/* fix-review MINOR (2026-08-23): used to say "4 ประเภทรถ" — BOS
               can serve any number of price classes (today: 3), so a hardcoded
@@ -336,8 +348,8 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
     <section class="section block">
       <div class="wrap section-inner faq-inner">
         <div class="section-head center reveal">
-          <span class="eyebrow">FAQ</span>
-          <h2 data-i18n="faq.h2">คำถามที่พบบ่อย</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.faqEyebrow', 'FAQ')}</span>
+          <h2 data-i18n="faq.h2">{t(CTX, 'chrome.faqTitle', 'คำถามที่พบบ่อย')}</h2>
           <p data-i18n="faq.desc">สงสัยเรื่องการจอง ราคา หรือบริการ? ดูคำตอบด้านล่าง — ถ้ายังไม่พบคำตอบ LINE หาเราได้</p>
         </div>
 

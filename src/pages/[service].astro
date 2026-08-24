@@ -1,5 +1,8 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { t } from '../lib/cms-merge';
+import { getLandingContent } from '../lib/cms-api';
+import { servicesSchema } from '../lib/content-schemas';
 import Base from '../layouts/Base.astro';
 import BookingForm from '../components/BookingForm.astro';
 
@@ -23,7 +26,16 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const d = entry.data;
+// Landing CMS override — เนื้อหาจาก BOS (key "service:<slug>") ต้องผ่าน zod เดียวกับ yaml
+// ผิดโครงตกกลับ yaml เดิม + log — admin กรอกผิด build ไม่มีวันพัง
+const cmsAll = await getLandingContent();
+const CTX = (cmsAll?.['chrome-subpage'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+const cmsOverride = cmsAll?.[`service:${entry.id}`];
+const parsed = cmsOverride ? servicesSchema.safeParse(cmsOverride) : null;
+if (cmsOverride && parsed && !parsed.success) {
+  console.error(`[cms] service:${entry.id} override fails schema, using yaml`, parsed.error.issues[0]);
+}
+const d = parsed && parsed.success ? parsed.data : entry.data;
 
 const serviceSchema: Record<string, unknown> = {
   '@context': 'https://schema.org',
@@ -99,7 +111,7 @@ const ICONS: Record<string, string> = {
       <div class="wrap hero-inner">
         <div class="hero-text">
           <div class="breadcrumb">
-            <a href="/" data-i18n="crumb.home">หน้าแรก</a>
+            <a href="/" data-i18n="crumb.home">{t(CTX, 'chrome.home', 'หน้าแรก')}</a>
             <span> / </span>
             <span data-i18n="crumb.current">{d.breadcrumbName}</span>
           </div>
@@ -126,7 +138,7 @@ const ICONS: Record<string, string> = {
     <section class="section section-alt block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Fixed Rates</span>
+          <span class="eyebrow">{t(CTX, 'chrome.fixedRates', 'Fixed Rates')}</span>
           <h2 data-i18n="price.h2">{d.priceHeading}</h2>
           <p data-i18n="price.desc">{d.priceDesc}</p>
         </div>
@@ -154,7 +166,7 @@ const ICONS: Record<string, string> = {
                     row.cols.map((cell, i) => (
                       <td data-label={d.priceCols[i]}>
                         {cell === null ? (
-                          <span class="price-unavailable" data-i18n="price.ask">สอบถาม</span>
+                          <span class="price-unavailable" data-i18n="price.ask">{t(CTX, 'chrome.ask', 'สอบถาม')}</span>
                         ) : (
                           <>
                             <span class="price-currency">฿</span>
@@ -176,8 +188,8 @@ const ICONS: Record<string, string> = {
     <section class="section block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Service Scope</span>
-          <h2 data-i18n="inc.h2">ทุกการจองรวม</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.serviceScope', 'Service Scope')}</span>
+          <h2 data-i18n="inc.h2">{t(CTX, 'chrome.included', 'ทุกการจองรวม')}</h2>
           <p data-i18n="inc.desc">{d.includedDesc}</p>
         </div>
 
@@ -208,8 +220,8 @@ const ICONS: Record<string, string> = {
     <section class="section block">
       <div class="wrap section-inner faq-inner">
         <div class="section-head center reveal">
-          <span class="eyebrow">FAQ</span>
-          <h2 data-i18n="faq.h2">คำถามที่พบบ่อย</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.faqEyebrow', 'FAQ')}</span>
+          <h2 data-i18n="faq.h2">{t(CTX, 'chrome.faqTitle', 'คำถามที่พบบ่อย')}</h2>
           <p data-i18n="faq.desc">สงสัยเรื่องราคาหรือบริการ? ดูคำตอบด้านล่าง</p>
         </div>
 
@@ -227,7 +239,7 @@ const ICONS: Record<string, string> = {
     </section>
 
     <section class="cta-footer">
-      <h2>พร้อมออกเดินทาง?<br />เลือกบริการที่ใช่</h2>
+      <h2 set:html={t(CTX, 'chrome.ctaServices', 'พร้อมออกเดินทาง?<br />เลือกบริการที่ใช่')} />
       <p data-i18n="cta.desc">กรอกฟอร์มด้านบนหรือ LINE หาเรา — ทีมงานตอบกลับใน 15 นาที</p>
       <div class="actions">
         <a href="#bookingForm" class="btn btn-primary btn-lg" data-i18n="cta.book">กรอกฟอร์มจอง</a>

@@ -1,5 +1,8 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { t } from '../../lib/cms-merge';
+import { getLandingContent } from '../../lib/cms-api';
+import { routesSchema } from '../../lib/content-schemas';
 import Base from '../../layouts/Base.astro';
 import BookingForm from '../../components/BookingForm.astro';
 
@@ -22,7 +25,16 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const d = entry.data;
+// Landing CMS override — เนื้อหาจาก BOS (key "route:<slug>") ต้องผ่าน zod เดียวกับ yaml
+// ผิดโครงตกกลับ yaml เดิม + log — admin กรอกผิด build ไม่มีวันพัง
+const cmsAll = await getLandingContent();
+const CTX = (cmsAll?.['chrome-subpage'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
+const cmsOverride = cmsAll?.[`route:${entry.id}`];
+const parsed = cmsOverride ? routesSchema.safeParse(cmsOverride) : null;
+if (cmsOverride && parsed && !parsed.success) {
+  console.error(`[cms] route:${entry.id} override fails schema, using yaml`, parsed.error.issues[0]);
+}
+const d = parsed && parsed.success ? parsed.data : entry.data;
 
 // ---- JSON-LD, built per-page from the collection entry (ported structure
 // from the live <script type="application/ld+json"> blocks). ----
@@ -130,7 +142,7 @@ function fmt(n: number | null): string {
       <div class="wrap hero-inner">
         <div class="hero-text">
           <div class="breadcrumb">
-            <a href="/" data-i18n="crumb.home">หน้าแรก</a>
+            <a href="/" data-i18n="crumb.home">{t(CTX, 'chrome.home', 'หน้าแรก')}</a>
             <span> / </span>
             <span data-i18n="crumb.current">{d.breadcrumbName}</span>
           </div>
@@ -167,7 +179,7 @@ function fmt(n: number | null): string {
     <section class="section section-alt block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Fixed Rates</span>
+          <span class="eyebrow">{t(CTX, 'chrome.fixedRates', 'Fixed Rates')}</span>
           <h2 data-i18n="price.h2">ราคาคงที่ ตามประเภทการเดินทาง</h2>
           <p data-i18n="price.desc">{d.priceDesc}</p>
         </div>
@@ -219,8 +231,8 @@ function fmt(n: number | null): string {
     <section class="section block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">Service Scope</span>
-          <h2 data-i18n="inc.h2">ทุกการจองรวม</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.serviceScope', 'Service Scope')}</span>
+          <h2 data-i18n="inc.h2">{t(CTX, 'chrome.included', 'ทุกการจองรวม')}</h2>
           <p data-i18n="inc.desc">{d.includedDesc}</p>
         </div>
 
@@ -243,7 +255,7 @@ function fmt(n: number | null): string {
         <section class="section block">
           <div class="wrap section-inner">
             <div class="section-head reveal">
-              <span class="eyebrow">Other Routes</span>
+              <span class="eyebrow">{t(CTX, 'chrome.otherRoutes', 'Other Routes')}</span>
               <h2>{d.extraRatesTable.heading}</h2>
               <p>{d.extraRatesTable.desc}</p>
             </div>
@@ -273,7 +285,7 @@ function fmt(n: number | null): string {
                       </td>
                       <td data-label="Sedan">
                         {row.sedan === null ? (
-                          <span class="price-unavailable">สอบถาม</span>
+                          <span class="price-unavailable">{t(CTX, 'chrome.ask', 'สอบถาม')}</span>
                         ) : (
                           <>
                             <span class="price-currency">฿</span>
@@ -283,7 +295,7 @@ function fmt(n: number | null): string {
                       </td>
                       <td data-label="SUV / MPV">
                         {row.suv === null ? (
-                          <span class="price-unavailable">สอบถาม</span>
+                          <span class="price-unavailable">{t(CTX, 'chrome.ask', 'สอบถาม')}</span>
                         ) : (
                           <>
                             <span class="price-currency">฿</span>
@@ -293,7 +305,7 @@ function fmt(n: number | null): string {
                       </td>
                       <td data-label="VAN">
                         {row.van === null ? (
-                          <span class="price-unavailable">สอบถาม</span>
+                          <span class="price-unavailable">{t(CTX, 'chrome.ask', 'สอบถาม')}</span>
                         ) : (
                           <>
                             <span class="price-currency">฿</span>
@@ -325,8 +337,8 @@ function fmt(n: number | null): string {
     <section class="section block">
       <div class="wrap section-inner faq-inner">
         <div class="section-head center reveal">
-          <span class="eyebrow">FAQ</span>
-          <h2 data-i18n="faq.h2">คำถามที่พบบ่อย</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.faqEyebrow', 'FAQ')}</span>
+          <h2 data-i18n="faq.h2">{t(CTX, 'chrome.faqTitle', 'คำถามที่พบบ่อย')}</h2>
           <p data-i18n="faq.desc">สงสัยเรื่องเส้นทาง ราคา หรือ trip type? ดูคำตอบด้านล่าง</p>
         </div>
 
@@ -351,7 +363,7 @@ function fmt(n: number | null): string {
           Pulling live's page-specific EN string here would pair a generic
           Thai default with a page-specific English swap, a mismatch we're
           not going to invent. */}
-      <h2>พร้อมออกเดินทาง?<br />เลือก trip type ที่ใช่</h2>
+      <h2 set:html={t(CTX, 'chrome.ctaRoutes', 'พร้อมออกเดินทาง?<br />เลือก trip type ที่ใช่')} />
       <p data-i18n="cta.desc">กรอกฟอร์มด้านบนหรือ LINE หาเรา — ทีมงานตอบกลับใน 15 นาที</p>
       <div class="actions">
         <a href="#bookingForm" class="btn btn-primary btn-lg" data-i18n="cta.book">กรอกฟอร์มจอง</a>
