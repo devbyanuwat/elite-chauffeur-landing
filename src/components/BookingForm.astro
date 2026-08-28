@@ -300,7 +300,7 @@ import ServiceTabs from './ServiceTabs.astro';
     // UI keys -> canonical service codes (src/lib/service-types.ts ฝั่ง BOS)
     var SVC_API: Record<string, string> = { airport: 'one_way', rental: 'hourly_charter', b2b: 'wait_return', fullday: 'daily_charter' };
     // ส่งค่าไทยอ่านง่ายให้ทีมแอดมิน; 'any' = ไม่ระบุ (ไม่ส่ง field)
-    var VT_API: Record<string, string> = { sedan: 'รถเก๋ง', suv: 'รถ SUV', premium: 'พรีเมียมแวน', any: '' };
+    var VT_API: Record<string, string> = { sedan: 'รถเก๋ง', mpv: 'รถ MPV', suv: 'รถ SUV', premium: 'พรีเมียมแวน', any: '' };
     function setFieldError(input: HTMLInputElement, bad: boolean) {
       input.classList.toggle('invalid', bad);
       if (bad) { input.setAttribute('aria-invalid', 'true'); }

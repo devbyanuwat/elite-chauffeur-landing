@@ -1,34 +1,31 @@
 title: "รถเช่าพร้อมคนขับ กรุงเทพ-พัทยา | Bangkok to Pattaya Premium Chauffeur — SABUYGO"
-description: "รถเช่าพร้อมคนขับ กรุงเทพ-พัทยา ระยะทาง 147 กม. ใช้เวลา 1.45 ชม. รถ Alphard / Fortuner / Xpander / Altis ราคาคงที่ ไป-กลับวันเดียวก็ได้. Bangkok to Pattaya premium chauffeur service — fixed fare, one-way / round-trip / day-trip options."
+description: "รถเช่าพร้อมคนขับ กรุงเทพ-พัทยา ระยะทาง 147 กม. ใช้เวลา 1.45 ชม. มีรถเก๋ง MPV SUV และรถตู้ VIP ราคาโดยประมาณแจ้งก่อนจอง ไป-กลับวันเดียวก็ได้. Bangkok to Pattaya premium chauffeur service. Sedan, MPV, SUV and VIP van. Indicative rates, one-way / round-trip / hourly charter."
 canonical: "https://sabuygo.com/routes/bangkok-to-pattaya/"
 ogTitle: "รถเช่าพร้อมคนขับ กรุงเทพ-พัทยา | SABUYGO"
 ogDescription: "บริการรถเช่าพร้อมคนขับ กรุงเทพ-พัทยา ระยะทาง 147 กม. รถระดับพรีเมียม ราคาคงที่ ประกัน + พ.ร.บ."
 twitterTitle: null # live route pages emit no Twitter Card meta at all
 twitterDescription: null
-keywords: "รถเช่ากรุงเทพไปพัทยา, รถพร้อมคนขับ พัทยา, bangkok to pattaya, pattaya chauffeur, รถรับส่ง พัทยา, เหมารถไปพัทยา, รถ Alphard ไปพัทยา, private car bangkok pattaya"
+keywords: "รถเช่ากรุงเทพไปพัทยา, รถพร้อมคนขับ พัทยา, bangkok to pattaya, pattaya chauffeur, รถรับส่ง พัทยา, เหมารถไปพัทยา, รถตู้ VIP ไปพัทยา, private car bangkok pattaya"
 
 serviceName: "รถเช่าพร้อมคนขับ กรุงเทพ-พัทยา (Bangkok to Pattaya Chauffeur)"
 serviceDescription: "บริการรถเช่าพร้อมคนขับเส้นทางกรุงเทพ-พัทยา ระยะทาง 147 กม. ใช้เวลา 1.45 ชม. ราคาคงที่ มีตัวเลือก one-way, round-trip, day-trip"
 areaServed: ["Bangkok", "Pattaya"]
-priceLow: "2000"
-priceHigh: "9500"
 
 breadcrumbName: "กรุงเทพ → พัทยา"
 
 heroHeadingHtml: "รถเช่าพร้อมคนขับ<br>กรุงเทพ → พัทยา"
-heroSub: "ระยะทาง 147 กม. มอเตอร์เวย์ 7 · ใช้เวลา 1 ชม. 45 นาที · เลือกได้ One-way / Round-trip / Day-trip · มีประกันทุกคัน"
+heroSub: "ระยะทาง 147 กม. มอเตอร์เวย์ 7 · ใช้เวลา 1 ชม. 45 นาที · เลือกได้ One-way / Round-trip / เหมารายชั่วโมง · มีประกันทุกคัน"
 distanceKm: 147
 travelTime: "1.45"
-startPrice: "฿1,500"
 
 priceDesc: "ราคาประเมินเส้นทาง กรุงเทพ ↔ พัทยา รวมค่าทางด่วน ค่าน้ำมัน ค่าจอด ภาษี และน้ำดื่ม ไม่มีค่าใช้จ่ายแอบแฝง"
-dayTripHours: 10
 rateRows:
-  - [1500, 2625, 3375]
-  - [1800, 3150, 4050]
-  - [1800, 3150, 4050]
-  - [2400, 4200, 5400]
-priceFootnote: "หมายเหตุ: Round-trip รวมเวลารอที่พัทยา 6 ชม. (ถ้าเกินคิดเพิ่มชั่วโมงละ 250-400 บาท) · Day-trip รวม 10 ชม. ตั้งแต่รับจนส่ง · ราคา final ยืนยันหลังกรอกฟอร์ม · เส้นทางเดียวกับขากลับ พัทยา → กรุงเทพ ราคาเท่ากัน"
+  - [1600, 3000]
+  - [1900, 3600]
+  - [2400, 4600]
+  - [4500, 8800]
+  - [6000, 11800]
+priceFootnote: "หมายเหตุ: อัตราค่าบริการที่แสดงเป็นราคาโดยประมาณ สำหรับใช้เปรียบเทียบเบื้องต้นเท่านั้น"
 
 includedDesc: "มาตรฐานบริการทุกเที่ยวเส้นทาง กรุงเทพ-พัทยา"
 included:
@@ -60,12 +57,12 @@ included:
 faq:
   - question: "กรุงเทพ-พัทยา ใช้เวลาเดินทางเท่าไหร่?"
     answer: "ระยะทาง 147 กม. ใช้เวลาประมาณ 1 ชั่วโมง 45 นาที (ไม่รวมรถติด) เส้นทางมอเตอร์เวย์ 7 — สะดวก ปลอดภัย"
-  - question: "One-way / Round-trip / Day-trip ต่างกันยังไง?"
-    answer: "One-way = ส่งครั้งเดียว ปล่อยที่ปลายทาง · Round-trip = ไป-รอ-กลับวันเดียว สูงสุด 6 ชั่วโมง · Day-trip (10 ชม.) = ใช้เป็นรถเหมาทั้งวัน เที่ยวได้หลายจุด เหมาะสำหรับครอบครัวหรือกลุ่มเที่ยว"
+  - question: "One-way / Round-trip / เหมารายชั่วโมง ต่างกันยังไง?"
+    answer: "One-way = ส่งครั้งเดียว ปล่อยที่ปลายทาง · Round-trip = ไป-รอ-กลับวันเดียว คนขับรอให้ · เหมารายชั่วโมง = เหมารถทั้งวัน เที่ยวได้หลายจุด บอกจำนวนชั่วโมงกับจุดที่จะไป แล้วเราคิดราคาให้"
   - question: "ราคารวมค่าทางด่วนหรือไม่?"
     answer: "ราคาที่แจ้งรวมค่าทางด่วนทั้งหมด (มอเตอร์เวย์ 7 ขาไป + กลับ) ค่าน้ำมัน ค่าคนขับ ค่าจอด ภาษี และน้ำดื่ม ไม่มีค่าใช้จ่ายแอบแฝง"
   - question: "คนขับรอที่ไหนช่วงระหว่างรอกลับ (Round-trip)?"
-    answer: "คนขับจะอยู่ในจุดที่สะดวกใกล้ปลายทาง (โรงแรม / ห้าง / ชายหาด) ติดต่อได้ทาง LINE ตลอดเวลา ถ้าต้องการให้รอเกิน 6 ชม. แจ้งล่วงหน้า อาจมีค่ารอเพิ่มชั่วโมงละ 250-400 บาท"
+    answer: "คนขับจะอยู่ในจุดที่สะดวกใกล้ปลายทาง (โรงแรม / ห้าง / ชายหาด) ติดต่อได้ทาง LINE ตลอดเวลา ถ้าต้องการให้รอนานกว่าที่ตกลงไว้ แจ้งล่วงหน้า อาจมีค่ารอเพิ่มชั่วโมงละ 250-400 บาท"
   - question: "ถ้าอยากแวะกินข้าว / ถ่ายรูประหว่างทางได้ไหม?"
     answer: "ได้ — แจ้งกับคนขับล่วงหน้า ถ้าเป็นจุดมาตรฐาน (Cafe Amazon / ปั๊มน้ำมัน) แวะได้ฟรี ถ้าเป็นจุดที่ออกนอกเส้นทาง อาจคิดค่าทางเพิ่มตามระยะ"
   - question: "ยกเลิกหรือเลื่อนวันได้ไหม?"
@@ -134,7 +131,7 @@ extraRatesTable:
       sedan: 1700
       suv: 2000
       van: null
-  footnote: "หมายเหตุ: ราคาในตารางเป็น One-way (เที่ยวเดียว) ขั้นต่ำตามราคากลางกลุ่ม (มีผล 5 พ.ค. 2569) · บาง zone อาจมีค่าเพิ่มเติมตามจุดรับ-ส่งจริง · Round-trip / Day-trip กรุณาสอบถามผ่านฟอร์ม · ราคา final ยืนยันหลังเจ้าหน้าที่ตรวจเส้นทาง"
+  footnote: "หมายเหตุ: ราคาในตารางเป็น One-way (เที่ยวเดียว) ขั้นต่ำตามราคากลางกลุ่ม (มีผล 5 พ.ค. 2569) · บาง zone อาจมีค่าเพิ่มเติมตามจุดรับ-ส่งจริง · Round-trip / เหมารายชั่วโมง กรุณาสอบถามผ่านฟอร์ม · ราคา final ยืนยันหลังเจ้าหน้าที่ตรวจเส้นทาง"
 
 # Final-review B1 fix — page-scoped EN dict (see content.config.ts `bodyI18n`
 # doc comment). Values copied verbatim from the live page's inline i18n
@@ -150,22 +147,23 @@ bodyI18n:
   crumb.home: "Home"
   crumb.current: "Bangkok → Pattaya"
   hero.h1: "Premium Chauffeur<br>Bangkok → Pattaya"
-  hero.sub: "147 km via Motorway 7 · 1h 45min travel · One-way / Round-trip / Day-trip options · Full insurance coverage on every vehicle"
+  hero.sub: "147 km via Motorway 7 · 1h 45min travel · One-way / Round-trip / Hourly charter · Full insurance coverage on every vehicle"
   stat.dist.num: "147"
   stat.dist.lbl: "km"
   stat.time.num: "1h45"
   stat.time.lbl: "travel time"
   stat.start.lbl: "from (sedan one-way)"
-  price.h2: "Fixed Rates by Trip Type"
+  price.h2: "Service Rates by Trip Type"
   price.desc: "Estimated rates Bangkok ↔ Pattaya. Includes tolls, fuel, parking, taxes, and bottled water. No hidden fees."
   price.col.vehicle: "Vehicle"
   price.col.oneway: "One-way"
   price.col.oneway.d: "drop-off only"
   price.col.round: "Round-trip"
-  price.col.round.d: "go · 6h wait · return"
-  price.col.day: "Day-trip 10h"
-  price.col.day.d: "multiple stops"
-  price.footnote: "Note: Round-trip includes 6h wait at Pattaya (overtime 250-400 THB/hr) · Day-trip is 10h pickup-to-drop · Final quote confirmed after inquiry · Same rate applies in reverse direction (Pattaya → Bangkok)."
+  price.col.round.d: "go · return"
+  price.col.day: "Hourly charter with driver"
+  price.col.day.d: "contact us with details"
+  price.ask: "Ask us"
+  price.footnote: "Note: The rates shown are indicative estimates for initial comparison only."
   inc.h2: "Every booking includes"
   inc.desc: "Service standard for every Bangkok-Pattaya transfer"
   inc.ins.t: "Full Insurance Coverage"
@@ -187,15 +185,27 @@ bodyI18n:
   faq.desc: "Questions about route, pricing, or trip type? Find answers below"
   faq.q1: "How long is Bangkok to Pattaya?"
   faq.a1: "147 km, about 1 hour 45 minutes (no traffic) via Motorway 7 — convenient and safe"
-  faq.q2: "What is the difference between One-way / Round-trip / Day-trip?"
-  faq.a2: "One-way = drop-off only · Round-trip = same-day go-wait-return up to 6 hours · Day-trip (10h) = full-day charter, multiple stops, ideal for families or tour groups"
+  faq.q2: "What is the difference between One-way / Round-trip / Hourly charter?"
+  faq.a2: "One-way = drop-off only · Round-trip = same-day go-wait-return, the driver waits for you · Hourly charter = full-day hire with multiple stops. Tell us the hours and the stops and we will quote."
   faq.q3: "Are tolls included?"
   faq.a3: "Yes, the quoted price includes all tolls (Motorway 7 both ways), fuel, driver, parking, taxes, and bottled water. No hidden fees."
   faq.q4: "Where does the driver wait during Round-trip?"
-  faq.a4: "Driver stays at a convenient nearby location (hotel / mall / beach), reachable via LINE at all times. Wait beyond 6 hours: 250-400 THB/hour additional, with advance notice."
+  faq.a4: "Driver stays at a convenient nearby location (hotel / mall / beach), reachable via LINE at all times. Waiting longer than agreed: 250-400 THB/hour additional, with advance notice."
   faq.q5: "Can I stop for food / photos along the way?"
   faq.a5: "Yes — let the driver know in advance. Standard stops (Cafe Amazon / petrol station) are free. Off-route stops may incur additional charges based on distance."
   faq.q6: "Can I cancel or reschedule?"
   faq.a6: "Free cancellation 12+ hours before. Less notice incurs 30% fee. Flexible for weather/illness/force majeure."
   cta.desc: "Fill the form above or LINE us — our team responds within 15 minutes"
   cta.book: "Fill Booking Form"
+  veh.sedan: "Mid-size sedan"
+  veh.mpv: "MPV"
+  veh.suv: "7-seat SUV"
+  veh.van: "Van"
+  veh.vanvip: "VIP van"
+  extra.col.route: "Route"
+  extra.col.sedan: "Sedan"
+  extra.col.sedan.d: "3 seats"
+  extra.col.suvmpv: "SUV / MPV"
+  extra.col.suvmpv.d: "6-7 seats"
+  extra.col.van: "VIP van"
+  extra.col.van.d: "6 seats"

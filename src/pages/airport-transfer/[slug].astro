@@ -47,8 +47,8 @@ const serviceSchema: Record<string, unknown> = {
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'THB',
-    lowPrice: d.priceLow,
-    highPrice: d.priceHigh,
+    lowPrice: String(Math.min(...d.rateRows.flat())),
+    highPrice: String(Math.max(...d.rateRows.flat())),
     offerCount: '12',
   },
   url: d.canonical,
@@ -82,17 +82,17 @@ const faqSchema: Record<string, unknown> = {
 // ---- Structure that never varies between the two airport pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
 const VEHICLES = [
-  { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
-  { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
-  { name: 'Toyota Fortuner Legender', type: 'Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า' },
-  { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
+  { name: 'รถเก๋งขนาดกลาง' },
+  { name: 'รถ MPV' },
+  { name: 'รถ SUV 7 ที่นั่ง' },
+  { name: 'รถตู้ VIP' },
 ] as const;
 
 const FLEET = [
-  { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่' },
-  { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่' },
-  { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่' },
-  { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP' },
+  { img: '/images/car4.webp', name: 'รถเก๋งขนาดกลาง' },
+  { img: '/images/car1.webp', name: 'รถ MPV' },
+  { img: '/images/car3.webp', name: 'รถ SUV 7 ที่นั่ง' },
+  { img: '/images/car2.webp', name: 'รถตู้ VIP' },
 ] as const;
 
 const ICONS: Record<string, string> = {
@@ -107,8 +107,7 @@ const ICONS: Record<string, string> = {
 // Final-review B1 fix — data-i18n keys for HeroTrust and VEHICLES, in the
 // exact order those arrays render (matches the live page's key order).
 const TRUST_KEYS = ['trust.flight', 'trust.sign', 'trust.waiting', 'trust.english'] as const;
-const VEH_KEYS = ['veh.altis', 'veh.xpander', 'veh.fortuner', 'veh.alphard'] as const;
-const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortuner', 'fleet.cap.alphard'] as const;
+const VEH_KEYS = ['veh.sedan', 'veh.mpv', 'veh.suv', 'veh.vanvip'] as const;
 ---
 
 <Base
@@ -187,8 +186,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
               VEHICLES.map((v, i) => (
                 <tr>
                   <td data-label="ประเภทรถ">
-                    <span class="veh-name">{v.name}</span>
-                    <span class="veh-type" data-i18n={VEH_KEYS[i]}>{v.type}</span>
+                    <span class="veh-name" data-i18n={VEH_KEYS[i]}>{v.name}</span>
                   </td>
                   {d.rateRows[i].map((price, zi) => (
                     <td data-label={d.zoneLabels[zi]}>
@@ -240,9 +238,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
             FLEET.map((f, i) => (
               <div class="fleet-mini">
                 <img src={f.img} alt={f.name} width="600" height="400" loading="lazy" />
-                <h4>{f.name}</h4>
-                <div class="type">{f.type}</div>
-                <div class="cap" data-i18n={FLEET_CAP_KEYS[i]}>{f.cap}</div>
+                <h4 data-i18n={VEH_KEYS[i]}>{f.name}</h4>
               </div>
             ))
           }
@@ -360,9 +356,23 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   }
 
   /* ==================== RELATED STRIP ==================== */
+  /* จังหวะแนวตั้ง: ระยะที่ตาเห็นต้องมาจาก --section-spacing ตัวเดียว
+     ไม่ใช่ margin ของเนื้อหาชิ้นสุดท้ายบวกเพิ่ม */
+  .section-inner > :last-child,
+  .section-head > :last-child {
+    margin-block-end: 0;
+  }
+
+  /* section.block ใส่ padding-block ทั้งบนและล่าง สอง section พื้นหลังเดียวกัน
+     ชนกันจึงได้ระยะซ้อนสองชั้นที่อ่านเป็นช่องโหว่ — รอยต่อควรเป็นหนึ่งหน่วยเดียว
+     (บล็อกที่มีพื้นหลังของตัวเองยังต้องมี padding-top ของมันเอง จึงไม่โดนกฎนี้) */
+  .block + .block {
+    padding-top: 0;
+  }
+
   .related-strip {
     background: var(--bg-secondary);
-    padding: 2.5rem clamp(1.25rem, 5vw, 2.5rem);
+    padding: calc(var(--section-spacing) * 0.5) clamp(1.25rem, 5vw, 2.5rem);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
@@ -455,8 +465,10 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
     font-weight: 400;
   }
   .price-note {
-    margin-top: 1rem;
+    margin-top: 0.65rem;
+    padding-left: 0.1rem;
     font-size: 0.8rem;
+    line-height: 1.6;
     color: var(--text-tertiary);
   }
   @media (max-width: 700px) {
@@ -490,8 +502,15 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   /* ==================== INCLUDED GRID ==================== */
   .included-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* auto-fit เดิมได้ 4-5 คอลัมน์ที่จอกว้าง ทิ้งแถวสุดท้ายเหลือ 1-2 ใบ
+       6 ไอเทม ล็อก 3 คอลัมน์ = 2 แถวเต็มพอดี */
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: 2rem;
+  }
+  @media (min-width: 900px) {
+    .included-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
   .included-item {
     padding-left: 1.5rem;
