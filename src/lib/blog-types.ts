@@ -1,3 +1,14 @@
+export interface ArticleFaq {
+  q: string;
+  a: string;
+}
+
+export interface RelatedPage {
+  key: string;
+  title: string;
+  href: string;
+}
+
 export interface ArticleSummary {
   id: string;
   slug: string;
@@ -7,6 +18,7 @@ export interface ArticleSummary {
   publishedAt: string | null;
   tags: string[];
   authorName: string | null;
+  summary: string | null;
 }
 
 export interface ArticleFull extends ArticleSummary {
@@ -16,4 +28,6 @@ export interface ArticleFull extends ArticleSummary {
   locale: string;
   createdAt: string | null;
   updatedAt: string | null;
+  faq: ArticleFaq[];
+  relatedPages: RelatedPage[];
 }

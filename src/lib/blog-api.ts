@@ -47,8 +47,8 @@ export async function getArticles(): Promise<ArticleSummary[]> {
     async () => {
       const res = await fetch(`${base()}/api/public/articles`);
       if (!res.ok) throw new Error(`articles ${res.status}`);
-      const data = (await res.json()) as { articles?: ArticleSummary[] };
-      return data.articles ?? [];
+      const data = (await res.json()) as { articles?: Partial<ArticleSummary>[] };
+      return (data.articles ?? []).map(normalizeSummary);
     },
     [],
   );
@@ -61,8 +61,38 @@ export async function getArticle(slug: string): Promise<ArticleFull | null> {
       const res = await fetch(`${base()}/api/public/articles/${encodeURIComponent(slug)}`);
       if (res.status === 404) return null;
       if (!res.ok) throw new Error(`article ${res.status}`);
-      return (await res.json()) as ArticleFull;
+      return normalizeFull((await res.json()) as Partial<ArticleFull>);
     },
     null,
   );
+}
+
+// Tolerate a BOS that predates the AEO fields: default them so deploys need not
+// be coordinated. Types are enforced defensively (arrays stay arrays).
+function normalizeSummary(a: Partial<ArticleSummary>): ArticleSummary {
+  return {
+    id: a.id ?? '',
+    slug: a.slug ?? '',
+    title: a.title ?? '',
+    excerpt: a.excerpt ?? null,
+    coverImageUrl: a.coverImageUrl ?? null,
+    publishedAt: a.publishedAt ?? null,
+    tags: Array.isArray(a.tags) ? a.tags : [],
+    authorName: a.authorName ?? null,
+    summary: a.summary ?? null,
+  };
+}
+
+function normalizeFull(a: Partial<ArticleFull>): ArticleFull {
+  return {
+    ...normalizeSummary(a),
+    body: a.body ?? '',
+    seoTitle: a.seoTitle ?? null,
+    seoDescription: a.seoDescription ?? null,
+    locale: a.locale ?? 'th',
+    createdAt: a.createdAt ?? null,
+    updatedAt: a.updatedAt ?? null,
+    faq: Array.isArray(a.faq) ? a.faq : [],
+    relatedPages: Array.isArray(a.relatedPages) ? a.relatedPages : [],
+  };
 }
