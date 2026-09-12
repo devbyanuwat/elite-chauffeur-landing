@@ -89,7 +89,7 @@ describe('mergeFleet', () => {
     expect(car.vtype).toBeNull();
   });
 
-  it('ชิปมีที่นั่ง เกียร์ออโต้ ประกัน และ VIP เมื่อติดธง', () => {
+  it('ชิปมีที่นั่ง เกียร์ออโต้ พ.ร.บ. และ VIP เมื่อติดธง', () => {
     const [car] = mergeFleet(
       [
         {

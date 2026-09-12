@@ -35,7 +35,7 @@ export interface Car {
  * span ที่ setLang เขียนทับ ไม่งั้นสลับเป็นอังกฤษแล้วตัวเลขหาย
  */
 export const AUTO_CHIP: Chip = { text: 'เกียร์ออโต้', key: 'fl.chip.auto' };
-export const INSURED_CHIP: Chip = { text: 'ประกันเต็มคัน', key: 'fl.chip.insured' };
+export const INSURED_CHIP: Chip = { text: 'มี พ.ร.บ.', key: 'fl.chip.insured' };
 export const VIP_CHIP: Chip = { text: 'VIP', key: 'fl.chip.vip' };
 export const SEAT_CHIP_KEY = 'fl.chip.seats';
 
