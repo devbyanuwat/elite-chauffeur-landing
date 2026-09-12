@@ -34,7 +34,7 @@ export function isHidden(cms: CmsSections | null, key: string): boolean {
 
 /**
  * ดึงข้อความ th ต่อ i18n key จาก texts ของ section — คืน fallback เมื่อไม่มี
- * ใช้ใน component: t(texts, 'wy.1.t', 'ประกันเต็มทุกคัน')
+ * ใช้ใน component: t(texts, 'wy.1.t', 'พ.ร.บ. ครบทุกคัน')
  */
 export function t(
   texts: Record<string, LText> | undefined,
