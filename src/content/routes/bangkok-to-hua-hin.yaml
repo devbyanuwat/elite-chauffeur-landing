@@ -2,7 +2,7 @@ title: "รถเช่าพร้อมคนขับ กรุงเทพ-�
 description: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน ระยะทาง 200 กม. ใช้เวลา 3 ชม. รถ Alphard / Fortuner / Xpander / Altis ราคาคงที่. Bangkok to Hua Hin premium chauffeur — fixed fare, one-way / round-trip / day-trip options."
 canonical: "https://sabuygo.com/routes/bangkok-to-hua-hin/"
 ogTitle: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน | SABUYGO"
-ogDescription: "บริการรถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน ระยะทาง 200 กม. รถระดับพรีเมียม ราคาคงที่ ประกัน + พ.ร.บ."
+ogDescription: "บริการรถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน ระยะทาง 200 กม. รถระดับพรีเมียม ราคาคงที่ พ.ร.บ. ครบทุกคัน"
 twitterTitle: null # live route pages emit no Twitter Card meta at all
 twitterDescription: null
 keywords: "รถเช่ากรุงเทพไปหัวหิน, รถพร้อมคนขับ หัวหิน, bangkok to hua hin, hua hin chauffeur, รถรับส่ง หัวหิน, เหมารถไปหัวหิน, รถ Alphard ไปหัวหิน, private car bangkok hua hin"
@@ -16,7 +16,7 @@ priceHigh: "11500"
 breadcrumbName: "กรุงเทพ → หัวหิน"
 
 heroHeadingHtml: "รถเช่าพร้อมคนขับ<br>กรุงเทพ → หัวหิน"
-heroSub: "ระยะทาง 200 กม. Highway 4 (พระราม 2) · ใช้เวลา 3 ชม. · เลือกได้ One-way / Round-trip / Day-trip · มีประกันทุกคัน"
+heroSub: "ระยะทาง 200 กม. Highway 4 (พระราม 2) · ใช้เวลา 3 ชม. · เลือกได้ One-way / Round-trip / Day-trip · มี พ.ร.บ. ทุกคัน"
 distanceKm: 200
 travelTime: "3.0"
 startPrice: "฿2,500"
@@ -33,8 +33,8 @@ priceFootnote: "หมายเหตุ: Round-trip รวมเวลารอ
 includedDesc: "มาตรฐานบริการทุกเที่ยวเส้นทาง กรุงเทพ-หัวหิน"
 included:
   - icon: shield
-    title: "ประกัน + พ.ร.บ."
-    desc: "ประกัน + พ.ร.บ. ครอบคลุมทั้งคนและทรัพย์สินตลอดเส้นทาง"
+    title: "พ.ร.บ. ครบทุกคัน"
+    desc: "พ.ร.บ. ครบทุกคัน คุ้มครองผู้โดยสารตลอดเส้นทาง"
     i18nKey: "inc.ins"
   - icon: lines
     title: "ค่าน้ำมัน รวม"
@@ -89,7 +89,7 @@ bodyI18n:
   crumb.home: "Home"
   crumb.current: "Bangkok → Hua Hin"
   hero.h1: "Premium Chauffeur<br>Bangkok → Hua Hin"
-  hero.sub: "200 km via Highway 4 (Rama 2) · 3 hours travel · One-way / Round-trip / Day-trip options · Full insurance coverage on every vehicle"
+  hero.sub: "200 km via Highway 4 (Rama 2) · 3 hours travel · One-way / Round-trip / Day-trip options · Compulsory motor insurance on every vehicle"
   stat.dist.num: "200"
   stat.dist.lbl: "km"
   stat.time.num: "3h"
@@ -107,8 +107,8 @@ bodyI18n:
   price.footnote: "Note: Round-trip includes 6h wait at Hua Hin (overtime 250-400 THB/hr) · Day-trip is 12h (Hua Hin further than Pattaya) · Final quote confirmed after inquiry · Cha-am same rate · Same rate applies in reverse direction."
   inc.h2: "Every booking includes"
   inc.desc: "Service standard for every Bangkok-Hua Hin transfer"
-  inc.ins.t: "Full Insurance Coverage"
-  inc.ins.d: "Full insurance coverage + compulsory motor insurance covering passengers and property throughout the route"
+  inc.ins.t: "Compulsory Motor Insurance"
+  inc.ins.d: "Valid compulsory motor insurance covering passengers throughout the route"
   inc.fuel.t: "Fuel Included"
   inc.fuel.d: "Fuel included for the entire route · Highway 4 is toll-free, no extra charges"
   inc.flex.t: "Flexible Timing"
