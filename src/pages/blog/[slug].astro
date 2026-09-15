@@ -2,6 +2,7 @@
 export const prerender = false;
 import Base from '../../layouts/Base.astro';
 import { getArticle } from '../../lib/blog-api';
+import { buildArticleJsonLd } from '../../lib/blog-schema';
 
 const { slug } = Astro.params;
 const article = slug ? await getArticle(slug) : null;
@@ -12,23 +13,12 @@ if (!article) {
 
 const canonical = article ? `https://sabuygo.com/blog/${article.slug}/` : 'https://sabuygo.com/blog/';
 const published = article?.publishedAt ?? article?.createdAt ?? null;
-const jsonLd = article
-  ? [{
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: article.title,
-      description: article.seoDescription ?? article.excerpt ?? article.title,
-      image: article.coverImageUrl ?? undefined,
-      datePublished: published ?? undefined,
-      author: article.authorName ? { '@type': 'Person', name: article.authorName } : undefined,
-      mainEntityOfPage: canonical,
-    }]
-  : [];
+const jsonLd = article ? buildArticleJsonLd(article, canonical) : [];
 ---
 {article ? (
   <Base
     title={`${article.seoTitle ?? article.title} | SABUYGO`}
-    description={article.seoDescription ?? article.excerpt ?? article.title}
+    description={article.seoDescription ?? article.summary ?? article.excerpt ?? article.title}
     canonical={canonical}
     ogImage={article.coverImageUrl ?? undefined}
     jsonLd={jsonLd}
@@ -39,8 +29,36 @@ const jsonLd = article
           <div class="breadcrumb"><a href="/">หน้าแรก</a><span> / </span><a href="/blog/">บทความ</a></div>
           <h1>{article.title}</h1>
           {published && <p class="article-meta">{new Date(published).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}{article.authorName ? ` · ${article.authorName}` : ''}</p>}
+          {article.summary && <p class="article-summary">{article.summary}</p>}
           {article.coverImageUrl && <img class="article-cover" src={article.coverImageUrl} alt={article.title} loading="eager" />}
           <div class="article-body" set:html={article.body} />
+
+          {article.faq.length > 0 && (
+            <section class="article-faq" aria-label="คำถามที่พบบ่อย">
+              <h2>คำถามที่พบบ่อย</h2>
+              <div class="faq-list">
+                {article.faq.map((item) => (
+                  <div class="faq-item">
+                    <button class="faq-q" type="button" aria-expanded="false">
+                      <span>{item.q}</span><span class="plus" aria-hidden="true"></span>
+                    </button>
+                    <div class="faq-a"><p>{item.a}</p></div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {article.relatedPages.length > 0 && (
+            <section class="article-related" aria-label="บริการที่เกี่ยวข้อง">
+              <h2>บริการที่เกี่ยวข้อง</h2>
+              <div class="related-grid">
+                {article.relatedPages.map((page) => (
+                  <a class="related-card" href={page.href}>{page.title}</a>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </article>
     </main>
@@ -61,6 +79,16 @@ const jsonLd = article
 <style>
   .article-wrap { max-width: 760px; margin: 0 auto; }
   .article-meta { color: var(--text-tertiary); font-size: 0.9rem; margin: 0.5rem 0 1.5rem; }
+  .article-summary {
+    border-left: 3px solid var(--gold-dark);
+    background: var(--surface-2, rgba(156, 129, 68, 0.06));
+    padding: 1rem 1.2rem;
+    margin: 0 0 1.8rem;
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    font-size: 1.12rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+  }
   .article-cover { width: 100%; height: auto; border-radius: var(--r-lg); margin-bottom: 2rem; }
   .article-body { font-size: 1.06rem; line-height: 1.9; color: var(--text-primary); }
   .article-body :global(h2) { margin: 2.2em 0 .6em; font-size: 1.6rem; }
@@ -69,4 +97,83 @@ const jsonLd = article
   .article-body :global(ul), .article-body :global(ol) { padding-left: 1.5em; }
   .article-body :global(img) { max-width: 100%; height: auto; border-radius: var(--r-md); }
   .article-body :global(a) { color: var(--gold-dark); text-decoration: underline; }
+
+  .article-faq { margin-top: 3rem; }
+  .article-faq h2, .article-related h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+  .faq-list { border-top: 1px solid var(--border); }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 1.04rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+    padding: 1.4rem 0.25rem;
+    transition: color 0.2s;
+  }
+  .faq-q:hover { color: var(--gold-dark); }
+  .faq-q .plus {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    position: relative;
+    transition: transform 0.3s var(--ease-out);
+    color: var(--gold-dark);
+  }
+  .faq-q .plus::before, .faq-q .plus::after {
+    content: "";
+    position: absolute;
+    background: currentColor;
+    border-radius: 2px;
+  }
+  .faq-q .plus::before {
+    left: 50%; top: 4px; bottom: 4px; width: 2px;
+    transform: translateX(-50%);
+    transition: opacity 0.3s;
+  }
+  .faq-q .plus::after {
+    top: 50%; left: 4px; right: 4px; height: 2px;
+    transform: translateY(-50%);
+  }
+  .faq-item.open .plus::before { opacity: 0; }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s var(--ease-out); }
+  .faq-a p { padding: 0 0.25rem 1.4rem; color: var(--text-secondary); font-size: 0.95rem; }
+
+  .article-related { margin-top: 3rem; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; }
+  .related-card {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 1rem 1.2rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .related-card:hover { border-color: var(--gold-dark); color: var(--gold-dark); }
 </style>
+
+<script>
+  (function () {
+    'use strict';
+    document.querySelectorAll('.article-faq .faq-q').forEach(function (q) {
+      q.addEventListener('click', function () {
+        var item = q.closest('.faq-item');
+        if (!item) return;
+        var ans = item.querySelector('.faq-a') as HTMLElement | null;
+        var open = item.classList.toggle('open');
+        q.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (ans) ans.style.maxHeight = open ? ans.scrollHeight + 'px' : '0';
+      });
+    });
+  })();
+</script>
