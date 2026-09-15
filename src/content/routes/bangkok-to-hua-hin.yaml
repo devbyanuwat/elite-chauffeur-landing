@@ -1,34 +1,30 @@
 title: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน | Bangkok to Hua Hin Premium Chauffeur — SABUYGO"
-description: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน ระยะทาง 200 กม. ใช้เวลา 3 ชม. รถ Alphard / Fortuner / Xpander / Altis ราคาคงที่. Bangkok to Hua Hin premium chauffeur — fixed fare, one-way / round-trip / day-trip options."
+description: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน ระยะทาง 200 กม. ใช้เวลา 3 ชม. มีรถเก๋ง MPV SUV และรถตู้ VIP ราคาโดยประมาณแจ้งก่อนจอง. Bangkok to Hua Hin premium chauffeur. Sedan, MPV, SUV and VIP van. Indicative rates, one-way / round-trip / hourly charter."
 canonical: "https://sabuygo.com/routes/bangkok-to-hua-hin/"
 ogTitle: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน | SABUYGO"
 ogDescription: "บริการรถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน ระยะทาง 200 กม. รถระดับพรีเมียม ราคาคงที่ พ.ร.บ. ครบทุกคัน"
 twitterTitle: null # live route pages emit no Twitter Card meta at all
 twitterDescription: null
-keywords: "รถเช่ากรุงเทพไปหัวหิน, รถพร้อมคนขับ หัวหิน, bangkok to hua hin, hua hin chauffeur, รถรับส่ง หัวหิน, เหมารถไปหัวหิน, รถ Alphard ไปหัวหิน, private car bangkok hua hin"
+keywords: "รถเช่ากรุงเทพไปหัวหิน, รถพร้อมคนขับ หัวหิน, bangkok to hua hin, hua hin chauffeur, รถรับส่ง หัวหิน, เหมารถไปหัวหิน, รถตู้ VIP ไปหัวหิน, private car bangkok hua hin"
 
 serviceName: "รถเช่าพร้อมคนขับ กรุงเทพ-หัวหิน (Bangkok to Hua Hin Chauffeur)"
 serviceDescription: "บริการรถเช่าพร้อมคนขับเส้นทางกรุงเทพ-หัวหิน ระยะทาง 200 กม. ใช้เวลา 3 ชม. ราคาคงที่ มีตัวเลือก one-way, round-trip, day-trip"
 areaServed: ["Bangkok", "Hua Hin", "Cha-am"]
-priceLow: "2500"
-priceHigh: "11500"
 
 breadcrumbName: "กรุงเทพ → หัวหิน"
 
 heroHeadingHtml: "รถเช่าพร้อมคนขับ<br>กรุงเทพ → หัวหิน"
-heroSub: "ระยะทาง 200 กม. Highway 4 (พระราม 2) · ใช้เวลา 3 ชม. · เลือกได้ One-way / Round-trip / Day-trip · มี พ.ร.บ. ทุกคัน"
+heroSub: "ระยะทาง 200 กม. Highway 4 (พระราม 2) · ใช้เวลา 3 ชม. · เลือกได้ One-way / Round-trip / เหมารายชั่วโมง · มี พ.ร.บ. ทุกคัน"
 distanceKm: 200
 travelTime: "3.0"
-startPrice: "฿2,500"
 
 priceDesc: "ราคาประเมินเส้นทาง กรุงเทพ ↔ หัวหิน รวมค่าน้ำมัน ค่าจอด ภาษี และน้ำดื่ม (ไม่มีค่าทางด่วน เพราะ Highway 4 ฟรี)"
-dayTripHours: 12
 rateRows:
-  - [2500, 4500, 5500]
-  - [3000, 5000, 6500]
-  - [3500, 6500, 8000]
-  - [5500, 9000, 11500]
-priceFootnote: "หมายเหตุ: Round-trip รวมเวลารอที่หัวหิน 6 ชม. (ถ้าเกินคิดเพิ่มชั่วโมงละ 250-400 บาท) · Day-trip รวม 12 ชม. (เพราะหัวหินไกลกว่าพัทยา) · ราคา final ยืนยันหลังกรอกฟอร์ม · ไป Cha-am ก็ราคาเดียวกัน · เส้นทางเดียวกับขากลับ หัวหิน → กรุงเทพ"
+  - [2500, 4500]
+  - [3000, 5000]
+  - [3500, 6500]
+  - [5500, 9000]
+priceFootnote: "หมายเหตุ: อัตราค่าบริการที่แสดงเป็นราคาโดยประมาณ สำหรับใช้เปรียบเทียบเบื้องต้นเท่านั้น"
 
 includedDesc: "มาตรฐานบริการทุกเที่ยวเส้นทาง กรุงเทพ-หัวหิน"
 included:
@@ -62,8 +58,8 @@ faq:
     answer: "ระยะทาง 200 กม. ใช้เวลาประมาณ 3 ชั่วโมง (ไม่รวมรถติด) เส้นทาง Highway 4 (พระราม 2) ผ่านเพชรบุรี ชะอำ ก่อนถึงหัวหิน"
   - question: "แวะเที่ยวระหว่างทางได้ไหม?"
     answer: "ได้ — ระหว่างทางมีจุดน่าแวะ เช่น Cafe Amazon เพชรบุรี, ตลาดน้ำชะอำ, สะพานเขายี่สาร แจ้งคนขับล่วงหน้า ถ้าออกนอกเส้นทางหลัก อาจคิดค่าทางเพิ่มตามระยะ"
-  - question: "One-way / Round-trip / Day-trip ต่างกันยังไง?"
-    answer: "One-way = ส่งครั้งเดียว · Round-trip = ไป-รอ-กลับวันเดียว สูงสุด 6 ชม. (เหมาะถ้าไปธุระ/ดินเนอร์) · Day-trip 12 ชม. = เที่ยวได้ทั้งวัน เหมาะกับครอบครัว/กลุ่มเที่ยว เพราะหัวหินไกลกว่าพัทยา ใช้ 12 ชม. แทน 10 ชม."
+  - question: "One-way / Round-trip / เหมารายชั่วโมง ต่างกันยังไง?"
+    answer: "One-way = ส่งครั้งเดียว · Round-trip = ไป-รอ-กลับวันเดียว คนขับรอให้ เหมาะถ้าไปธุระหรือดินเนอร์ · เหมารายชั่วโมง = เที่ยวได้ทั้งวัน เหมาะกับครอบครัวหรือกลุ่มเที่ยว หัวหินไกลกว่าพัทยา เผื่อเวลาไว้มากกว่าหน่อย"
   - question: "ราคารวมค่าทางด่วนหรือไม่?"
     answer: "เส้นทาง Highway 4 ไม่ใช่ทางด่วน ไม่มีค่าผ่านทาง ราคาที่แจ้งรวมค่าน้ำมัน คนขับ จอด ภาษี และน้ำดื่ม ครบทั้งหมด ไม่มีค่าใช้จ่ายแอบแฝง"
   - question: "ไป Cha-am ก็ใช้บริการนี้ได้ไหม?"
@@ -89,22 +85,23 @@ bodyI18n:
   crumb.home: "Home"
   crumb.current: "Bangkok → Hua Hin"
   hero.h1: "Premium Chauffeur<br>Bangkok → Hua Hin"
-  hero.sub: "200 km via Highway 4 (Rama 2) · 3 hours travel · One-way / Round-trip / Day-trip options · Compulsory motor insurance on every vehicle"
+  hero.sub: "200 km via Highway 4 (Rama 2) · 3 hours travel · One-way / Round-trip / Hourly charter · Compulsory motor insurance on every vehicle"
   stat.dist.num: "200"
   stat.dist.lbl: "km"
   stat.time.num: "3h"
   stat.time.lbl: "travel time"
   stat.start.lbl: "from (sedan one-way)"
-  price.h2: "Fixed Rates by Trip Type"
+  price.h2: "Service Rates by Trip Type"
   price.desc: "Estimated rates Bangkok ↔ Hua Hin. Includes fuel, parking, taxes, and bottled water (Highway 4 has no toll, so no toll charges)."
   price.col.vehicle: "Vehicle"
   price.col.oneway: "One-way"
   price.col.oneway.d: "drop-off only"
   price.col.round: "Round-trip"
-  price.col.round.d: "go · 6h wait · return"
-  price.col.day: "Day-trip 12h"
-  price.col.day.d: "multiple stops"
-  price.footnote: "Note: Round-trip includes 6h wait at Hua Hin (overtime 250-400 THB/hr) · Day-trip is 12h (Hua Hin further than Pattaya) · Final quote confirmed after inquiry · Cha-am same rate · Same rate applies in reverse direction."
+  price.col.round.d: "go · return"
+  price.col.day: "Hourly charter with driver"
+  price.col.day.d: "contact us with details"
+  price.ask: "Ask us"
+  price.footnote: "Note: The rates shown are indicative estimates for initial comparison only."
   inc.h2: "Every booking includes"
   inc.desc: "Service standard for every Bangkok-Hua Hin transfer"
   inc.ins.t: "Compulsory Motor Insurance"
@@ -128,8 +125,8 @@ bodyI18n:
   faq.a1: "200 km, about 3 hours (no traffic) via Highway 4 (Rama 2), passing Petchaburi and Cha-am before reaching Hua Hin"
   faq.q2: "Can I stop along the way?"
   faq.a2: "Yes — there are nice stops like Cafe Amazon Petchaburi, Cha-am floating market, Yi-Sarn bridge. Let driver know in advance. Off-route stops may incur additional charges."
-  faq.q3: "What is the difference between One-way / Round-trip / Day-trip?"
-  faq.a3: "One-way = drop-off only · Round-trip = same-day go-wait-return up to 6 hours (good for business/dinner) · Day-trip 12h = full-day charter, ideal for families/tour groups. Hua Hin is further than Pattaya, so 12h instead of 10h."
+  faq.q3: "What is the difference between One-way / Round-trip / Hourly charter?"
+  faq.a3: "One-way = drop-off only · Round-trip = same-day go-wait-return, the driver waits for you (good for business or dinner) · Hourly charter = full-day touring, ideal for families or tour groups. Hua Hin is further than Pattaya, so allow a little more time."
   faq.q4: "Are tolls included?"
   faq.a4: "Highway 4 has no tolls. The quoted price includes fuel, driver, parking, taxes, and bottled water. No hidden fees."
   faq.q5: "Can I use this service to Cha-am too?"
@@ -138,3 +135,15 @@ bodyI18n:
   faq.a6: "Free cancellation 12+ hours before. Less notice incurs 30% fee. Flexible for weather/illness/force majeure."
   cta.desc: "Fill the form above or LINE us — our team responds within 15 minutes"
   cta.book: "Fill Booking Form"
+  veh.sedan: "Mid-size sedan"
+  veh.mpv: "MPV"
+  veh.suv: "7-seat SUV"
+  veh.van: "Van"
+  veh.vanvip: "VIP van"
+  extra.col.route: "Route"
+  extra.col.sedan: "Sedan"
+  extra.col.sedan.d: "3 seats"
+  extra.col.suvmpv: "SUV / MPV"
+  extra.col.suvmpv.d: "6-7 seats"
+  extra.col.van: "VIP van"
+  extra.col.van.d: "6 seats"

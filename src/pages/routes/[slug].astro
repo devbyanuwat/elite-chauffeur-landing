@@ -56,9 +56,9 @@ const serviceSchema: Record<string, unknown> = {
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'THB',
-    lowPrice: d.priceLow,
-    highPrice: d.priceHigh,
-    offerCount: '12',
+    lowPrice: String(Math.min(...d.rateRows.flat())),
+    highPrice: String(Math.max(...d.rateRows.flat())),
+    offerCount: String(d.rateRows.flat().length),
   },
   url: d.canonical,
 };
@@ -90,25 +90,25 @@ const faqSchema: Record<string, unknown> = {
 
 // ---- Structure that never varies between the two route pages — hardcoded
 // once here rather than duplicated in each YAML entry. ----
+// VEHICLES ต้อง hardcode เสมอ ห้ามดึงจาก BOS /api/public/fleet — ฝั่งนั้นคืนกี่ชั้น
+// เรียงยังไงก็ได้ จับคู่กับ rateRows ผิดแถวคือราคาผิด และเกินแถวคือ build พัง
+// ชุดรถต้องตรงกับ rateRows ของเส้นทางนั้นแถวต่อแถว และเส้นทางไม่ได้มีชั้นเท่ากันทุกเส้น
+//   5 ราคา (พัทยา)  = เก๋ง / MPV / SUV / รถตู้ / รถตู้ VIP
+//   4 ราคา (หัวหิน) = เก๋ง / MPV / SUV / รถตู้ VIP   (ยังไม่มีชั้นรถตู้ธรรมดา)
+// จับคู่ด้วย index เฉย ๆ ไม่ได้ เพราะแถวที่ 4 ของสองเส้นทางคนละคัน
+const V_SEDAN = { name: 'รถเก๋งขนาดกลาง', key: 'veh.sedan' } as const;
+const V_MPV = { name: 'รถ MPV', key: 'veh.mpv' } as const;
+const V_SUV = { name: 'รถ SUV 7 ที่นั่ง', key: 'veh.suv' } as const;
+const V_VAN = { name: 'รถตู้', key: 'veh.van' } as const;
+const V_PREMIUM = { name: 'รถตู้ VIP', key: 'veh.vanvip' } as const;
 
-// fix-round-1 (2026-08-23, CRITICAL finding from task review): VEHICLES here
-// pairs with `d.rateRows[i]` by raw array index — rateRows is a YAML array
-// pinned to exactly 4 tuples in economy/standard/premium/vip order
-// (content.config.ts's `.length(4)`, authored per-route against these four
-// canonical tiers). BOS's `/api/public/fleet` has no notion of that fixed
-// order and can return any subset, in any order, of however many classes an
-// admin has enabled — a prior version of this file made VEHICLES BOS-driven,
-// which meant a 3-car BOS response (e.g. `vip` filtered out for missing
-// showcase_name) silently paired Alphard with Fortuner's price and dropped
-// Alphard's real row, and a 5th class would throw on `d.rateRows[4]` and
-// crash the static build. This list must stay the canonical hardcoded four,
-// always — never BOS-driven. See task-13 fix-round-1 report.
-const VEHICLES = [
-  { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
-  { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
-  { name: 'Toyota Fortuner Legender', type: 'Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า' },
-  { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
-] as const;
+// เริ่มต้น = sedan one-way = ช่องซ้ายบนของตาราง อ่านจากที่เดียวกับตาราง
+const startPrice = `฿${d.rateRows[0][0].toLocaleString()}`;
+
+const VEHICLES =
+  d.rateRows.length === 5
+    ? [V_SEDAN, V_MPV, V_SUV, V_VAN, V_PREMIUM]
+    : [V_SEDAN, V_MPV, V_SUV, V_PREMIUM];
 
 const ICONS: Record<string, string> = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
@@ -160,14 +160,9 @@ function fmt(n: number | null): string {
               <span class="lbl" data-i18n="stat.time.lbl">ชม. เดินทาง</span>
             </div>
             <div class="route-stat">
-              {/* .num intentionally NOT toggled: d.startPrice is a currency
-                  figure invariant across languages, and — unrelated to this
-                  fix — this baseline value already differs from the live
-                  page's own displayed figure on bangkok-to-pattaya (a
-                  pre-existing content gap out of B1/B2 scope). Toggling it
-                  to live's number would silently change the displayed price
-                  on EN, which we won't invent. */}
-              <span class="num">{d.startPrice}</span>
+              {/* ไม่ต้อง toggle ภาษา: เป็นตัวเลขเงินที่เขียนเหมือนกันทั้งไทยและอังกฤษ
+                  ค่ามาจาก rateRows แถวแรกคอลัมน์ one-way จึงตรงกับตารางเสมอ */}
+              <span class="num">{startPrice}</span>
               <span class="lbl" data-i18n="stat.start.lbl">เริ่มต้น (sedan one-way)</span>
             </div>
           </div>
@@ -181,8 +176,8 @@ function fmt(n: number | null): string {
     <section class="section section-alt block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">{t(CTX, 'chrome.fixedRates', 'Fixed Rates')}</span>
-          <h2 data-i18n="price.h2">ราคาคงที่ ตามประเภทการเดินทาง</h2>
+          <span class="eyebrow">{t(CTX, 'chrome.serviceRates', 'Service Rates')}</span>
+          <h2 data-i18n="price.h2">อัตราค่าบริการโดยประมาณ ตามประเภทการเดินทาง</h2>
           <p data-i18n="price.desc">{d.priceDesc}</p>
         </div>
 
@@ -197,8 +192,8 @@ function fmt(n: number | null): string {
                   DOM node on the very first toggle (innerHTML replaces all
                   descendants), silently deleting its own translation. */}
               <th><span data-i18n="price.col.oneway">One-way</span><span class="desc" data-i18n="price.col.oneway.d">ส่งครั้งเดียว</span></th>
-              <th><span data-i18n="price.col.round">Round-trip</span><span class="desc" data-i18n="price.col.round.d">ไป-รอ 6 ชม.-กลับ</span></th>
-              <th><span data-i18n="price.col.day">Day-trip {d.dayTripHours} ชม.</span><span class="desc" data-i18n="price.col.day.d">เที่ยวได้หลายจุด</span></th>
+              <th><span data-i18n="price.col.round">Round-trip</span><span class="desc" data-i18n="price.col.round.d">ไป-กลับ</span></th>
+              <th><span data-i18n="price.col.day">พร้อมคนขับ เหมารายชม.</span><span class="desc" data-i18n="price.col.day.d">ติดต่อแจ้งรายละเอียด</span></th>
             </tr>
           </thead>
           <tbody>
@@ -206,8 +201,7 @@ function fmt(n: number | null): string {
               VEHICLES.map((v, i) => (
                 <tr>
                   <td data-label="ประเภทรถ">
-                    <span class="veh-name">{v.name}</span>
-                    <span class="veh-type">{v.type}</span>
+                    <span class="veh-name" data-i18n={v.key}>{v.name}</span>
                   </td>
                   <td data-label="One-way">
                     <span class="price-currency">฿</span>
@@ -217,9 +211,8 @@ function fmt(n: number | null): string {
                     <span class="price-currency">฿</span>
                     <span class="price">{d.rateRows[i][1].toLocaleString()}</span>
                   </td>
-                  <td data-label="Day-trip">
-                    <span class="price-currency">฿</span>
-                    <span class="price">{d.rateRows[i][2].toLocaleString()}</span>
+                  <td data-label="เหมารายชั่วโมง">
+                    <span class="price-ask" data-i18n="price.ask">สอบถาม</span>
                   </td>
                 </tr>
               ))
@@ -233,7 +226,6 @@ function fmt(n: number | null): string {
     <section class="section block">
       <div class="wrap section-inner">
         <div class="section-head reveal">
-          <span class="eyebrow">{t(CTX, 'chrome.serviceScope', 'Service Scope')}</span>
           <h2 data-i18n="inc.h2">{t(CTX, 'chrome.included', 'ทุกการจองรวม')}</h2>
           <p data-i18n="inc.desc">{d.includedDesc}</p>
         </div>
@@ -257,7 +249,6 @@ function fmt(n: number | null): string {
         <section class="section block">
           <div class="wrap section-inner">
             <div class="section-head reveal">
-              <span class="eyebrow">{t(CTX, 'chrome.otherRoutes', 'Other Routes')}</span>
               <h2>{d.extraRatesTable.heading}</h2>
               <p>{d.extraRatesTable.desc}</p>
             </div>
@@ -271,10 +262,10 @@ function fmt(n: number | null): string {
               </colgroup>
               <thead>
                 <tr>
-                  <th>เส้นทาง</th>
-                  <th>Sedan<span class="desc">Altis · 3 ที่นั่ง</span></th>
-                  <th>SUV / MPV<span class="desc">Fortuner · Xpander · 6 ที่นั่ง</span></th>
-                  <th>VAN<span class="desc">Alphard · 6 ที่นั่ง</span></th>
+                  <th data-i18n="extra.col.route">เส้นทาง</th>
+                  <th><span data-i18n="extra.col.sedan">รถเก๋ง</span><span class="desc" data-i18n="extra.col.sedan.d">3 ที่นั่ง</span></th>
+                  <th><span data-i18n="extra.col.suvmpv">SUV / MPV</span><span class="desc" data-i18n="extra.col.suvmpv.d">6-7 ที่นั่ง</span></th>
+                  <th><span data-i18n="extra.col.van">รถตู้ VIP</span><span class="desc" data-i18n="extra.col.van.d">6 ที่นั่ง</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -339,7 +330,6 @@ function fmt(n: number | null): string {
     <section class="section block">
       <div class="wrap section-inner faq-inner">
         <div class="section-head center reveal">
-          <span class="eyebrow">{t(CTX, 'chrome.faqEyebrow', 'FAQ')}</span>
           <h2 data-i18n="faq.h2">{t(CTX, 'chrome.faqTitle', 'คำถามที่พบบ่อย')}</h2>
           <p data-i18n="faq.desc">สงสัยเรื่องเส้นทาง ราคา หรือ trip type? ดูคำตอบด้านล่าง</p>
         </div>
@@ -449,6 +439,22 @@ function fmt(n: number | null): string {
   }
 
   /* ==================== PRICE TABLES ==================== */
+  /* จังหวะแนวตั้ง: ทุก section ใช้ --section-spacing เท่ากันอยู่แล้ว แต่ margin ของ
+     เนื้อหาชิ้นสุดท้ายทำให้ระยะที่ตาเห็นเหวี่ยง 27-241px — ตัดทิ้งให้ระยะมาจาก token เดียว */
+  .section-inner > :last-child,
+  .section-head > :last-child {
+    margin-block-end: 0;
+  }
+
+  /* section.block ใส่ padding-block: var(--section-spacing) ทั้งบนและล่าง (141px ที่จอ 1280)
+     section บนหน้านี้พื้นหลังโปร่งเหมือนกันหมด ยกเว้น .related-strip กับ .cta-footer
+     ที่มีสีของตัวเอง — สอง section พื้นเดียวกันชนกันจึงได้ระยะซ้อน 282px ที่อ่านเป็นช่องโหว่
+     รอยต่อควรเป็นหนึ่งหน่วยเดียว: ปล่อยให้ระยะมาจาก padding-bottom ของ section ก่อนหน้า
+     (บล็อกที่มีพื้นหลังเองยังต้องมี padding-top ของตัวเอง จึงไม่โดนกฎนี้) */
+  .block + .block {
+    padding-top: 0;
+  }
+
   .price-table {
     width: 100%;
     border-collapse: collapse;
@@ -507,9 +513,20 @@ function fmt(n: number | null): string {
     color: var(--text-tertiary);
     font-weight: 400;
   }
+  /* หมายเหตุเป็นบรรทัดท้ายของตาราง ไม่ใช่ข้อความลอยเหนือช่องว่างท้าย section
+     (หลังตัดข้อความเหลือบรรทัดเดียว มันลอยอยู่เหนือระยะ 144px โดยไม่มีอะไรถ่วง) */
+  /* คอลัมน์เหมารายชั่วโมงไม่มีราคาตายตัว — ถ่วงน้ำหนักให้เบากว่าตัวเลขราคา
+     ไม่ให้แย่งสายตาไปจาก one-way / round-trip ที่เป็นตัวเลขจริง */
+  .price-ask {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+  }
+
   .price-note {
-    margin-top: 1rem;
+    margin-top: 0.65rem;
+    padding-left: 0.1rem;
     font-size: 0.8rem;
+    line-height: 1.6;
     color: var(--text-tertiary);
   }
   /* Other-routes rate card variant: balanced columns + right-aligned numerics */
@@ -561,8 +578,15 @@ function fmt(n: number | null): string {
   /* ==================== INCLUDED GRID ==================== */
   .included-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* auto-fit เดิมได้ 4-5 คอลัมน์ที่จอกว้าง ทิ้งแถวสุดท้ายเหลือ 1-2 ใบ
+       6 ไอเทม ล็อก 3 คอลัมน์ = 2 แถวเต็มพอดี */
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: 2rem;
+  }
+  @media (min-width: 900px) {
+    .included-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
   .included-item {
     padding-left: 1.5rem;
@@ -598,7 +622,7 @@ function fmt(n: number | null): string {
   /* ==================== RELATED STRIP ==================== */
   .related-strip {
     background: var(--bg-secondary);
-    padding: 2.5rem clamp(1.25rem, 5vw, 2.5rem);
+    padding: calc(var(--section-spacing) * 0.5) clamp(1.25rem, 5vw, 2.5rem);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }

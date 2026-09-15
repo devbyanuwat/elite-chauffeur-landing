@@ -28,6 +28,12 @@
     </span>
     <span class="lbl"><b data-i18n="book.v.sedan">รถเก๋ง</b><small data-i18n="book.v.sedan.s">4 ที่นั่ง · ประหยัด</small></span>
   </button>
+  <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="mpv">
+    <span class="ic" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l1.6-4.6A2 2 0 016.5 6h11a2 2 0 011.9 1.4L21 12"/><path d="M2 12h20v5a1 1 0 01-1 1h-1.5a1 1 0 01-1-1H5.5a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M12 6v6"/><circle cx="7" cy="16" r="1.1"/><circle cx="17" cy="16" r="1.1"/></svg>
+    </span>
+    <span class="lbl"><b data-i18n="book.v.mpv">รถ MPV</b><small data-i18n="book.v.mpv.s">7 ที่นั่ง · นั่งสบาย</small></span>
+  </button>
   <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="suv">
     <span class="ic" aria-hidden="true">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l1-5a2 2 0 012-1.5h10A2 2 0 0118 7l2 5"/><path d="M2 12h20v5a1 1 0 01-1 1h-1.5a1 1 0 01-1-1H5.5a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><circle cx="7" cy="16" r="1.2"/><circle cx="17" cy="16" r="1.2"/></svg>
@@ -38,7 +44,7 @@
     <span class="ic" aria-hidden="true">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 11h18"/><path d="M8 6v12"/></svg>
     </span>
-    <span class="lbl"><b data-i18n="book.v.premium">พรีเมียมแวน</b><small data-i18n="book.v.premium.s">Alphard · VIP</small></span>
+    <span class="lbl"><b data-i18n="book.v.premium">พรีเมียมแวน</b><small data-i18n="book.v.premium.s">รถตู้ VIP</small></span>
   </button>
   <button type="button" class="vtype-chip" role="radio" aria-checked="false" data-value="any">
     <span class="ic" aria-hidden="true">
@@ -117,9 +123,14 @@
 
   .vtype {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.55rem;
     margin-bottom: 1.1rem;
+  }
+
+  /* 5 ชิปใน 2 คอลัมน์เหลือเศษ 1 ใบ — ใบสุดท้ายกินเต็มแถวแทนที่จะลอยโดด */
+  .vtype-chip:last-child {
+    grid-column: 1 / -1;
   }
 
   .vtype-chip {
@@ -221,8 +232,11 @@
       gap: 0.4rem;
     }
 
+    /* ชิปเพิ่มจาก 4 เป็น 5 ใบ (เพิ่ม MPV) = สูงขึ้นอีก 1 แถว
+       บีบ padding แนวตั้งคืนพื้นที่ ให้ปุ่ม submit ยังอยู่เหนือขอบจอ
+       ความสูงชิปเหลือ ~45px ยังเกินขั้นต่ำพื้นที่กดของ a11y */
     .vtype-chip {
-      padding: 0.4rem 0.8rem;
+      padding: 0.25rem 0.8rem;
     }
 
     .vtype-chip .ic {

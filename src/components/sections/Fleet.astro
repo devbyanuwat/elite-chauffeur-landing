@@ -35,7 +35,7 @@ const CARS: Car[] = [
   {
     ghost: 'ALTIS',
     name: 'Toyota Corolla Altis',
-    price: '฿400',
+    price: '฿1,600',
     chips: [SEAT4, AUTO, INSURED],
     img: '/images/car4.webp',
     alt: 'Toyota Corolla Altis',
@@ -45,7 +45,7 @@ const CARS: Car[] = [
   {
     ghost: 'XPANDER',
     name: 'Mitsubishi Xpander',
-    price: '฿450',
+    price: '฿1,900',
     chips: [SEAT7, AUTO, INSURED],
     img: '/images/car1.webp',
     alt: 'Mitsubishi Xpander Cross',
@@ -55,7 +55,7 @@ const CARS: Car[] = [
   {
     ghost: 'FORTUNER',
     name: 'Toyota Fortuner',
-    price: '฿500',
+    price: '฿2,400',
     chips: [SEAT7, AUTO, INSURED],
     img: '/images/car3.webp',
     alt: 'Toyota Fortuner Legender',
@@ -177,7 +177,7 @@ const first = cars[0];
         {first.price && (
           <>
             <small data-i18n="fl.from">{t(TX, 'fl.from', 'เริ่มต้น')}</small><br />
-            <b>{first.price}</b><small data-i18n="fl.day">{t(TX, 'fl.day', '/วัน')}</small>
+            <b>{first.price}</b><small data-i18n="fl.trip">{t(TX, 'fl.trip', '/เที่ยว')}</small>
           </>
         )}
         <div>

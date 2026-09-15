@@ -111,8 +111,6 @@ export const airportsSchema = seoMeta.extend({
     serviceName: z.string(),
     serviceDescription: z.string(),
     areaServedPlaceName: z.string(), // e.g. "Suvarnabhumi Airport (BKK)"
-    priceLow: z.string(),
-    priceHigh: z.string(),
     // Breadcrumb (JSON-LD) — position-3 label for this airport
     breadcrumbName: z.string(), // e.g. "สุวรรณภูมิ (BKK)"
     // Hero
@@ -128,6 +126,8 @@ export const airportsSchema = seoMeta.extend({
     // names per airport, e.g. "price.col.riverside" on Suvarnabhumi vs
     // "price.col.north" on Don Mueang, for the middle zone).
     zoneKeys: z.array(z.string()).length(3),
+    // lowPrice/highPrice ของ JSON-LD คำนวณจาก rateRows ไม่กรอกมือ
+    // (ดอนเมืองเคยกรอกค้างเป็น 1000-3900 ทั้งที่ตารางจริง 800-3700)
     rateRows: z.array(z.tuple([z.number(), z.number(), z.number()])).length(4),
     priceFootnote: z.string(),
     // Included
@@ -146,8 +146,6 @@ export const routesSchema = seoMeta.extend({
     serviceName: z.string(),
     serviceDescription: z.string(),
     areaServed: z.array(z.string()), // City names, e.g. ["Bangkok", "Hua Hin", "Cha-am"]
-    priceLow: z.string(),
-    priceHigh: z.string(),
     // Breadcrumb (JSON-LD)
     breadcrumbName: z.string(), // e.g. "กรุงเทพ → หัวหิน"
     // Hero
@@ -155,11 +153,13 @@ export const routesSchema = seoMeta.extend({
     heroSub: z.string(),
     distanceKm: z.number(),
     travelTime: z.string(), // display string, e.g. "3.0" or "1.45"
-    startPrice: z.string(), // e.g. "฿2,500"
-    // Price matrix (One-way / Round-trip / Day-trip)
+    // Price matrix (One-way / Round-trip) — lowPrice/highPrice/startPrice ของ
+    // JSON-LD และ hero คำนวณจาก rateRows ไม่กรอกมือ กันตัวเลขค้างเมื่อราคาขยับ
     priceDesc: z.string(),
-    dayTripHours: z.number(),
-    rateRows: z.array(z.tuple([z.number(), z.number(), z.number()])).length(4),
+    // 4 หรือ 5 แถว: พัทยามีชั้น Premium เพิ่ม ส่วนหัวหินยังเป็น 4 ชั้น
+    // ตารางบนหน้าเว็บข้ามรถที่ยังไม่มีราคา จึงไม่บังคับให้ทุกเส้นทางเท่ากัน
+    // 2 ค่า: [one-way, round-trip] — คอลัมน์เหมารายชั่วโมงคิดตามงานจริง ไม่มีราคาตายตัว
+    rateRows: z.array(z.tuple([z.number(), z.number()])).min(4).max(5),
     priceFootnote: z.string(),
     // Included
     includedDesc: z.string(),

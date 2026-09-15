@@ -62,8 +62,8 @@ const serviceSchema: Record<string, unknown> = {
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'THB',
-    lowPrice: d.priceLow,
-    highPrice: d.priceHigh,
+    lowPrice: String(Math.min(...d.rateRows.flat())),
+    highPrice: String(Math.max(...d.rateRows.flat())),
     offerCount: '12',
   },
   url: d.canonical,
@@ -108,76 +108,35 @@ const faqSchema: Record<string, unknown> = {
 // where each card stands alone and BOS-driven is safe. See task-13
 // fix-round-1 report.
 const VEHICLES = [
-  { name: 'Toyota Corolla Altis', type: 'Sedan · 3 ผู้โดยสาร · 2 กระเป๋า' },
-  { name: 'Mitsubishi Xpander Cross', type: 'Crossover MPV · 6 ผู้โดยสาร · 4 กระเป๋า' },
-  { name: 'Toyota Fortuner Legender', type: 'Premium SUV · 6 ผู้โดยสาร · 5 กระเป๋า' },
-  { name: 'Toyota Alphard', type: 'Luxury Van · 6 ผู้โดยสาร · 6 กระเป๋า' },
+  { name: 'รถเก๋งขนาดกลาง' },
+  { name: 'รถ MPV' },
+  { name: 'รถ SUV 7 ที่นั่ง' },
+  { name: 'รถตู้ VIP' },
 ] as const;
 
-// fix-review IMPORTANT (2026-08-23): vehicleClass ผูกกับชั้นราคาของ BOS
-// (economy/standard/premium/vip) — ใช้ยืมรูปแทนการเทียบ name ตรงตัว (name
-// เปลี่ยนได้ทุกเมื่อที่แอดมินแก้ showcase_name บน BOS — ดูคอมเมนต์ที่ twin
-// ด้านล่าง). ค่านี้ไม่ถูก render ที่ไหนเลยจึงไม่กระทบ fallback output
+// vehicleClass ผูกกับชั้นราคาของ BOS (economy/standard/premium/vip) — ใช้ยืมรูป
+// แทนการเทียบด้วย name เพราะแอดมินแก้ showcase_name บน BOS ได้ทุกเมื่อ
 const FALLBACK_FLEET = [
-  { img: '/images/car4.webp', name: 'Toyota Corolla Altis', type: 'Executive Sedan', cap: '3 ผู้โดยสาร · 2 กระเป๋าใหญ่', vehicleClass: 'economy' },
-  { img: '/images/car1.webp', name: 'Mitsubishi Xpander', type: 'Crossover MPV', cap: '6 ผู้โดยสาร · 4 กระเป๋าใหญ่', vehicleClass: 'standard' },
-  { img: '/images/car3.webp', name: 'Toyota Fortuner', type: 'Premium SUV', cap: '6 ผู้โดยสาร · 5 กระเป๋าใหญ่', vehicleClass: 'vip' },
-  { img: '/images/car2.webp', name: 'Toyota Alphard', type: 'Luxury Van', cap: '6 ผู้โดยสาร · 6 กระเป๋าใหญ่ · VIP', vehicleClass: 'premium' },
+  { img: '/images/car4.webp', name: 'รถเก๋งขนาดกลาง', vehicleClass: 'economy' },
+  { img: '/images/car1.webp', name: 'รถ MPV', vehicleClass: 'standard' },
+  { img: '/images/car3.webp', name: 'รถ SUV 7 ที่นั่ง', vehicleClass: 'vip' },
+  { img: '/images/car2.webp', name: 'รถตู้ VIP', vehicleClass: 'premium' },
 ];
 
-// ระดับรถ (Executive Sedan / Luxury Van ...) เป็น copy ผูกชั้นราคา — ใช้กับ FLEET เท่านั้น
-// (VEHICLES/price matrix ด้านบนเป็น hardcode ตายตัว ไม่ผ่าน BOS แล้ว)
-// fix-review MINOR (documented trade, not a bug): คีย์ตาม class ทำให้คำบรรยาย
-// (เช่น "Luxury Van · 6 กระเป๋าใหญ่" ที่จริงเป็นสเปคของ Alphard) ถูกแปะให้กับ
-// รถจริงคันไหนก็ได้ที่ BOS ส่งมาเป็นชั้นราคานั้น — เช่น Kia Carnival ในชั้น
-// premium ก็จะได้คำบรรยายเดียวกัน นี่คือทางเลือกที่ดีที่สุดเท่าที่ทำได้แล้ว
-// เพราะ BOS ไม่ได้เก็บจำนวนกระเป๋าต่อคัน ไม่ใช่บั๊ก — ไม่ต้อง restructure
-const CLASS_TIER: Record<string, string> = {
-  economy: 'Executive Sedan',
-  standard: 'Crossover MPV',
-  premium: 'Luxury Van',
-  vip: 'VIP Sedan',
-};
-
-const CLASS_BAGS: Record<string, string> = {
-  economy: '2 กระเป๋าใหญ่',
-  standard: '4 กระเป๋าใหญ่',
-  premium: '6 กระเป๋าใหญ่',
-  vip: '3 กระเป๋าใหญ่',
-};
-
-// FLEET (การ์ดรูปรถ) ยังคง BOS-driven ได้ต่อไป — แต่ละการ์ดยืนด้วยตัวเอง ไม่ได้
-// index เข้า array ที่ตายตัวความยาวแบบ rateRows ข้างบน
+// FLEET (การ์ดรูปรถ) ยังคง BOS-driven ได้ — แต่ละการ์ดยืนด้วยตัวเอง ไม่ได้ index
+// เข้า array ที่ตายตัวความยาวแบบ rateRows/VEHICLES ข้างบน
 const fleetFromBos = await getFleet();
 
 const FLEET =
   fleetFromBos.length > 0
-    ? fleetFromBos.map((c) => {
-        // fix-review IMPORTANT: เทียบด้วย vehicleClass ไม่ใช่ name — ก่อนหน้า
-        // นี้ `f.name === c.name` พังทันทีที่แอดมินแก้ showcase_name บน BOS
-        // (นั่นคือเหตุผลที่ BOS มีปุ่มแก้ชื่อให้แอดมินตั้งแต่แรก) FALLBACK_FLEET
-        // เองก็มีชื่อไม่ตรงกับ VEHICLES อยู่แล้ว ('Mitsubishi Xpander' vs
-        // 'Mitsubishi Xpander Cross') ซึ่งเป็นหลักฐานว่าการเทียบด้วยชื่อเปราะ
-        const twin = FALLBACK_FLEET.find((f) => f.vehicleClass === c.vehicleClass);
-        return {
-          img: c.photoUrl ?? twin?.img ?? '',
-          name: c.name,
-          type: CLASS_TIER[c.vehicleClass] ?? '',
-          cap: [
-            c.seats ? `${c.seats} ผู้โดยสาร` : '',
-            CLASS_BAGS[c.vehicleClass] ?? '',
-            c.vip ? 'VIP' : '',
-          ]
-            .filter(Boolean)
-            .join(' · '),
-        };
-      })
+    ? fleetFromBos.map((c) => ({
+        img: c.photoUrl ?? FALLBACK_FLEET.find((f) => f.vehicleClass === c.vehicleClass)?.img ?? '',
+        name: c.name,
+      }))
     : FALLBACK_FLEET;
 
-// FLEET_CAP_KEYS (ด้านล่าง) เป็น key i18n ที่ผูกกับลำดับ 4 คันของชุด fallback fleet
-// เดิม — ถ้าจำนวน/ลำดับรถมาจาก BOS ลำดับจะเพี้ยน จึงใช้ key นี้เฉพาะตอนที่ยังใช้ชุด
-// fallback เท่านั้น (VEHICLES/VEH_KEYS ไม่ต้องกันแบบนี้อีกแล้ว เพราะ VEHICLES เป็น
-// hardcode ตายตัวเสมอ — ดู comment ด้านบน)
+// VEH_KEYS ผูกกับลำดับ 4 คันของชุด fallback — ถ้ารายการมาจาก BOS ลำดับเพี้ยน
+// จึงแปะ data-i18n เฉพาะตอนที่ยังใช้ชุด fallback
 const usingFallback = fleetFromBos.length === 0;
 
 const ICONS: Record<string, string> = {
@@ -192,8 +151,7 @@ const ICONS: Record<string, string> = {
 // Final-review B1 fix — data-i18n keys for HeroTrust and VEHICLES, in the
 // exact order those arrays render (matches the live page's key order).
 const TRUST_KEYS = ['trust.flight', 'trust.sign', 'trust.waiting', 'trust.english'] as const;
-const VEH_KEYS = ['veh.altis', 'veh.xpander', 'veh.fortuner', 'veh.alphard'] as const;
-const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortuner', 'fleet.cap.alphard'] as const;
+const VEH_KEYS = ['veh.sedan', 'veh.mpv', 'veh.suv', 'veh.vanvip'] as const;
 ---
 
 <Base
@@ -272,8 +230,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
               VEHICLES.map((v, i) => (
                 <tr>
                   <td data-label="ประเภทรถ">
-                    <span class="veh-name">{v.name}</span>
-                    <span class="veh-type" data-i18n={VEH_KEYS[i]}>{v.type}</span>
+                    <span class="veh-name" data-i18n={VEH_KEYS[i]}>{v.name}</span>
                   </td>
                   {d.rateRows[i].map((price, zi) => (
                     <td data-label={d.zoneLabels[zi]}>
@@ -329,17 +286,10 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
           {
             FLEET.map((f, i) => (
               <div class="fleet-mini">
-                {/* ruling 2 (2026-08-22): f.img can be '' when mergeFleet-style
-                    logic finds no BOS photo and no same-class fallback twin —
-                    render only when there's something to point at, same as
-                    Fleet.astro / Reviews.astro, instead of a broken-image icon.
-                    fix-review IMPORTANT (2026-08-23): "same-name" above is now
-                    "same-class" — see FALLBACK_FLEET's twin-lookup above,
-                    which now keys on vehicleClass instead of name. */}
-                {f.img && <img src={f.img} alt={f.name} width="600" height="375" loading="lazy" />}
-                <h4>{f.name}</h4>
-                <div class="type">{f.type}</div>
-                <div class="cap" data-i18n={usingFallback ? FLEET_CAP_KEYS[i] : undefined}>{f.cap}</div>
+                {/* f.img เป็น '' ได้เมื่อ BOS ไม่มีรูปและไม่มีคันชั้นเดียวกันให้ยืมรูป
+                    — ไม่ render ดีกว่าโชว์ไอคอนรูปพัง เหมือน Fleet.astro / Reviews.astro */}
+                {f.img && <img src={f.img} alt={f.name} width="600" height="400" loading="lazy" />}
+                <h4 data-i18n={usingFallback ? VEH_KEYS[i] : undefined}>{f.name}</h4>
               </div>
             ))
           }
@@ -457,9 +407,23 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   }
 
   /* ==================== RELATED STRIP ==================== */
+  /* จังหวะแนวตั้ง: ระยะที่ตาเห็นต้องมาจาก --section-spacing ตัวเดียว
+     ไม่ใช่ margin ของเนื้อหาชิ้นสุดท้ายบวกเพิ่ม */
+  .section-inner > :last-child,
+  .section-head > :last-child {
+    margin-block-end: 0;
+  }
+
+  /* section.block ใส่ padding-block ทั้งบนและล่าง สอง section พื้นหลังเดียวกัน
+     ชนกันจึงได้ระยะซ้อนสองชั้นที่อ่านเป็นช่องโหว่ — รอยต่อควรเป็นหนึ่งหน่วยเดียว
+     (บล็อกที่มีพื้นหลังของตัวเองยังต้องมี padding-top ของมันเอง จึงไม่โดนกฎนี้) */
+  .block + .block {
+    padding-top: 0;
+  }
+
   .related-strip {
     background: var(--bg-secondary);
-    padding: 2.5rem clamp(1.25rem, 5vw, 2.5rem);
+    padding: calc(var(--section-spacing) * 0.5) clamp(1.25rem, 5vw, 2.5rem);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
@@ -552,8 +516,10 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
     font-weight: 400;
   }
   .price-note {
-    margin-top: 1rem;
+    margin-top: 0.65rem;
+    padding-left: 0.1rem;
     font-size: 0.8rem;
+    line-height: 1.6;
     color: var(--text-tertiary);
   }
   @media (max-width: 700px) {
@@ -587,8 +553,15 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
   /* ==================== INCLUDED GRID ==================== */
   .included-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* auto-fit เดิมได้ 4-5 คอลัมน์ที่จอกว้าง ทิ้งแถวสุดท้ายเหลือ 1-2 ใบ
+       6 ไอเทม ล็อก 3 คอลัมน์ = 2 แถวเต็มพอดี */
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: 2rem;
+  }
+  @media (min-width: 900px) {
+    .included-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
   .included-item {
     padding-left: 1.5rem;
