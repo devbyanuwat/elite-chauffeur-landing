@@ -24,6 +24,7 @@ import { getReviewSummary } from '../lib/reviews-api';
 import { getLandingContent } from '../lib/cms-api';
 import { collectEnOverrides, isHidden, t } from '../lib/cms-merge';
 import { buildProductCatalogSchema } from '../lib/product-cms';
+import { getContact } from '../lib/contact';
 
 // ruling (2026-08-23, deferred by design): this runs at BUILD time, but
 // <Reviews server:defer> below renders the visible review cards at REQUEST
@@ -41,14 +42,12 @@ const cmsAll = await getLandingContent();
 const hidden = (key: string) => isHidden(cmsAll, key);
 const pageI18n = collectEnOverrides(cmsAll);
 const TM = (cmsAll?.['static-reviews'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
-const contact = cmsAll?.['global-contact'] as
-  | { phone?: string; lineUrl?: string }
-  | undefined;
+const contact = await getContact();
 // เบอร์/LINE จาก CMS ไหลเข้า JSON-LD ด้วย — clone แล้วทับเฉพาะ field ที่เกี่ยว
 const limousineSchemaLive: Record<string, unknown> = {
   ...limousineServiceSchema,
-  ...(contact?.phone ? { telephone: contact.phone } : {}),
-  ...(contact?.lineUrl ? { sameAs: [contact.lineUrl] } : {}),
+  telephone: contact.phone,
+  sameAs: [contact.lineUrl],
 };
 const productCatalogSchema = buildProductCatalogSchema(cmsAll);
 

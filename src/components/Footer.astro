@@ -1,13 +1,11 @@
 ---
 import { getLandingContent } from '../lib/cms-api';
 import { t } from '../lib/cms-merge';
+import { getContact, telHref as toTelHref } from '../lib/contact';
 
 const cmsAll = await getLandingContent();
-const contact = cmsAll?.['global-contact'] as { phone?: string; phoneDisplay?: string; lineId?: string; lineUrl?: string } | undefined;
-const telHref = 'tel:' + (contact?.phone ?? '0623879159').replace(/^\+66/, '0');
-const phoneDisplay = contact?.phoneDisplay ?? '062-387-9159';
-const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
-const lineId = contact?.lineId ?? '@031cvnva';
+const { phoneDisplay, lineId, lineUrl, phone } = await getContact();
+const telHref = toTelHref(phone);
 const TX = (cmsAll?.['footer'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 

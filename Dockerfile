@@ -9,6 +9,9 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci || npm install
 COPY . .
+# ปลายทาง BOS สำหรับดึงเนื้อหา CMS ตอน build (ไม่ตั้ง = ใช้ค่า fallback ในโค้ด)
+ARG BOS_PUBLIC_API
+ENV BOS_PUBLIC_API=$BOS_PUBLIC_API
 RUN npm run build
 
 # --- runtime ---

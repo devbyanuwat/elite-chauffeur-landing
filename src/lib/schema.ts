@@ -1,3 +1,5 @@
+import { DEFAULT_CONTACT } from './contact';
+
 /**
  * Live JSON-LD structured data, ported verbatim from index.html (lines ~45-154).
  * Every field (LimousineService/areaServed/sameAs etc.) is kept identical to the
@@ -16,7 +18,7 @@ export const limousineServiceSchema: Record<string, unknown> = {
   url: 'https://sabuygo.com',
   logo: 'https://sabuygo.com/images/logo.webp',
   image: 'https://sabuygo.com/images/logo.webp',
-  telephone: '+66623879159',
+  telephone: DEFAULT_CONTACT.phone,
   priceRange: '$$$',
   areaServed: [
     { '@type': 'City', name: 'Bangkok' },
@@ -36,7 +38,7 @@ export const limousineServiceSchema: Record<string, unknown> = {
     addressRegion: 'Bangkok',
     addressCountry: 'TH',
   },
-  sameAs: ['https://line.me/R/ti/p/@031cvnva'],
+  sameAs: [DEFAULT_CONTACT.lineUrl],
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

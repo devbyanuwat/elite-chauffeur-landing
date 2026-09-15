@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { t } from '../../lib/cms-merge';
 import { getLandingContent } from '../../lib/cms-api';
+import { getContact } from '../../lib/contact';
 import { airportsSchema } from '../../lib/content-schemas';
 import Base from '../../layouts/Base.astro';
 import BookingForm from '../../components/BookingForm.astro';
@@ -29,6 +30,7 @@ const { entry } = Astro.props;
 // Landing CMS override — เนื้อหาจาก BOS (key "airport:<slug>") ต้องผ่าน zod เดียวกับ yaml
 // ผิดโครงตกกลับ yaml เดิม + log — admin กรอกผิด build ไม่มีวันพัง
 const cmsAll = await getLandingContent();
+const contact = await getContact();
 const CTX = (cmsAll?.['chrome-subpage'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 const cmsOverride = cmsAll?.[`airport:${entry.id}`];
 const parsed = cmsOverride ? airportsSchema.safeParse(cmsOverride) : null;
@@ -50,7 +52,7 @@ const serviceSchema: Record<string, unknown> = {
     '@type': 'LocalBusiness',
     name: 'SABUYGO',
     url: 'https://sabuygo.com',
-    telephone: '+66623879159',
+    telephone: contact.phone,
     address: { '@type': 'PostalAddress', addressLocality: 'Bangkok', addressCountry: 'TH' },
   },
   areaServed: [
@@ -375,7 +377,7 @@ const FLEET_CAP_KEYS = ['fleet.cap.altis', 'fleet.cap.xpander', 'fleet.cap.fortu
       <p data-i18n="cta.desc">กรอกฟอร์มด้านบนหรือ LINE หาเรา ทีมงานตอบกลับภายใน 15 นาที</p>
       <div class="actions">
         <a href="#bookingForm" class="btn btn-primary btn-lg" data-i18n="cta.book">กรอกฟอร์มจอง</a>
-        <a href="https://line.me/R/ti/p/@031cvnva" class="btn btn-line btn-lg" target="_blank" rel="noopener nofollow">LINE @031cvnva</a>
+        <a href={contact.lineUrl} class="btn btn-line btn-lg" target="_blank" rel="noopener nofollow">LINE {contact.lineId}</a>
       </div>
     </section>
   </main>

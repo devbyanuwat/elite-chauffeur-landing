@@ -1,10 +1,10 @@
 ---
 import { getLandingContent } from '../lib/cms-api';
 import { t } from '../lib/cms-merge';
+import { getContact } from '../lib/contact';
 
 const cmsAll = await getLandingContent();
-const contact = cmsAll?.['global-contact'] as { lineUrl?: string } | undefined;
-const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
+const { lineUrl } = await getContact();
 const TX = (cmsAll?.['cta'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
 ---
 

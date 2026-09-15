@@ -2,12 +2,11 @@
 import ServiceTabs from './ServiceTabs.astro';
 import { getLandingContent } from '../lib/cms-api';
 import { t } from '../lib/cms-merge';
+import { getContact } from '../lib/contact';
 
 const cmsAll = await getLandingContent();
 const BTX = (cmsAll?.['booking'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
-const contact = cmsAll?.['global-contact'] as { lineId?: string; lineUrl?: string } | undefined;
-const lineId = contact?.lineId ?? '@031cvnva';
-const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
+const { lineId, lineUrl } = await getContact();
 // endpoint จาก env ก่อน (dev ชี้เครื่องอื่นได้) ไม่งั้นค่า production เดิม
 const bosApi = (import.meta.env.BOS_PUBLIC_API ?? 'https://bos.sabuygo.com').replace(/\/+$/, '') + '/api/public/inquiry';
 

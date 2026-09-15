@@ -1,6 +1,7 @@
 ---
 import { getLandingContent } from '../lib/cms-api';
 import { t } from '../lib/cms-merge';
+import { getContact } from '../lib/contact';
 
 const cmsAll = await getLandingContent();
 const TX = (cmsAll?.['hero'] as { texts?: Record<string, { th: string; en: string }> } | undefined)?.texts;
@@ -8,8 +9,7 @@ const heroImages = (cmsAll?.['hero'] as { images?: { bg?: string; depthMap?: str
 // depth pair ต้องมาคู่ — มีตัวเดียวถือว่าไม่ครบ ใช้ของเดิมทั้งคู่ (validator ฝั่ง BOS กันอยู่แล้ว ชั้นนี้กันเข็มขัด)
 const heroBg = heroImages?.bg && heroImages?.depthMap ? heroImages.bg : '/images/hero-bg.travelv1-baseline.webp';
 const heroDepth = heroImages?.bg && heroImages?.depthMap ? heroImages.depthMap : '/images/parallax/hero-travelv1/depth.webp';
-const contact = cmsAll?.['global-contact'] as { lineUrl?: string } | undefined;
-const lineUrl = contact?.lineUrl ?? 'https://line.me/R/ti/p/@031cvnva';
+const { lineUrl } = await getContact();
 ---
 
 <section class="hero">
