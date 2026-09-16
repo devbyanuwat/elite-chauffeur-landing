@@ -82,6 +82,7 @@ jobs:
           # BOS endpoint ที่ build ใช้ดึงเนื้อหา CMS (ตั้ง repo variable BOS_PUBLIC_API ทับได้)
           build-args: |
             BOS_PUBLIC_API=${{ vars.BOS_PUBLIC_API || 'https://bos.sabuygo.com' }}
+            CMS_BUILD_ID=${{ github.run_id }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           # Cache จาก GHCR เพื่อเร่ง build

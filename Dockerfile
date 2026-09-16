@@ -12,7 +12,9 @@ COPY . .
 # ปลายทาง BOS สำหรับดึงเนื้อหา CMS ตอน build (ไม่ตั้ง = ใช้ค่า fallback ในโค้ด)
 ARG BOS_PUBLIC_API
 ENV BOS_PUBLIC_API=$BOS_PUBLIC_API
-RUN npm run build
+# เปลี่ยนทุก run (github.run_id) เพื่อกัน Docker cache ข้ามขั้น build — ไม่งั้นปุ่มเผยแพร่ได้ image เดิมที่ไม่ได้ดึง CMS ใหม่
+ARG CMS_BUILD_ID=local
+RUN echo "cms build $CMS_BUILD_ID" && npm run build
 
 # --- runtime ---
 FROM node:20-alpine
